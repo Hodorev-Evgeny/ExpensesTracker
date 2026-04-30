@@ -14,6 +14,15 @@ CREATE TABLE trackerapp.users (
     time_add TIMESTAMPTZ NOT NULL
 );
 
+CREATE TABLE trackerapp.categories (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(125) NOT NULL,
+    user_id INTEGER NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES trackerapp.users(id) ON DELETE CASCADE,
+    CONSTRAINT uq_categories_user_title UNIQUE (user_id, title)
+);
+
 CREATE TABLE trackerapp.transactions (
     id SERIAL PRIMARY KEY,
     sum INTEGER NOT NULL,
@@ -21,11 +30,12 @@ CREATE TABLE trackerapp.transactions (
         type_transaction = 'Income' OR type_transaction = 'Expenditure'
         ),
     date TIMESTAMP NOT NULL,
-    category VARCHAR(125) NOT NULL,
+    category_id INTEGER NOT NULL,
     comments VARCHAR(1000),
     user_id INTEGER NOT NULL,
     time_create TIMESTAMPTZ NOT NULL,
     time_changes TIMESTAMPTZ,
 
-    FOREIGN KEY (user_id) REFERENCES trackerapp.users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES trackerapp.users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES trackerapp.categories(id) ON DELETE CASCADE
 );
