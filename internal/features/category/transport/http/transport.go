@@ -22,6 +22,12 @@ type CategoryService interface {
 	GetAllCategories(
 		ctx context.Context,
 	) ([]core_domain.Category, error)
+
+	RenameCategory(
+		ctx context.Context,
+		id int,
+		patch core_domain.CategoryUpdate,
+	) (core_domain.Category, error)
 }
 
 type CategoryHTTPHandler struct {
@@ -52,6 +58,11 @@ func (h *CategoryHTTPHandler) Routes() []core_transport_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/category/{id}",
 			Handler: h.GetCategory,
+		},
+		{
+			Method:  http.MethodPatch,
+			Path:    "/category/{id}",
+			Handler: h.RenameCategory,
 		},
 	}
 }

@@ -20,6 +20,12 @@ type CategoryRepository interface {
 	GetAllCategories(
 		ctx context.Context,
 	) ([]core_domain.Category, error)
+
+	RenameCategory(
+		ctx context.Context,
+		id int,
+		category core_domain.Category,
+	) (core_domain.Category, error)
 }
 
 type CategoryService struct {
