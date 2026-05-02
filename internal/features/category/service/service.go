@@ -26,6 +26,11 @@ type CategoryRepository interface {
 		id int,
 		category core_domain.Category,
 	) (core_domain.Category, error)
+
+	DeleteCategory(
+		ctx context.Context,
+		id int,
+	) error
 }
 
 type CategoryService struct {

@@ -28,6 +28,11 @@ type CategoryService interface {
 		id int,
 		patch core_domain.CategoryUpdate,
 	) (core_domain.Category, error)
+
+	DeleteCategory(
+		ctx context.Context,
+		id int,
+	) error
 }
 
 type CategoryHTTPHandler struct {
@@ -63,6 +68,11 @@ func (h *CategoryHTTPHandler) Routes() []core_transport_server.Route {
 			Method:  http.MethodPatch,
 			Path:    "/category/{id}",
 			Handler: h.RenameCategory,
+		},
+		{
+			Method:  http.MethodDelete,
+			Path:    "/category/{id}",
+			Handler: h.DeleteCategory,
 		},
 	}
 }
