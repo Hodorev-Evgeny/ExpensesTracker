@@ -11,6 +11,15 @@ type CategoryRepository interface {
 		ctx context.Context,
 		category core_domain.Category,
 	) (core_domain.Category, error)
+
+	GetCategoryByID(
+		ctx context.Context,
+		id int,
+	) (core_domain.Category, error)
+
+	GetAllCategories(
+		ctx context.Context,
+	) ([]core_domain.Category, error)
 }
 
 type CategoryService struct {

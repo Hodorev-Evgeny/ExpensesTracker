@@ -13,6 +13,15 @@ type CategoryService interface {
 		ctx context.Context,
 		category core_domain.Category,
 	) (core_domain.Category, error)
+
+	GetCategoryByID(
+		ctx context.Context,
+		id int,
+	) (core_domain.Category, error)
+
+	GetAllCategories(
+		ctx context.Context,
+	) ([]core_domain.Category, error)
 }
 
 type CategoryHTTPHandler struct {
@@ -33,6 +42,16 @@ func (h *CategoryHTTPHandler) Routes() []core_transport_server.Route {
 			Method:  http.MethodPost,
 			Path:    "/category",
 			Handler: h.CreateNewCategory,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/category",
+			Handler: h.GetAllCategorys,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/category/{id}",
+			Handler: h.GetCategory,
 		},
 	}
 }
