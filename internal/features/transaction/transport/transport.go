@@ -13,6 +13,11 @@ type TransactionService interface {
 		ctx context.Context,
 		transaction core_domain.Transaction,
 	) (core_domain.Transaction, error)
+
+	GetTransactions(
+		ctx context.Context,
+		filters core_domain.FiltersTransaction,
+	) ([]core_domain.Transaction, error)
 }
 
 type TransactionHTTPHandler struct {
@@ -33,6 +38,11 @@ func (h *TransactionHTTPHandler) Router() []core_transport_server.Route {
 			Method:  http.MethodPost,
 			Path:    "/transaction",
 			Handler: h.CreateTransaction,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/transactions",
+			Handler: h.GetsTransaction,
 		},
 	}
 }

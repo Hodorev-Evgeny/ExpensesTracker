@@ -11,6 +11,11 @@ type TransactionRepository interface {
 		ctx context.Context,
 		transaction core_domain.Transaction,
 	) (core_domain.Transaction, error)
+
+	GetTransactions(
+		ctx context.Context,
+		filters core_domain.FiltersTransaction,
+	) ([]core_domain.Transaction, error)
 }
 
 type TransactionService struct {
