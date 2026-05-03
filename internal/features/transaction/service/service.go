@@ -1,0 +1,26 @@
+package feature_transaction_service
+
+import (
+	"context"
+
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+)
+
+type TransactionRepository interface {
+	CreateTransaction(
+		ctx context.Context,
+		transaction core_domain.Transaction,
+	) (core_domain.Transaction, error)
+}
+
+type TransactionService struct {
+	transactionRepository TransactionRepository
+}
+
+func NewTransactionService(
+	transactionRepository TransactionRepository,
+) *TransactionService {
+	return &TransactionService{
+		transactionRepository: transactionRepository,
+	}
+}
