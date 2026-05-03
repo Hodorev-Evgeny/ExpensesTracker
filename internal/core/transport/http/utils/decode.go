@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	"github.com/go-playground/validator"
 )
 
@@ -26,8 +27,15 @@ func DecodeJSON(data any, r *http.Request) error {
 	if ok {
 		err = value.Validate()
 	} else {
-		err = v.Struct(value)
+		err = v.Struct(data)
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("invalid argument: %w, %w",
+			err,
+			core_errors.ErrorBadRequest,
+		)
+	}
+
+	return nil
 }

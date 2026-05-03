@@ -17,6 +17,15 @@ env-cleanup:
 		echo "Очистка окружения отменена"; \
 	fi
 
+logs-clean:
+	@read -p "Очистить все логи? Опасность утери данных. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "логи очищены"; \
+	else \
+		echo "Очистка логов отменена"; \
+	fi
+
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
 		echo "Dont have seq"; \

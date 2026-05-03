@@ -16,8 +16,8 @@ type Rows struct {
 	pgx.Rows
 }
 
-func (r Rows) Scan(dest ...any) error {
-	err := r.Rows.Scan(dest...)
+func (r Row) Scan(dest ...any) error {
+	err := r.Row.Scan(dest...)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return core_repository_pool.ErrNoRows
