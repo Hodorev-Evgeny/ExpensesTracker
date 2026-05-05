@@ -18,6 +18,17 @@ type TransactionService interface {
 		ctx context.Context,
 		filters core_domain.FiltersTransaction,
 	) ([]core_domain.Transaction, error)
+
+	GetTransaction(
+		ctx context.Context,
+		id int,
+	) (core_domain.Transaction, error)
+
+	PatchTransaction(
+		ctx context.Context,
+		id int,
+		patch core_domain.PatchTransaction,
+	) (core_domain.Transaction, error)
 }
 
 type TransactionHTTPHandler struct {
@@ -43,6 +54,16 @@ func (h *TransactionHTTPHandler) Router() []core_transport_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/transactions",
 			Handler: h.GetsTransaction,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/transactions/{id}",
+			Handler: h.GetTransaction,
+		},
+		{
+			Method:  http.MethodPatch,
+			Path:    "/transactions/{id}",
+			Handler: h.PatchTransaction,
 		},
 	}
 }

@@ -52,3 +52,12 @@ func ToTransactionResponse(
 		TimeChange: transaction.TimeChange,
 	}
 }
+
+func ToDomainPatch(patch TransactionPatchRequest) core_domain.PatchTransaction {
+	return core_domain.NewTransactionPatch(
+		patch.Sum.ToDomain(),
+		patch.CategoryID.ToDomain(),
+		patch.TypeTransaction.ToDomain(),
+		patch.Comments.ToDomain(),
+	)
+}

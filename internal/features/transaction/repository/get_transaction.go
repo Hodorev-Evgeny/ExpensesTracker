@@ -2,85 +2,47 @@ package feature_repository_transaction
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"strings"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
-func (r *TransactionRepository) GetTransactions(
+func (r *TransactionRepository) GetTransaction(
 	ctx context.Context,
-	filters core_domain.FiltersTransaction,
-) ([]core_domain.Transaction, error) {
+	id int,
+) (core_domain.Transaction, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `
 		SELECT id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes
 		FROM trackerapp.transactions
-		`
+		WHERE id = $1;`
 
-	args := []any{}
-	conditions := []string{}
+	row := r.pool.QueryRow(ctx, query, id)
 
-	if filters.CategoryId != nil {
-		conditions = append(conditions, fmt.Sprintf("category_id=$%d", len(args)+1))
-		args = append(args, *filters.CategoryId)
-	}
-	if filters.UserId != nil {
-		conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
-		args = append(args, *filters.UserId)
-	}
-	if filters.Sum != nil {
-		conditions = append(conditions, fmt.Sprintf("sum>$%d", len(args)+1))
-		args = append(args, *filters.Sum)
-	}
-	if filters.From != nil {
-		conditions = append(conditions, fmt.Sprintf("date>=$%d", len(args)+1))
-		args = append(args, *filters.From)
-	}
-	if filters.To != nil {
-		conditions = append(conditions, fmt.Sprintf("date<$%d", len(args)+1))
-		args = append(args, *filters.To)
-	}
+	var transaction core_domain.Transaction
+	err := row.Scan(
+		&transaction.ID,
+		&transaction.Sum,
+		&transaction.Type,
+		&transaction.Date,
+		&transaction.CategoryID,
+		&transaction.UserID,
+		&transaction.Comments,
+		&transaction.TimeCreated,
+		&transaction.TimeChange,
+	)
 
-	if len(conditions) > 0 {
-		query += " WHERE " + strings.Join(conditions, " AND ")
-	}
-	query += " ORDER BY id ASC"
-	if filters.Limit != nil {
-		query += fmt.Sprintf(" LIMIT %d", filters.Limit)
-	}
-	if filters.Offset != nil {
-		query += fmt.Sprintf(" OFFSET %d", filters.Offset)
-	}
-
-	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("get transactions: %w", err)
-	}
-	defer rows.Close()
-
-	var list []core_domain.Transaction
-	for rows.Next() {
-		var transaction core_domain.Transaction
-		err = rows.Scan(
-			&transaction.ID,
-			&transaction.Sum,
-			&transaction.Type,
-			&transaction.Date,
-			&transaction.CategoryID,
-			&transaction.UserID,
-			&transaction.Comments,
-			&transaction.TimeCreated,
-			&transaction.TimeChange,
-		)
-
-		if err != nil {
-			return nil, fmt.Errorf("transaction repository GetTransactions: %w", err)
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
+			return core_domain.Transaction{}, fmt.Errorf("transaction not found: %w", core_errors.ErrorNotFoud)
 		}
-		list = append(list, transaction)
+		return core_domain.Transaction{}, fmt.Errorf("error getting transaction: %w", err)
 	}
 
-	return list, nil
+	return transaction, nil
 }
