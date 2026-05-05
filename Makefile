@@ -75,3 +75,11 @@ app-run:
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/trackerapp/main.go
+
+swagger-generate:
+	@docker compose run --rm swagger \
+	init \
+	-g cmd/trackerapp/main.go \
+	-o docs \
+	--parseInternal \
+	--parseDependency

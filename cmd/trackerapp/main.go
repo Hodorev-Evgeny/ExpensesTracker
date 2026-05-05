@@ -22,8 +22,15 @@ import (
 	feature_user_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
 	features_users_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	_ "github.com/Hodorev-Evgeny/ExpensesTracker/docs"
 )
 
+// @title ExpensesTracker
+// @version 0.7
+// @description This server help you tracker money
+// @host 127.0.0.1
+// @BasePath /api/v1
 func main() {
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
@@ -83,7 +90,9 @@ func main() {
 		core_middleware.Trace(),
 		core_middleware.PanicRecovery(),
 	)
+
 	httpServer.ResisterApiVersionRouter(apiVersionRouter)
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Start(ctx); err != nil {
 		logger.Error("HTTP server failed to start", zap.Error(err))

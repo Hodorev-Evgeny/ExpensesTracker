@@ -1,0 +1,9 @@
+basePath: /api/v1
+host: 127.0.0.1
+info:
+  contact: {}
+  description: This server help you tracker money
+  title: ExpensesTracker
+  version: "0.7"
+paths: {}
+swagger: "2.0"
