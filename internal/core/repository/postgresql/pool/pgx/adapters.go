@@ -19,14 +19,28 @@ type Rows struct {
 func (r Row) Scan(dest ...any) error {
 	err := r.Row.Scan(dest...)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return core_repository_pool.ErrNoRows
-		}
-		return err
+		newError := MappingError(err)
+		return newError
 	}
 	return nil
 }
 
 type CommandTag struct {
 	pgconn.CommandTag
+}
+
+func MappingError(err error) error {
+	var pgxErr *pgconn.PgError
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return core_repository_pool.ErrNoRows
+	}
+
+	if errors.As(err, &pgxErr) {
+		if pgxErr.Code == "23503" {
+			return core_repository_pool.ErrViolationKey
+		}
+	}
+
+	return err
 }

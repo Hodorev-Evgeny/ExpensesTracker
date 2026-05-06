@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This server help you tracker money",
+        "title": "ExpensesTracker",
+        "contact": {},
+        "version": "0.7"
+    },
+    "host": "127.0.0.1",
+    "basePath": "/api/v1",
+    "paths": {}
+}

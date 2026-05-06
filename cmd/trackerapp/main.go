@@ -15,12 +15,22 @@ import (
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
 	feature_service_categor "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
 	feature_category_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
+	feature_repository_transaction "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/repository"
+	feature_transaction_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service"
+	feature_transactio_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/transport"
 	features_users_repository "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/postgres"
 	feature_user_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
 	features_users_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	_ "github.com/Hodorev-Evgeny/ExpensesTracker/docs"
 )
 
+// @title ExpensesTracker
+// @version 0.7
+// @description This server help you tracker money
+// @host 127.0.0.1
+// @BasePath /api/v1
 func main() {
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
@@ -62,9 +72,15 @@ func main() {
 	categoryTransport := feature_category_transport.NewCategoryHTTPHandler(categoryService)
 	categoryRouters := categoryTransport.Routes()
 
+	transactionRepository := feature_repository_transaction.NewTransactionRepository(pool)
+	transactionService := feature_transaction_service.NewTransactionService(transactionRepository)
+	transactionTransport := feature_transactio_transport.NewTransactionHTTPHandler(transactionService)
+	transactionRouters := transactionTransport.Router()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(userRouters...)
 	apiVersionRouter.RegisterRoutes(categoryRouters...)
+	apiVersionRouter.RegisterRoutes(transactionRouters...)
 
 	httpServer := core_transport_server.NewServer(
 		core_transport_server.MustNewConfigServer(),
@@ -74,7 +90,9 @@ func main() {
 		core_middleware.Trace(),
 		core_middleware.PanicRecovery(),
 	)
+
 	httpServer.ResisterApiVersionRouter(apiVersionRouter)
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Start(ctx); err != nil {
 		logger.Error("HTTP server failed to start", zap.Error(err))
