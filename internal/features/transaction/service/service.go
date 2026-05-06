@@ -26,6 +26,11 @@ type TransactionRepository interface {
 		ctx context.Context,
 		transaction core_domain.Transaction,
 	) (core_domain.Transaction, error)
+
+	DeleteTransaction(
+		ctx context.Context,
+		id int,
+	) error
 }
 
 type TransactionService struct {

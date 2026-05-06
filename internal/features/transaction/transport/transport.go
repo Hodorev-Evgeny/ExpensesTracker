@@ -29,6 +29,11 @@ type TransactionService interface {
 		id int,
 		patch core_domain.PatchTransaction,
 	) (core_domain.Transaction, error)
+
+	DeleteTransaction(
+		ctx context.Context,
+		id int,
+	) error
 }
 
 type TransactionHTTPHandler struct {
@@ -64,6 +69,11 @@ func (h *TransactionHTTPHandler) Router() []core_transport_server.Route {
 			Method:  http.MethodPatch,
 			Path:    "/transactions/{id}",
 			Handler: h.PatchTransaction,
+		},
+		{
+			Method:  http.MethodDelete,
+			Path:    "/transactions/{id}",
+			Handler: h.DeleteTransaction,
 		},
 	}
 }
