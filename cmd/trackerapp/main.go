@@ -15,6 +15,9 @@ import (
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
 	feature_service_categor "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
 	feature_category_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
+	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
+	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
+	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
 	feature_repository_transaction "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/repository"
 	feature_transaction_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service"
 	feature_transactio_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/transport"
@@ -77,10 +80,16 @@ func main() {
 	transactionTransport := feature_transactio_transport.NewTransactionHTTPHandler(transactionService)
 	transactionRouters := transactionTransport.Router()
 
+	limitRepository := feature_repository_limit.NewLimitRepository(pool)
+	limitService := feature_service_limit.NewLimitService(limitRepository)
+	limitTransport := feature_transport_limit.NewLimitHTTPHandler(limitService)
+	limitRouters := limitTransport.Router()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(userRouters...)
 	apiVersionRouter.RegisterRoutes(categoryRouters...)
 	apiVersionRouter.RegisterRoutes(transactionRouters...)
+	apiVersionRouter.RegisterRoutes(limitRouters...)
 
 	httpServer := core_transport_server.NewServer(
 		core_transport_server.MustNewConfigServer(),
