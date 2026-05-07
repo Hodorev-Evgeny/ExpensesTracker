@@ -23,6 +23,10 @@ func LimitResponseToDomain(req limitDTO) core_domain.Limit {
 	)
 }
 
+func LimitResponseToPatch(req PatchLimit) core_domain.PatchLimit {
+	return core_domain.CreatePatchLimit(req.Duraction.ToDomain(), req.AmountLimit.ToDomain())
+}
+
 func LimitDomainToResponse(limit core_domain.Limit) LimitResponse {
 	return LimitResponse{
 		ID: limit.ID,
