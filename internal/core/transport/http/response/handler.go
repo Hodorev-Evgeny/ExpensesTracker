@@ -75,9 +75,9 @@ func (h *HandlerResponse) PanicResponse(p any, msg string) {
 func (h *HandlerResponse) errorResponse(err error, msg string, status int) {
 	h.rw.WriteHeader(status)
 
-	response := map[string]string{
-		"massage": msg,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   msg,
+		Massage: msg,
 	}
 
 	if err := json.NewEncoder(h.rw).Encode(response); err != nil {

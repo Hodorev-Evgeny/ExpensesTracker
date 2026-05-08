@@ -8,6 +8,17 @@ import (
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// GetCategory		godoc
+// @Summary 		Get category
+// @Description 	Get category in database by id
+// @Tags 			category
+// @Accept 			json
+// @Produce 		json
+// @Param 			id	path int		true	"Id category"
+// @Success			200	{object}		CategoryResponse "Get category successfully"
+// @Failure 		400	{object}		response.ErrorResponse "Bad request"
+// @Failure 		404	{object}		response.ErrorResponse "Category not found"
+// @Router 			/category/{id}		[get]
 func (h *CategoryHTTPHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
