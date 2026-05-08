@@ -156,7 +156,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Patch category in database by id",
+                "description": "Patch category in database by id you can give all param or nothing",
                 "consumes": [
                     "application/json"
                 ],
@@ -359,7 +359,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Patch limit by id",
+                "description": "Patch limit by id and you can give all param or nothing",
                 "consumes": [
                     "application/json"
                 ],
@@ -451,6 +451,245 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions": {
+            "get": {
+                "description": "Get all transaction with filters you can get all parm of nothing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get all transaction",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by user id",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by user category id",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by more sum transaction",
+                        "name": "sum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by time to",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by time from",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get transaction successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create transaction in database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Create transaction",
+                "parameters": [
+                    {
+                        "description": "Example body request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Create transaction successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/{id}": {
+            "get": {
+                "description": "Get transaction by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get transaction",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID transaction",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get transaction successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete transaction in database",
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Delete transaction",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID transaction",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Delete transaction successfully"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Patch transaction you can get all parm of nothing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Patch transaction",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID transaction",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "transaction filters for get",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionPatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Patch transaction successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -564,7 +803,7 @@ const docTemplate = `{
                 },
                 "duration": {
                     "type": "string",
-                    "example": "2006-01-02 15:04:05"
+                    "example": "2006-01-02T15:04:05-07:00"
                 }
             }
         },
@@ -617,6 +856,109 @@ const docTemplate = `{
                 "sum_income": {
                     "type": "integer",
                     "example": 1255
+                }
+            }
+        },
+        "internal_features_transaction_transport.TransactionPatchRequest": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "comment"
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 1023
+                },
+                "typeTransaction": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                }
+            }
+        },
+        "internal_features_transaction_transport.TransactionRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "comments",
+                "date",
+                "sum",
+                "type",
+                "user_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "somthing else"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 10123
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "internal_features_transaction_transport.TransactionResponse": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "comments",
+                "date",
+                "sum",
+                "type",
+                "user_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "somthing else"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 10123
+                },
+                "time_change": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         }

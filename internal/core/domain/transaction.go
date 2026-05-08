@@ -20,13 +20,13 @@ type Transaction struct {
 }
 
 type FiltersTransaction struct {
-	Limit      *int       `json:"limit"`
-	Offset     *int       `json:"offset"`
-	UserId     *int       `json:"user_id"`
-	CategoryId *int       `json:"category_id"`
-	Sum        *int       `json:"sum"`
-	From       *time.Time `json:"from"`
-	To         *time.Time `json:"to"`
+	Limit      *int       `json:"limit" example:"5"`
+	Offset     *int       `json:"offset" example:"0"`
+	UserId     *int       `json:"user_id" example:"1"`
+	CategoryId *int       `json:"category_id" example:"1"`
+	Sum        *int       `json:"sum" example:"12134"`
+	From       *time.Time `json:"from" example:"2006-01-02T15:04:05-07:00"`
+	To         *time.Time `json:"to" example:"2006-01-02T15:04:05-07:00"`
 }
 
 type PatchTransaction struct {

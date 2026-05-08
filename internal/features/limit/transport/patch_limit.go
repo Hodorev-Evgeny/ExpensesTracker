@@ -19,7 +19,7 @@ type PatchLimit struct {
 // @Summary 			Patch Limit
 // @Description 		Patch limit by id and you can give all param or nothing
 // @Tags 				limit
-// @Accept 				json2006-01-02 15:04:05
+// @Accept 				json
 // @Produce				json
 // @Param       		id      		path int true "Limit ID"
 // @Param				request body 	PatchLimit false "Patch limit body"

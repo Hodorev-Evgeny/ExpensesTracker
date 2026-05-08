@@ -7,24 +7,23 @@ import (
 )
 
 type TransactionDTO struct {
-	Sum        int        `json:"sum" validate:"required"`
-	Type       string     `json:"type" validate:"required"`
-	Date       time.Time  `json:"date" validate:"required"`
-	UserID     int        `json:"user_id" validate:"required"`
-	CategoryID int        `json:"category_id" validate:"required"`
-	Comments   string     `json:"comments" validate:"required"`
-	TimeChange *time.Time `json:"time_change"`
+	Sum        int       `json:"sum" validate:"required" example:"10123"`
+	Type       string    `json:"type" validate:"required" example:"Expenditure/Income"`
+	Date       time.Time `json:"date" validate:"required" example:"2006-01-02T15:04:05-07:00"`
+	UserID     int       `json:"user_id" validate:"required" example:"1"`
+	CategoryID int       `json:"category_id" validate:"required" example:"1"`
+	Comments   string    `json:"comments" validate:"required" example:"somthing else"`
 }
 
 type TransactionResponse struct {
-	ID         int        `json:"id"`
-	Sum        int        `json:"sum" validate:"required"`
-	Type       string     `json:"type" validate:"required"`
-	Date       time.Time  `json:"date" validate:"required"`
-	UserID     int        `json:"user_id" validate:"required"`
-	CategoryID int        `json:"category_id" validate:"required"`
-	Comments   string     `json:"comments" validate:"required"`
-	TimeChange *time.Time `json:"time_change"`
+	ID         int        `json:"id" example:"1"`
+	Sum        int        `json:"sum" validate:"required" example:"10123"`
+	Type       string     `json:"type" validate:"required" example:"Expenditure/Income"`
+	Date       time.Time  `json:"date" validate:"required" example:"2006-01-02T15:04:05-07:00"`
+	UserID     int        `json:"user_id" validate:"required" example:"1"`
+	CategoryID int        `json:"category_id" validate:"required" example:"1"`
+	Comments   string     `json:"comments" validate:"required" example:"somthing else"`
+	TimeChange *time.Time `json:"time_change" example:"2006-01-02T15:04:05-07:00"`
 }
 
 func ToDomainTransaction(
@@ -34,7 +33,7 @@ func ToDomainTransaction(
 		req.Sum, req.CategoryID, req.UserID,
 		req.Type, req.Comments,
 		req.Date, time.Now(),
-		req.TimeChange,
+		nil,
 	)
 }
 

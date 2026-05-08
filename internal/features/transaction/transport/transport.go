@@ -52,7 +52,7 @@ func (h *TransactionHTTPHandler) Router() []core_transport_server.Route {
 	return []core_transport_server.Route{
 		{
 			Method:  http.MethodPost,
-			Path:    "/transaction",
+			Path:    "/transactions",
 			Handler: h.CreateTransaction,
 		},
 		{

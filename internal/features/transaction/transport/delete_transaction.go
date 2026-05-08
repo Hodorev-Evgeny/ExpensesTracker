@@ -8,6 +8,15 @@ import (
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// DeleteTransaction	godoc
+// @Summary 			Delete transaction
+// @Description 		Delete transaction in database
+// @Tags 				transactions
+// @Param				id				path int true "ID transaction"
+// @Success				204				"Delete transaction successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure 			404	{object}	response.ErrorResponse "Not Found"
+// @Router 				/transactions/{id}	[delete]
 func (h *TransactionHTTPHandler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

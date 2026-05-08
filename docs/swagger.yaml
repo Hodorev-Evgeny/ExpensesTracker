@@ -72,7 +72,7 @@ definitions:
         example: 1
         type: integer
       duration:
-        example: "2006-01-02 15:04:05"
+        example: "2006-01-02T15:04:05-07:00"
         type: string
     type: object
   internal_features_static_transport.StaticResponse:
@@ -112,6 +112,83 @@ definitions:
       sum_income:
         example: 1255
         type: integer
+    type: object
+  internal_features_transaction_transport.TransactionPatchRequest:
+    properties:
+      categoryId:
+        example: 1
+        type: integer
+      comments:
+        example: comment
+        type: string
+      sum:
+        example: 1023
+        type: integer
+      typeTransaction:
+        example: Expenditure/Income
+        type: string
+    type: object
+  internal_features_transaction_transport.TransactionRequest:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      comments:
+        example: somthing else
+        type: string
+      date:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+      sum:
+        example: 10123
+        type: integer
+      type:
+        example: Expenditure/Income
+        type: string
+      user_id:
+        example: 1
+        type: integer
+    required:
+    - category_id
+    - comments
+    - date
+    - sum
+    - type
+    - user_id
+    type: object
+  internal_features_transaction_transport.TransactionResponse:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      comments:
+        example: somthing else
+        type: string
+      date:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+      id:
+        example: 1
+        type: integer
+      sum:
+        example: 10123
+        type: integer
+      time_change:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+      type:
+        example: Expenditure/Income
+        type: string
+      user_id:
+        example: 1
+        type: integer
+    required:
+    - category_id
+    - comments
+    - date
+    - sum
+    - type
+    - user_id
     type: object
 host: 127.0.0.1:8080
 info:
@@ -216,7 +293,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Patch category in database by id
+      description: Patch category in database by id you can give all param or nothing
       parameters:
       - description: Id category
         in: path
@@ -350,7 +427,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Patch limit by id
+      description: Patch limit by id and you can give all param or nothing
       parameters:
       - description: Limit ID
         in: path
@@ -412,4 +489,162 @@ paths:
       summary: Get static
       tags:
       - static
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transaction with filters you can get all parm of nothing
+      parameters:
+      - description: Filter by user id
+        in: query
+        name: user_id
+        type: integer
+      - description: Filter by user category id
+        in: query
+        name: category_id
+        type: integer
+      - description: Filter by more sum transaction
+        in: query
+        name: sum
+        type: integer
+      - description: Filter by time to
+        in: query
+        name: to
+        type: integer
+      - description: Filter by time from
+        in: query
+        name: from
+        type: integer
+      - description: Filter for pagination
+        in: query
+        name: limit
+        type: integer
+      - description: Filter for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get transaction successfully
+          schema:
+            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Get all transaction
+      tags:
+      - transactions
+    post:
+      consumes:
+      - application/json
+      description: Create transaction in database
+      parameters:
+      - description: Example body request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_transaction_transport.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Create transaction successfully
+          schema:
+            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Create transaction
+      tags:
+      - transactions
+  /transactions/{id}:
+    delete:
+      description: Delete transaction in database
+      parameters:
+      - description: ID transaction
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Delete transaction successfully
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete transaction
+      tags:
+      - transactions
+    get:
+      consumes:
+      - application/json
+      description: Get transaction by id
+      parameters:
+      - description: ID transaction
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get transaction successfully
+          schema:
+            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Get transaction
+      tags:
+      - transactions
+    patch:
+      consumes:
+      - application/json
+      description: Patch transaction you can get all parm of nothing
+      parameters:
+      - description: ID transaction
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: transaction filters for get
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_transaction_transport.TransactionPatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Patch transaction successfully
+          schema:
+            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Patch transaction
+      tags:
+      - transactions
 swagger: "2.0"
