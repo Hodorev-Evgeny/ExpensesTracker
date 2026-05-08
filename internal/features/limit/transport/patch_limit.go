@@ -26,6 +26,7 @@ type PatchLimit struct {
 // @Success				200	{object}	LimitResponse "Patch limit successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure 			404	{object}	response.ErrorResponse "Not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/limit/{id}		[patch]
 func (h *LimitHTTPHandler) PatchLimit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

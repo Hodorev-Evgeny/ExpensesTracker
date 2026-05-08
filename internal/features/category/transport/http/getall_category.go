@@ -17,6 +17,7 @@ type CategoryListResponse []CategoryResponse
 // @Produce 			json
 // @Success				200	{array}		CategoryResponse "Get all category successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure     		500 {object} 	response.ErrorResponse "Internal server error"
 // @Router 				/category		[get]
 func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

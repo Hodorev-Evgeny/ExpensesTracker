@@ -8,6 +8,17 @@ import (
 	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// ExtraditionUser       godoc
+// @Summary      Получение пользователя
+// @Description  Получение конкретного пользователя по его ID
+// @Tags         users
+// @Produce      json
+// @Param        id  path int true                          "ID получаемого пользователя"
+// @Success      200 {object} UserDTOResponse                  "Пользователь успешно найден"
+// @Failure      400 {object} response.ErrorResponse "Bad request"
+// @Failure      404 {object} response.ErrorResponse "User not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router       /users/{id} [get]
 func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

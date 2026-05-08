@@ -25,6 +25,7 @@ import (
 // @Param				offset 			query int false "Filter for pagination"
 // @Success				200	{object}	TransactionResponse "Get transaction successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/transactions	[get]
 func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

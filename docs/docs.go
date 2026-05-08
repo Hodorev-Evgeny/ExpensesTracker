@@ -43,6 +43,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -78,6 +84,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -125,6 +137,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -149,6 +167,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -203,6 +227,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -249,6 +279,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -287,6 +323,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -322,6 +364,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -352,6 +400,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -405,6 +459,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -451,6 +511,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -527,6 +593,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -562,6 +634,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -609,6 +687,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -639,6 +723,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -690,6 +780,254 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Просмотр списка пользователей с опциональной пагинацией",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Список пользователей",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Размер страницы с пользователями",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Смещение страницы с пользователями",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение списка пользователей",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_features_users_transport_http.UserDTOResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создать нового пользователя в системе",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Создать пользователя",
+                "parameters": [
+                    {
+                        "description": "CreateUser тело запроса",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.CreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Успешно созданный пользователь",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.CreateUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Получение конкретного пользователя по его ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Получение пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID получаемого пользователя",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пользователь успешно найден",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.UserDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удаление существующего в системе пользователя по его ID",
+                "tags": [
+                    "users"
+                ],
+                "summary": "Удаление пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID удаляемого пользователя",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Успешное удаление пользователя"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Изменение информации об уже существующем в системе пользователе\n### Логика обновления полей (Three-state logic):\n1. **Поле не передано**: ` + "`" + `phone_number` + "`" + ` игнорируется, значение в БД не меняется\n2. **Явно передано значение**: ` + "`" + `\"phone_number\": \"+711122233344\"` + "`" + ` - устанавливает новый номер телефона в БД\n3. **Передан null**: ` + "`" + `\"phone_number\": null` + "`" + ` - очищает поле в БД (set to NULL)\nОграничения: ` + "`" + `full_name` + "`" + ` не может быть выставлен как null",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Изменение пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID изменяемого пользователя",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "PatchUser тело запроса",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.RequestPatchUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно изменённый пользователь",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.UserDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -959,6 +1297,96 @@ const docTemplate = `{
                 "user_id": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "internal_features_users_transport_http.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "full_name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@gmail.com"
+                },
+                "full_name": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 3,
+                    "example": "John Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8,
+                    "example": "123456"
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 11,
+                    "minLength": 11,
+                    "example": "+71124234312"
+                }
+            }
+        },
+        "internal_features_users_transport_http.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "time_add": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_features_users_transport_http.RequestPatchUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@gmai;.com"
+                },
+                "full_name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "555-555-5555"
+                }
+            }
+        },
+        "internal_features_users_transport_http.UserDTOResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "time_add": {
+                    "type": "string"
                 }
             }
         }

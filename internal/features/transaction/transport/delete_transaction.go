@@ -16,6 +16,7 @@ import (
 // @Success				204				"Delete transaction successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure 			404	{object}	response.ErrorResponse "Not Found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/transactions/{id}	[delete]
 func (h *TransactionHTTPHandler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

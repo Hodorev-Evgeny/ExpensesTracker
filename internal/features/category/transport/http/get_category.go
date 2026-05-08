@@ -18,6 +18,7 @@ import (
 // @Success			200	{object}		CategoryResponse "Get category successfully"
 // @Failure 		400	{object}		response.ErrorResponse "Bad request"
 // @Failure 		404	{object}		response.ErrorResponse "Category not found"
+// @Failure      	500 {object} 		response.ErrorResponse "Internal server error"
 // @Router 			/category/{id}		[get]
 func (h *CategoryHTTPHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

@@ -36,6 +36,7 @@ func (u *CategoryUpdateRequest) Validate() error {
 // @Success				200	{object}			CategoryResponse "Patch category successfully"
 // @Failure 			400	{object}			response.ErrorResponse "Bad request"
 // @Failure 			404	{object}			response.ErrorResponse "Category not found"
+// @Failure      		500 {object} 			response.ErrorResponse "Internal server error"
 // @Router 				/category/{id}			[patch]
 func (h *CategoryHTTPHandler) RenameCategory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

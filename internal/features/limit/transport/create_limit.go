@@ -17,6 +17,7 @@ import (
 // @Param				request body	LimitDTO true "Body for create limit"
 // @Success				201	{object}	LimitResponse "Create new limit successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/limit			[post]
 func (h *LimitHTTPHandler) CreateLimit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

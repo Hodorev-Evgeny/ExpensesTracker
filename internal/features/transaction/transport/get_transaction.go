@@ -18,6 +18,7 @@ import (
 // @Success				200	{object}	TransactionResponse "Get transaction successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure 			404	{object}	response.ErrorResponse "Not Found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/transactions/{id}	[get]
 func (h *TransactionHTTPHandler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

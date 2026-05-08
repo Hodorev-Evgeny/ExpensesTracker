@@ -16,6 +16,7 @@ import (
 // @Param				id 				path int true "ID limit"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure 			404	{object}	response.ErrorResponse "Not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/limit/{id}			[delete]
 func (h *LimitHTTPHandler) DeleteLimit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

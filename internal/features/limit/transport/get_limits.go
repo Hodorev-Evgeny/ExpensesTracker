@@ -19,6 +19,7 @@ import (
 // @Param				offset			query int false	"Offset for pagination"
 // @Success				200	{array}		LimitResponse "Get limit successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router 				/limit			[get]
 func (h *LimitHTTPHandler) GetLimits(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
