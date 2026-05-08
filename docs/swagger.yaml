@@ -40,6 +40,79 @@ definitions:
     required:
     - title
     type: object
+  internal_features_limit_transport.LimitDTO:
+    properties:
+      amount_limit:
+        example: 1000
+        type: integer
+      duration:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+    required:
+    - amount_limit
+    - duration
+    type: object
+  internal_features_limit_transport.LimitResponse:
+    properties:
+      amount_limit:
+        example: 1000
+        type: integer
+      duration:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+      id:
+        type: integer
+    required:
+    - amount_limit
+    - duration
+    type: object
+  internal_features_limit_transport.PatchLimit:
+    properties:
+      amount_limit:
+        example: 1
+        type: integer
+      duration:
+        example: "2006-01-02 15:04:05"
+        type: string
+    type: object
+  internal_features_static_transport.StaticResponse:
+    properties:
+      avg_expenditure:
+        example: 632.12
+        type: number
+      avg_income:
+        example: 123.53
+        type: number
+      cost_category:
+        example: Medicine
+        type: string
+      count_operation:
+        example: 6
+        type: integer
+      difference:
+        example: 25
+        type: number
+      max_expenditure:
+        example: 155
+        type: integer
+      max_income:
+        example: 1200
+        type: integer
+      share_category:
+        additionalProperties:
+          format: float64
+          type: number
+        example:
+          Medic: 11.6
+          Medicine: 12.4
+        type: object
+      sum_expenditure:
+        example: 1230
+        type: integer
+      sum_income:
+        example: 1255
+        type: integer
+    type: object
 host: 127.0.0.1:8080
 info:
   contact: {}
@@ -174,4 +247,169 @@ paths:
       summary: Patch category
       tags:
       - category
+  /limit:
+    get:
+      consumes:
+      - application/json
+      description: Get Limit all with query param
+      parameters:
+      - description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get limit successfully
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Get Limit all
+      tags:
+      - limit
+    post:
+      consumes:
+      - application/json
+      description: This limit dont set on category, you need patch category
+      parameters:
+      - description: Body for create limit
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_limit_transport.LimitDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Create new limit successfully
+          schema:
+            $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Create new Limit
+      tags:
+      - limit
+  /limit/{id}:
+    delete:
+      description: Delete limit in database
+      parameters:
+      - description: ID limit
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Delete limit successfully
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete Limit
+      tags:
+      - limit
+    get:
+      description: Get limit in database ny id
+      parameters:
+      - description: ID limit
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Get limit successfully
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Get Limit by id
+      tags:
+      - limit
+    patch:
+      consumes:
+      - application/json
+      description: Patch limit by id
+      parameters:
+      - description: Limit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Patch limit body
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/internal_features_limit_transport.PatchLimit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Patch limit successfully
+          schema:
+            $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Patch Limit
+      tags:
+      - limit
+  /static:
+    get:
+      consumes:
+      - application/json
+      description: Get all static about category and transaction
+      parameters:
+      - description: Time to
+        in: query
+        name: to
+        type: integer
+      - description: Time from
+        in: query
+        name: from
+        type: integer
+      - description: Category Id
+        in: query
+        name: category_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get static successfully
+          schema:
+            $ref: '#/definitions/internal_features_static_transport.StaticResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+      summary: Get static
+      tags:
+      - static
 swagger: "2.0"

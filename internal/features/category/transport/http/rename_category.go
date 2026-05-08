@@ -27,7 +27,7 @@ func (u *CategoryUpdateRequest) Validate() error {
 
 // RenameCategory		godoc
 // @Summary 			Patch category
-// @Description 		Patch category in database by id
+// @Description 		Patch category in database by id you can give all param or nothing
 // @Tags 				category
 // @Accept 				json
 // @Produce 			json

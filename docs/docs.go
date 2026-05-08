@@ -206,6 +206,257 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/limit": {
+            "get": {
+                "description": "Get Limit all with query param",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "limit"
+                ],
+                "summary": "Get Limit all",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get limit successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_features_limit_transport.LimitResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "This limit dont set on category, you need patch category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "limit"
+                ],
+                "summary": "Create new Limit",
+                "parameters": [
+                    {
+                        "description": "Body for create limit",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_limit_transport.LimitDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Create new limit successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_limit_transport.LimitResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/limit/{id}": {
+            "get": {
+                "description": "Get limit in database ny id",
+                "tags": [
+                    "limit"
+                ],
+                "summary": "Get Limit by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID limit",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get limit successfully"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete limit in database",
+                "tags": [
+                    "limit"
+                ],
+                "summary": "Delete Limit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID limit",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Delete limit successfully"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Patch limit by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "limit"
+                ],
+                "summary": "Patch Limit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Patch limit body",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_limit_transport.PatchLimit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Patch limit successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_limit_transport.LimitResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/static": {
+            "get": {
+                "description": "Get all static about category and transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "static"
+                ],
+                "summary": "Get static",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Time to",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Time from",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category Id",
+                        "name": "category_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get static successfully",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_static_transport.StaticResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -264,6 +515,108 @@ const docTemplate = `{
             "properties": {
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "internal_features_limit_transport.LimitDTO": {
+            "type": "object",
+            "required": [
+                "amount_limit",
+                "duration"
+            ],
+            "properties": {
+                "amount_limit": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                }
+            }
+        },
+        "internal_features_limit_transport.LimitResponse": {
+            "type": "object",
+            "required": [
+                "amount_limit",
+                "duration"
+            ],
+            "properties": {
+                "amount_limit": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_features_limit_transport.PatchLimit": {
+            "type": "object",
+            "properties": {
+                "amount_limit": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "2006-01-02 15:04:05"
+                }
+            }
+        },
+        "internal_features_static_transport.StaticResponse": {
+            "type": "object",
+            "properties": {
+                "avg_expenditure": {
+                    "type": "number",
+                    "example": 632.12
+                },
+                "avg_income": {
+                    "type": "number",
+                    "example": 123.53
+                },
+                "cost_category": {
+                    "type": "string",
+                    "example": "Medicine"
+                },
+                "count_operation": {
+                    "type": "integer",
+                    "example": 6
+                },
+                "difference": {
+                    "type": "number",
+                    "example": 25
+                },
+                "max_expenditure": {
+                    "type": "integer",
+                    "example": 155
+                },
+                "max_income": {
+                    "type": "integer",
+                    "example": 1200
+                },
+                "share_category": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number",
+                        "format": "float64"
+                    },
+                    "example": {
+                        "Medic": 11.6,
+                        "Medicine": 12.4
+                    }
+                },
+                "sum_expenditure": {
+                    "type": "integer",
+                    "example": 1230
+                },
+                "sum_income": {
+                    "type": "integer",
+                    "example": 1255
                 }
             }
         }
