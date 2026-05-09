@@ -10,6 +10,23 @@ import (
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// GetsTransaction		godoc
+// @Summary 			Get all transaction
+// @Description 		Get all transaction with filters you can get all parm of nothing
+// @Tags 				transactions
+// @Accept 				json
+// @Produce 			json
+// @Param				user_id 		query int false "Filter by user id"
+// @Param				category_id 	query int false "Filter by user category id"
+// @Param				sum 			query int false "Filter by more sum transaction"
+// @Param				to 				query int false "Filter by time to"
+// @Param				from 			query int false "Filter by time from"
+// @Param				limit 			query int false "Filter for pagination"
+// @Param				offset 			query int false "Filter for pagination"
+// @Success				200	{object}	TransactionResponse "Get transaction successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/transactions	[get]
 func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

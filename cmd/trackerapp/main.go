@@ -35,7 +35,7 @@ import (
 // @title ExpensesTracker
 // @version 0.7
 // @description This server help you tracker money
-// @host 127.0.0.1
+// @host 127.0.0.1:8080
 // @BasePath /api/v1
 func main() {
 	ctx, cancel := signal.NotifyContext(
@@ -100,9 +100,11 @@ func main() {
 	apiVersionRouter.RegisterRoutes(limitRouters...)
 	apiVersionRouter.RegisterRoutes(staticRouters...)
 
+	serverConfig := core_transport_server.MustNewConfigServer()
 	httpServer := core_transport_server.NewServer(
-		core_transport_server.MustNewConfigServer(),
+		serverConfig,
 		logger,
+		core_middleware.CORS(serverConfig.AllowedOrigins),
 		core_middleware.RequestId(),
 		core_middleware.Logger(logger),
 		core_middleware.Trace(),

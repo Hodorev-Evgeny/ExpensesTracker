@@ -8,6 +8,16 @@ import (
 	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// DeleteUser    godoc
+// @Summary      Удаление пользователя
+// @Description  Удаление существующего в системе пользователя по его ID
+// @Tags         users
+// @Param        id  path int true                          "ID удаляемого пользователя"
+// @Success      204                                           "Успешное удаление пользователя"
+// @Failure      400 {object} response.ErrorResponse "Bad request"
+// @Failure      404 {object} response.ErrorResponse "User not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router       /users/{id} [delete]
 func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

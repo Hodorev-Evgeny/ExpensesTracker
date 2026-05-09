@@ -12,7 +12,7 @@ import (
 )
 
 type CategoryUpdateRequest struct {
-	Title core_http_types.Nullable[string] `json:"title" validate:"required"`
+	Title core_http_types.Nullable[string] `json:"title" validate:"required" swaggertype:"string"`
 }
 
 func (u *CategoryUpdateRequest) Validate() error {
@@ -25,6 +25,19 @@ func (u *CategoryUpdateRequest) Validate() error {
 	return nil
 }
 
+// RenameCategory		godoc
+// @Summary 			Patch category
+// @Description 		Patch category in database by id you can give all param or nothing
+// @Tags 				category
+// @Accept 				json
+// @Produce 			json
+// @Param 				id	path int	true	"Id category"
+// @Param				request body 			CategoryUpdateRequest true  "Parm from path category"
+// @Success				200	{object}			CategoryResponse "Patch category successfully"
+// @Failure 			400	{object}			response.ErrorResponse "Bad request"
+// @Failure 			404	{object}			response.ErrorResponse "Category not found"
+// @Failure      		500 {object} 			response.ErrorResponse "Internal server error"
+// @Router 				/category/{id}			[patch]
 func (h *CategoryHTTPHandler) RenameCategory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

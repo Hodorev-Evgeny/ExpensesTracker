@@ -8,6 +8,18 @@ import (
 	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// GetTransaction		godoc
+// @Summary 			Get transaction
+// @Description 		Get transaction by id
+// @Tags 				transactions
+// @Accept 				json
+// @Produce 			json
+// @Param				id				path int true "ID transaction"
+// @Success				200	{object}	TransactionResponse "Get transaction successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure 			404	{object}	response.ErrorResponse "Not Found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/transactions/{id}	[get]
 func (h *TransactionHTTPHandler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

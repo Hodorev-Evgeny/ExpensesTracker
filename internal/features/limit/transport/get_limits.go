@@ -9,6 +9,18 @@ import (
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// GetLimits			godoc
+// @Summary 			Get Limit all
+// @Description 		Get Limit all with query param
+// @Tags 				limit
+// @Accept 				json
+// @Produce 			json
+// @Param				limit			query int false	"Limit for pagination"
+// @Param				offset			query int false	"Offset for pagination"
+// @Success				200	{array}		LimitResponse "Get limit successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/limit			[get]
 func (h *LimitHTTPHandler) GetLimits(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

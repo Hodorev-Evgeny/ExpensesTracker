@@ -11,10 +11,23 @@ import (
 )
 
 type PatchLimit struct {
-	Duraction   core_http_types.Nullable[time.Time] `json:"duration"`
-	AmountLimit core_http_types.Nullable[int]       `json:"amount_limit"`
+	Duraction   core_http_types.Nullable[time.Time] `json:"duration" swaggertype:"string" example:"2006-01-02T15:04:05-07:00"`
+	AmountLimit core_http_types.Nullable[int]       `json:"amount_limit" swaggertype:"integer" example:"1"`
 }
 
+// PatchLimit			godoc
+// @Summary 			Patch Limit
+// @Description 		Patch limit by id and you can give all param or nothing
+// @Tags 				limit
+// @Accept 				json
+// @Produce				json
+// @Param       		id      		path int true "Limit ID"
+// @Param				request body 	PatchLimit false "Patch limit body"
+// @Success				200	{object}	LimitResponse "Patch limit successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure 			404	{object}	response.ErrorResponse "Not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/limit/{id}		[patch]
 func (h *LimitHTTPHandler) PatchLimit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

@@ -8,6 +8,16 @@ import (
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
+// GetLimit				godoc
+// @Summary 			Get Limit by id
+// @Description 		Get limit in database ny id
+// @Tags 				limit
+// @Success				200				"Get limit successfully"
+// @Param				id 				path int true "ID limit"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure 			404	{object}	response.ErrorResponse "Not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/limit/{id}		[get]
 func (h *LimitHTTPHandler) GetLimit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

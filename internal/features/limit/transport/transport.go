@@ -63,7 +63,7 @@ func (h LimitHTTPHandler) Router() []core_transport_server.Route {
 		},
 		{
 			Method:  http.MethodGet,
-			Path:    "/limits",
+			Path:    "/limit",
 			Handler: h.GetLimits,
 		},
 		{

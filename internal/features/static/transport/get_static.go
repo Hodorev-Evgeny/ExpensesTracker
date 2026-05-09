@@ -11,18 +11,31 @@ import (
 )
 
 type StaticResponse struct {
-	SumIncome      int                `json:"sum_income"`
-	SumExpenditure int                `json:"sum_expenditure"`
-	Difference     float64            `json:"difference"`
-	CountOperation int                `json:"count_operation"`
-	AVGIncome      float64            `json:"avg_income"`
-	AVGExpenditure float64            `json:"avg_expenditure"`
-	CostCategory   string             `json:"cost_category"`
-	ShareCategory  map[string]float64 `json:"share_category"`
-	MaxIncome      int                `json:"max_income"`
-	MaxExpenditure int                `json:"max_expenditure"`
+	SumIncome      int                `json:"sum_income" example:"1255"`
+	SumExpenditure int                `json:"sum_expenditure" example:"1230"`
+	Difference     float64            `json:"difference" example:"25"`
+	CountOperation int                `json:"count_operation" example:"6"`
+	AVGIncome      float64            `json:"avg_income" example:"123.53"`
+	AVGExpenditure float64            `json:"avg_expenditure" example:"632.12"`
+	CostCategory   string             `json:"cost_category" example:"Medicine"`
+	ShareCategory  map[string]float64 `json:"share_category" example:"Medicine:12.4,Medic:11.6"`
+	MaxIncome      int                `json:"max_income" example:"1200"`
+	MaxExpenditure int                `json:"max_expenditure" example:"155"`
 }
 
+// GetStatic			godoc
+// @Summary 			Get static
+// @Description 		Get all static about category and transaction
+// @Tags 				static
+// @Accept 				json
+// @Produce 			json
+// @Param				to				query int false "Time to"
+// @Param				from 			query int false "Time from"
+// @Param				category_id 	query int false "Category Id"
+// @Success				200	{object}	StaticResponse "Get static successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/static			[get]
 func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
