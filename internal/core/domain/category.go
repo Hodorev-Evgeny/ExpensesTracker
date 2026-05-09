@@ -5,13 +5,15 @@ import (
 )
 
 type Category struct {
-	ID      int
-	Name    string
-	User_ID int
+	ID       int
+	Name     string
+	User_ID  int
+	Limit_id *int
 }
 
 type CategoryUpdate struct {
-	Name Nullable[string]
+	Name     Nullable[string]
+	Limit_id Nullable[int]
 }
 
 func (u *CategoryUpdate) Validate() error {
@@ -45,6 +47,11 @@ func (c *Category) Update(data CategoryUpdate) error {
 		tmp.Name = *data.Name.Value
 	}
 
+	if data.Limit_id.Set {
+		fmt.Println("limit_id:", *data.Limit_id.Value)
+		tmp.Limit_id = data.Limit_id.Value
+	}
+
 	if tmp.Validate() != nil {
 		return fmt.Errorf("new category in invalid")
 	}
@@ -57,23 +64,27 @@ func NewCategory(
 	id int,
 	name string,
 	user_id int,
+	limit_id *int,
 ) Category {
 	return Category{
-		ID:      id,
-		Name:    name,
-		User_ID: user_id,
+		ID:       id,
+		Name:     name,
+		User_ID:  user_id,
+		Limit_id: limit_id,
 	}
 }
 
 func CreateUnincelizedCategory(
 	name string,
 	user_id int,
+	limit_id *int,
 ) Category {
-	return NewCategory(UnincelizedID, name, user_id)
+	return NewCategory(UnincelizedID, name, user_id, limit_id)
 }
 
-func RequestUpdateFromDomain(title Nullable[string]) CategoryUpdate {
+func RequestUpdateFromDomain(title Nullable[string], limit Nullable[int]) CategoryUpdate {
 	return CategoryUpdate{
-		Name: title,
+		Name:     title,
+		Limit_id: limit,
 	}
 }

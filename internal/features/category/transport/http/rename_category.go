@@ -12,7 +12,8 @@ import (
 )
 
 type CategoryUpdateRequest struct {
-	Title core_http_types.Nullable[string] `json:"title" validate:"required" swaggertype:"string"`
+	Title    core_http_types.Nullable[string] `json:"title" validate:"required" swaggertype:"string"`
+	Limit_id core_http_types.Nullable[int]    `json:"limit_id" validate:"required" swaggertype:"integer"`
 }
 
 func (u *CategoryUpdateRequest) Validate() error {
@@ -55,13 +56,15 @@ func (h *CategoryHTTPHandler) RenameCategory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	categoryUpdate := core_domain.RequestUpdateFromDomain(request.Title.ToDomain())
+	categoryUpdate := core_domain.RequestUpdateFromDomain(request.Title.ToDomain(), request.Limit_id.ToDomain())
 
 	categoryDomain, err := h.CategoryService.RenameCategory(ctx, categoryID, categoryUpdate)
 	if err != nil {
-		ResponseHandler.ErrorResponse(err, "error renaming category")
+		ResponseHandler.ErrorResponse(err, "error patching category")
 		return
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusOK, categoryDomain)
+	resp := DomainFromResponse(categoryDomain)
+
+	ResponseHandler.JSONResponseHandler(http.StatusOK, resp)
 }

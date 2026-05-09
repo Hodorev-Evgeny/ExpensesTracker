@@ -42,7 +42,7 @@ func (r *StaticRepository) GetStaticTransactions(
 	}
 	query += " ORDER BY id ASC"
 
-	rows, err := r.pool.Query(ctx, query)
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("Error get all categories: %w", err)
 	}

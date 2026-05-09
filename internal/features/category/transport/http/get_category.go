@@ -37,5 +37,6 @@ func (h *CategoryHTTPHandler) GetCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusOK, categoryDomain)
+	resp := DomainFromResponse(categoryDomain)
+	ResponseHandler.JSONResponseHandler(http.StatusOK, resp)
 }

@@ -3,6 +3,7 @@ package feature_category_transport
 import (
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 )
@@ -29,5 +30,19 @@ func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Req
 		ResponseHandler.ErrorResponse(err, "error getting all categories")
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusOK, listCategory)
+	listResponse := CategoryDomainListToResponse(listCategory)
+	ResponseHandler.JSONResponseHandler(http.StatusOK, listResponse)
+}
+
+func CategoryDomainListToResponse(list []core_domain.Category) []CategoryResponse {
+	listResponse := make([]CategoryResponse, len(list))
+	for i, item := range list {
+		listResponse[i] = CategoryResponse{
+			ID:           item.ID,
+			CategoryName: item.Name,
+			User_id:      item.User_ID,
+		}
+	}
+
+	return listResponse
 }

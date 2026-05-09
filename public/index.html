@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Трекер личных расходов</title>
+  <meta name="description" content="Приложение для учёта доходов, расходов, категорий, лимитов и финансовой аналитики." />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Expenses Tracker</p>
+        <h1>Трекер личных расходов</h1>
+        <p class="header-text">Учитывайте доходы и расходы, анализируйте траты и контролируйте бюджет.</p>
+      </div>
+
+      <div class="user-panel" aria-label="Текущий пользователь">
+        <label for="activeUserId">ID пользователя</label>
+        <div class="inline-control">
+          <input id="activeUserId" name="activeUserId" type="number" min="1" value="1" placeholder="Например: 1" />
+          <button id="saveUserIdBtn" class="btn btn-secondary" type="button">Выбрать</button>
+        </div>
+        <button id="themeToggleBtn" class="btn btn-ghost theme-toggle" type="button" aria-pressed="false">Тёмная тема</button>
+        <small>Backend сейчас работает с <code>user_id</code>, поэтому ID нужен для запросов.</small>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Основная навигация">
+      <button class="tab is-active" type="button" data-tab="dashboard">Сводка</button>
+      <button class="tab" type="button" data-tab="transactions">Операции</button>
+      <button class="tab" type="button" data-tab="categories">Категории</button>
+      <button class="tab" type="button" data-tab="limits">Лимиты</button>
+      <button class="tab" type="button" data-tab="users">Пользователи</button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="page is-active" aria-labelledby="dashboardTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Аналитика</p>
+            <h2 id="dashboardTitle">Финансовая картина</h2>
+          </div>
+          <form id="statsFilterForm" class="filters">
+            <div class="field">
+              <label for="statsFrom">С даты</label>
+              <input id="statsFrom" name="from" type="date" />
+            </div>
+            <div class="field">
+              <label for="statsTo">По дату</label>
+              <input id="statsTo" name="to" type="date" />
+            </div>
+            <div class="field">
+              <label for="statsCategoryId">Категория</label>
+              <select id="statsCategoryId" name="category_id">
+                <option value="">Все категории</option>
+              </select>
+            </div>
+            <div class="actions-row">
+              <button class="btn btn-primary" type="submit">Обновить</button>
+              <button class="btn btn-secondary" type="button" id="resetStatsFiltersBtn">
+                Сбросить
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="cards-grid stats-grid">
+          <article class="card stat-card"><span class="stat-label">Доходы</span><strong id="statIncome">0 ₽</strong></article>
+          <article class="card stat-card"><span class="stat-label">Расходы</span><strong id="statExpense">0 ₽</strong></article>
+          <article class="card stat-card"><span class="stat-label">Разница</span><strong id="statDifference">0 ₽</strong></article>
+          <article class="card stat-card"><span class="stat-label">Операций</span><strong id="statCount">0</strong></article>
+          <article class="card stat-card"><span class="stat-label">Средний расход</span><strong id="statAvgExpense">0 ₽</strong></article>
+          <article class="card stat-card"><span class="stat-label">Средний доход</span><strong id="statAvgIncome">0 ₽</strong></article>
+          <article class="card stat-card"><span class="stat-label">Самая затратная категория</span><strong id="statCostCategory">—</strong></article>
+          <article class="card stat-card"><span class="stat-label">Крупнейший расход</span><strong id="statMaxExpense">0 ₽</strong></article>
+        </div>
+
+        <section class="card">
+          <div class="card-header">
+            <h3>Доля категорий в расходах</h3>
+            <span class="muted">Проценты считаются только при наличии расходов</span>
+          </div>
+          <div id="categoryShareList" class="category-share-list">
+            <p class="empty-state">Здесь появится распределение расходов по категориям.</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="transactions" class="page" aria-labelledby="transactionsTitle">
+        <div class="section-header">
+          <div><p class="eyebrow">История</p><h2 id="transactionsTitle">Операции</h2></div>
+          <button id="reloadTransactionsBtn" class="btn btn-secondary" type="button">Обновить список</button>
+        </div>
+
+        <div class="layout-grid">
+          <section class="card">
+            <div class="card-header"><h3>Новая операция</h3><span class="muted">Доход или расход</span></div>
+            <form id="transactionForm" class="form">
+              <input id="transactionId" name="id" type="hidden" />
+              <div class="field">
+                <label for="transactionType">Тип операции *</label>
+                <select id="transactionType" name="type" required>
+                  <option value="Expenditure">Расход</option>
+                  <option value="Income">Доход</option>
+                </select>
+              </div>
+              <div class="field"><label for="transactionSum">Сумма *</label><input id="transactionSum" name="sum" type="number" min="1" step="1" placeholder="Например: 1500" required /></div>
+              <div class="field"><label for="transactionDate">Дата операции *</label><input id="transactionDate" name="date" type="datetime-local" required /></div>
+              <div class="field"><label for="transactionCategoryId">Категория *</label><select id="transactionCategoryId" name="category_id" required><option value="">Выберите категорию</option></select></div>
+              <div class="field"><label for="transactionComments">Комментарий</label><textarea id="transactionComments" name="comments" rows="3" placeholder="Например: продукты на неделю"></textarea></div>
+              <div class="field checkbox-field"><input id="transactionRegular" name="regular" type="checkbox" disabled /><label for="transactionRegular">Регулярная операция <span class="muted">(пока нет в API)</span></label></div>
+              <div class="form-actions"><button id="saveTransactionBtn" class="btn btn-primary" type="submit">Сохранить</button><button id="resetTransactionFormBtn" class="btn btn-ghost" type="reset">Очистить</button></div>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-header"><h3>Фильтры истории</h3><span class="muted">Поиск нужных операций</span></div>
+            <form id="transactionFilterForm" class="form">
+              <div class="field"><label for="filterType">Тип</label><select id="filterType" name="type"><option value="">Все</option><option value="Expenditure">Расход</option><option value="Income">Доход</option></select></div>
+              <div class="field"><label for="filterCategoryId">Категория</label><select id="filterCategoryId" name="category_id"><option value="">Все категории</option></select></div>
+              <div class="field"><label for="filterFrom">С даты</label><input id="filterFrom" name="from" type="date" /></div>
+              <div class="field"><label for="filterTo">По дату</label><input id="filterTo" name="to" type="date" /></div>
+              <div class="field"><label for="filterMinSum">Сумма от</label><input id="filterMinSum" name="sum" type="number" min="1" step="1" /></div>
+              <div class="field"><label for="filterLimit">На странице</label><input id="filterLimit" name="limit" type="number" min="1" value="20" /></div>
+              <div class="field"><label for="filterOffset">Смещение</label><input id="filterOffset" name="offset" type="number" min="0" value="0" /></div>
+              <div class="field"><label for="filterComment">Комментарий</label><input id="filterComment" name="comment" type="search" placeholder="Поиск по тексту на фронте" /></div>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Применить</button><button id="resetTransactionFiltersBtn" class="btn btn-ghost" type="reset">Сбросить</button></div>
+            </form>
+          </section>
+        </div>
+
+        <section class="card table-card">
+          <div class="card-header"><h3>Список операций</h3><span id="transactionsCount" class="muted">0 записей</span></div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>ID</th><th>Дата</th><th>Тип</th><th>Категория</th><th>Сумма</th><th>Комментарий</th><th>Изменено</th><th>Действия</th></tr></thead>
+              <tbody id="transactionsTbody"><tr><td colspan="8" class="empty-cell">Операции пока не загружены.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="categories" class="page" aria-labelledby="categoriesTitle">
+        <div class="section-header"><div><p class="eyebrow">Справочник</p><h2 id="categoriesTitle">Категории</h2></div><button id="reloadCategoriesBtn" class="btn btn-secondary" type="button">Обновить категории</button></div>
+        <div class="layout-grid">
+          <section class="card">
+            <div class="card-header"><h3>Создать / изменить категорию</h3><span class="muted">Название должно быть уникальным</span></div>
+            <form id="categoryForm" class="form">
+              <input id="categoryId" name="id" type="hidden" />
+              <div class="field"><label for="categoryName">Название категории *</label><input id="categoryName" name="category_name" type="text" minlength="3" maxlength="20" placeholder="Например: Еда" required /></div>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Сохранить</button><button id="resetCategoryFormBtn" class="btn btn-ghost" type="reset">Очистить</button></div>
+            </form>
+          </section>
+          <section class="card table-card">
+            <div class="card-header"><h3>Список категорий</h3><span id="categoriesCount" class="muted">0 записей</span></div>
+            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Название</th><th>User ID</th><th>Действия</th></tr></thead><tbody id="categoriesTbody"><tr><td colspan="4" class="empty-cell">Категории пока не загружены.</td></tr></tbody></table></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="limits" class="page" aria-labelledby="limitsTitle">
+        <div class="section-header"><div><p class="eyebrow">Бюджет</p><h2 id="limitsTitle">Лимиты</h2></div><button id="reloadLimitsBtn" class="btn btn-secondary" type="button">Обновить лимиты</button></div>
+        <div class="layout-grid">
+          <section class="card">
+            <div class="card-header"><h3>Создать / изменить лимит</h3><span class="muted">Ограничение расходов за период</span></div>
+            <form id="limitForm" class="form">
+              <input id="limitId" name="id" type="hidden" />
+              <div class="field"><label for="limitCategoryId">Категория *</label><select id="limitCategoryId" name="category_id" required><option value="">Выберите категорию</option></select></div>
+              <div class="field"><label for="limitAmount">Сумма лимита *</label><input id="limitAmount" name="amount_limit" type="number" min="1" step="1" placeholder="Например: 15000" required /></div>
+              <div class="field"><label for="limitDuration">Период / дата окончания *</label><input id="limitDuration" name="duration" type="datetime-local" required /></div>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Сохранить</button><button id="resetLimitFormBtn" class="btn btn-ghost" type="reset">Очистить</button></div>
+            </form>
+          </section>
+          <section class="card table-card">
+            <div class="card-header"><h3>Список лимитов</h3><span id="limitsCount" class="muted">0 записей</span></div>
+            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Категория</th><th>Сумма</th><th>Период</th><th>Потрачено</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="limitsTbody"><tr><td colspan="7" class="empty-cell">Лимиты пока не загружены.</td></tr></tbody></table></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="users" class="page" aria-labelledby="usersTitle">
+        <div class="section-header"><div><p class="eyebrow">Аккаунт</p><h2 id="usersTitle">Пользователи</h2></div><button id="reloadUsersBtn" class="btn btn-secondary" type="button">Обновить пользователей</button></div>
+        <div class="layout-grid">
+          <section class="card">
+            <div class="card-header"><h3>Создать / изменить пользователя</h3><span class="muted">Редактирование отправляет PATCH /users/{id}</span></div>
+            <form id="userForm" class="form">
+              <input id="userId" name="id" type="hidden" />
+              <div class="field"><label for="userFullName">Имя *</label><input id="userFullName" name="full_name" type="text" minlength="3" maxlength="32" placeholder="Иван Иванов" required /></div>
+              <div class="field"><label for="userEmail">Email *</label><input id="userEmail" name="email" type="email" placeholder="example@gmail.com" required /></div>
+              <div class="field"><label for="userPhone">Телефон *</label><input id="userPhone" name="phone" type="tel" minlength="11" maxlength="12" placeholder="+71112223344" required /></div>
+              <div class="field"><label for="userPassword">Пароль * при создании</label><input id="userPassword" name="password" type="password" minlength="8" maxlength="32" placeholder="Минимум 8 символов" /></div>
+              <div class="form-actions"><button id="saveUserBtn" class="btn btn-primary" type="submit">Создать</button><button id="resetUserFormBtn" class="btn btn-ghost" type="reset">Очистить</button></div>
+            </form>
+          </section>
+          <section class="card table-card">
+            <div class="card-header"><h3>Список пользователей</h3><span id="usersCount" class="muted">0 записей</span></div>
+            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Создан</th><th>Действия</th></tr></thead><tbody id="usersTbody"><tr><td colspan="6" class="empty-cell">Пользователи пока не загружены.</td></tr></tbody></table></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="confirmDialog" class="dialog">
+    <form method="dialog" class="dialog-content">
+      <h3 id="confirmTitle">Подтвердите действие</h3>
+      <p id="confirmText">Вы уверены?</p>
+      <div class="dialog-actions">
+        <button id="confirmCancelBtn" class="btn btn-ghost" value="cancel" type="submit">Отмена</button>
+        <button id="confirmOkBtn" class="btn btn-danger" value="ok" type="submit">Удалить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="transactionRowTemplate"><tr><td data-cell="id"></td><td data-cell="date"></td><td data-cell="type"></td><td data-cell="category"></td><td data-cell="sum"></td><td data-cell="comments"></td><td data-cell="time_change"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
+  <template id="categoryRowTemplate"><tr><td data-cell="id"></td><td data-cell="category_name"></td><td data-cell="user_id"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
+  <template id="limitRowTemplate"><tr><td data-cell="id"></td><td data-cell="category"></td><td data-cell="amount_limit"></td><td data-cell="duration"></td><td data-cell="spent"></td><td data-cell="status"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
+  <template id="userRowTemplate"><tr><td data-cell="id"></td><td data-cell="full_name"></td><td data-cell="email"></td><td data-cell="phone"></td><td data-cell="time_add"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="select">Выбрать</button><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

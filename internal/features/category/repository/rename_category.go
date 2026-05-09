@@ -16,17 +16,18 @@ func (r *CategoryRepository) RenameCategory(
 
 	query := `
 		UPDATE trackerapp.categories 
-		SET title=$1
-		WHERE id=$2
-		RETURNING id, title, user_id;`
+		SET title=$1, limit_id=$2
+		WHERE id=$3
+		RETURNING id, title, user_id, limit_id;`
 
-	row := r.pool.QueryRow(ctx, query, category.Name, id)
+	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id)
 
 	var categoryUpdated core_domain.Category
 	err := row.Scan(
 		&categoryUpdated.ID,
 		&categoryUpdated.Name,
 		&categoryUpdated.User_ID,
+		&categoryUpdated.Limit_id,
 	)
 	if err != nil {
 		return core_domain.Category{}, err
