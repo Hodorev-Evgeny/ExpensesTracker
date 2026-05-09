@@ -42,18 +42,18 @@ func CreateUserPatch(user RequestPatchUser) core_domain.UserPatch {
 
 // PatchUser     godoc
 // @Summary      Изменение пользователя
-// @Description  Изменение информации об уже существующем в системе пользователе
-// @Description  ### Логика обновления полей (Three-state logic):
-// @Description  1. **Поле не передано**: `phone_number` игнорируется, значение в БД не меняется
-// @Description  2. **Явно передано значение**: `"phone_number": "+711122233344"` - устанавливает новый номер телефона в БД
-// @Description  3. **Передан null**: `"phone_number": null` - очищает поле в БД (set to NULL)
-// @Description  Ограничения: `full_name` не может быть выставлен как null
+// @Description Changing information about a user already existing in the system
+// @Description ### Logic of updating fields (Three-state logic):
+// @Description 1. **The field was not passed**: `phone_number` is ignored, the value in the database does not change
+// @Description 2. **The value** is explicitly passed: `"phone_number": "+711122233344"` - sets a new phone number in the database
+// @Description 3. **null passed**: `"phone_number": null` - clears the field in the database (set to NULL)
+// @Description Restrictions: `full_name` cannot be set as null
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        id      path int          true            "ID изменяемого пользователя"
-// @Param        request body RequestPatchUser true            "PatchUser тело запроса"
-// @Success      200 {object} UserDTOResponse				"Успешно изменённый пользователь"
+// @Param		id path int true "ID of the user being modified"
+// @Param 		request body RequestPatchUser true "PatchUser request body"
+// @Success 	200 {object} UserDTOResponse "Successfully changed user"
 // @Failure      400 {object} response.ErrorResponse "Bad request"
 // @Failure      404 {object} response.ErrorResponse "User not found"
 // @Failure      409 {object} response.ErrorResponse "Conflict"

@@ -966,7 +966,7 @@
                 }
             },
             "patch": {
-                "description": "Изменение информации об уже существующем в системе пользователе\n### Логика обновления полей (Three-state logic):\n1. **Поле не передано**: `phone_number` игнорируется, значение в БД не меняется\n2. **Явно передано значение**: `\"phone_number\": \"+711122233344\"` - устанавливает новый номер телефона в БД\n3. **Передан null**: `\"phone_number\": null` - очищает поле в БД (set to NULL)\nОграничения: `full_name` не может быть выставлен как null",
+                "description": "Changing information about a user already existing in the system\n### Logic of updating fields (Three-state logic):\n1. **The field was not passed**: `phone_number` is ignored, the value in the database does not change\n2. **The value** is explicitly passed: `\"phone_number\": \"+711122233344\"` - sets a new phone number in the database\n3. **null passed**: `\"phone_number\": null` - clears the field in the database (set to NULL)\nRestrictions: `full_name` cannot be set as null",
                 "consumes": [
                     "application/json"
                 ],
@@ -980,13 +980,13 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID изменяемого пользователя",
+                        "description": "ID of the user being modified",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "PatchUser тело запроса",
+                        "description": "PatchUser request body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -997,7 +997,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешно изменённый пользователь",
+                        "description": "Successfully changed user",
                         "schema": {
                             "$ref": "#/definitions/internal_features_users_transport_http.UserDTOResponse"
                         }

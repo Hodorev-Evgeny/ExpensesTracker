@@ -897,19 +897,19 @@ paths:
       consumes:
       - application/json
       description: |-
-        Изменение информации об уже существующем в системе пользователе
-        ### Логика обновления полей (Three-state logic):
-        1. **Поле не передано**: `phone_number` игнорируется, значение в БД не меняется
-        2. **Явно передано значение**: `"phone_number": "+711122233344"` - устанавливает новый номер телефона в БД
-        3. **Передан null**: `"phone_number": null` - очищает поле в БД (set to NULL)
-        Ограничения: `full_name` не может быть выставлен как null
+        Changing information about a user already existing in the system
+        ### Logic of updating fields (Three-state logic):
+        1. **The field was not passed**: `phone_number` is ignored, the value in the database does not change
+        2. **The value** is explicitly passed: `"phone_number": "+711122233344"` - sets a new phone number in the database
+        3. **null passed**: `"phone_number": null` - clears the field in the database (set to NULL)
+        Restrictions: `full_name` cannot be set as null
       parameters:
-      - description: ID изменяемого пользователя
+      - description: ID of the user being modified
         in: path
         name: id
         required: true
         type: integer
-      - description: PatchUser тело запроса
+      - description: PatchUser request body
         in: body
         name: request
         required: true
@@ -919,7 +919,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Успешно изменённый пользователь
+          description: Successfully changed user
           schema:
             $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
         "400":
