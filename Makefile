@@ -76,6 +76,12 @@ app-run:
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/trackerapp/main.go
 
+tracker-deploy-run:
+	@docker compose up -d --build tracker-app
+
+tracker-deploy-stop:
+	@docker compose down tracker-app
+
 swagger-generate:
 	@docker compose run --rm swagger \
 	init \

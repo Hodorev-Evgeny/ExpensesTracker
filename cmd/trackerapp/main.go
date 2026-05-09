@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -47,6 +48,9 @@ func main() {
 	)
 	defer cancel()
 	fmt.Println("starting server")
+
+	serverConfig := core_transport_server.MustNewConfigServer()
+	time.Local = serverConfig.TimeZone
 
 	config := core_logger.MustNewConfig()
 	logger, err := core_logger.NewLogger(config)
@@ -108,7 +112,6 @@ func main() {
 	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
 
-	serverConfig := core_transport_server.MustNewConfigServer()
 	httpServer := core_transport_server.NewServer(
 		serverConfig,
 		logger,
