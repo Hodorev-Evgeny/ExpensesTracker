@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Hodorev-Evgeny/ExpensesTracker/docs"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
 
@@ -41,6 +43,49 @@ func (s *HTTPServer) ResisterApiVersionRouter(routers ...*APIVersionRouter) {
 		)
 	}
 
+}
+
+func (s *HTTPServer) AddFrond() {
+	s.mux.Handle(
+		"GET /css/",
+		http.StripPrefix(
+			"/css/",
+			http.FileServer(http.Dir("./public/css")),
+		),
+	)
+
+	s.mux.Handle(
+		"GET /js/",
+		http.StripPrefix(
+			"/js/",
+			http.FileServer(http.Dir("./public/js")),
+		),
+	)
+}
+
+func (s *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, route := range routes {
+		pattern := route.Method + " " + route.Path
+		s.mux.Handle(pattern, route.Handler)
+	}
+}
+
+func (s *HTTPServer) RegisterSwagger() {
+	s.mux.Handle(
+		"/swagger/",
+		httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+		),
+	)
+
+	s.mux.HandleFunc(
+		"/swagger/doc.json",
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(docs.SwaggerInfo.ReadDoc()))
+		},
+	)
 }
 
 func (s *HTTPServer) Start(ctx context.Context) error {

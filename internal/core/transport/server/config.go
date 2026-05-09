@@ -8,8 +8,10 @@ import (
 )
 
 type ServerConfig struct {
-	Addr            string        `envconfig:"ADDR" required:"true"`
-	ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" required:"true"`
+	Addr            string         `envconfig:"ADDR" required:"true"`
+	ShutdownTimeout time.Duration  `envconfig:"SHUTDOWN_TIMEOUT" required:"true"`
+	AllowedOrigins  []string       `envconfig:"ALLOWED_ORIGINS" required:"true"`
+	TimeZone        *time.Location `envconfig:"TIMEZONE" required:"true"`
 }
 
 func NewServerConfig() (ServerConfig, error) {

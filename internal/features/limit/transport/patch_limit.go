@@ -1,0 +1,58 @@
+package feature_transport_limit
+
+import (
+	"net/http"
+	"time"
+
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
+	core_http_types "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/types"
+	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
+)
+
+type PatchLimit struct {
+	Duraction   core_http_types.Nullable[time.Time] `json:"duration" swaggertype:"string" example:"2006-01-02T15:04:05-07:00"`
+	AmountLimit core_http_types.Nullable[int]       `json:"amount_limit" swaggertype:"integer" example:"1"`
+}
+
+// PatchLimit			godoc
+// @Summary 			Patch Limit
+// @Description 		Patch limit by id and you can give all param or nothing
+// @Tags 				limit
+// @Accept 				json
+// @Produce				json
+// @Param       		id      		path int true "Limit ID"
+// @Param				request body 	PatchLimit false "Patch limit body"
+// @Success				200	{object}	LimitResponse "Patch limit successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure 			404	{object}	response.ErrorResponse "Not found"
+// @Failure      500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/limit/{id}		[patch]
+func (h *LimitHTTPHandler) PatchLimit(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log := core_logger.FromContext(ctx)
+	ResponseHandler := response.NewHandlerResponse(log, w)
+
+	var patchLimit PatchLimit
+	if err := core_http_utils.DecodeJSON(&patchLimit, r); err != nil {
+		ResponseHandler.ErrorResponse(err, "error decoding patch limit")
+		return
+	}
+
+	id, err := core_http_utils.GetValuePathInt(r, "id")
+	if err != nil {
+		ResponseHandler.ErrorResponse(err, "error decoding id patch limit")
+		return
+	}
+
+	limitDomain := LimitResponseToPatch(patchLimit)
+
+	updateLimit, err := h.limitService.PatchLimit(ctx, id, limitDomain)
+	if err != nil {
+		ResponseHandler.ErrorResponse(err, "error patch limit")
+		return
+	}
+
+	resp := LimitDomainToResponse(updateLimit)
+	ResponseHandler.JSONResponseHandler(http.StatusOK, resp)
+}

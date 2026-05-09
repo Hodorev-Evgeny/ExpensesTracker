@@ -16,6 +16,15 @@ type HandlerResponse struct {
 	rw  http.ResponseWriter
 }
 
+func (h *HandlerResponse) HTMLResponse(html []byte) {
+	h.rw.WriteHeader(http.StatusOK)
+	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	if _, err := h.rw.Write(html); err != nil {
+		h.log.Error("Failed to write HTML response", zap.Error(err))
+	}
+}
+
 func NewHandlerResponse(logger *core_logger.Logger, rw http.ResponseWriter) *HandlerResponse {
 	return &HandlerResponse{
 		log: logger,
@@ -75,9 +84,9 @@ func (h *HandlerResponse) PanicResponse(p any, msg string) {
 func (h *HandlerResponse) errorResponse(err error, msg string, status int) {
 	h.rw.WriteHeader(status)
 
-	response := map[string]string{
-		"massage": msg,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   msg,
+		Massage: msg,
 	}
 
 	if err := json.NewEncoder(h.rw).Encode(response); err != nil {

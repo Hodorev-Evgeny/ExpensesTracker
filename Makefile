@@ -17,6 +17,15 @@ env-cleanup:
 		echo "Очистка окружения отменена"; \
 	fi
 
+logs-clean:
+	@read -p "Очистить все логи? Опасность утери данных. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "логи очищены"; \
+	else \
+		echo "Очистка логов отменена"; \
+	fi
+
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
 		echo "Dont have seq"; \
@@ -66,3 +75,17 @@ app-run:
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/trackerapp/main.go
+
+tracker-deploy-run:
+	@docker compose up -d --build tracker-app
+
+tracker-deploy-stop:
+	@docker compose down tracker-app
+
+swagger-generate:
+	@docker compose run --rm swagger \
+	init \
+	-g cmd/trackerapp/main.go \
+	-o docs \
+	--parseInternal \
+	--parseDependency

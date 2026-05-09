@@ -1,0 +1,48 @@
+package feature_category_transport
+
+import (
+	"net/http"
+
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
+)
+
+type CategoryListResponse []CategoryResponse
+
+// GetAllCategorys		godoc
+// @Summary 			Get all category
+// @Description 		Get all category without query parm
+// @Tags 				category
+// @Accept 				json
+// @Produce 			json
+// @Success				200	{array}		CategoryResponse "Get all category successfully"
+// @Failure 			400	{object}	response.ErrorResponse "Bad request"
+// @Failure     		500 {object} 	response.ErrorResponse "Internal server error"
+// @Router 				/category		[get]
+func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log := core_logger.FromContext(ctx)
+	ResponseHandler := response.NewHandlerResponse(log, w)
+
+	listCategory, err := h.CategoryService.GetAllCategories(ctx)
+	if err != nil {
+		ResponseHandler.ErrorResponse(err, "error getting all categories")
+	}
+
+	listResponse := CategoryDomainListToResponse(listCategory)
+	ResponseHandler.JSONResponseHandler(http.StatusOK, listResponse)
+}
+
+func CategoryDomainListToResponse(list []core_domain.Category) []CategoryResponse {
+	listResponse := make([]CategoryResponse, len(list))
+	for i, item := range list {
+		listResponse[i] = CategoryResponse{
+			ID:           item.ID,
+			CategoryName: item.Name,
+			User_id:      item.User_ID,
+		}
+	}
+
+	return listResponse
+}
