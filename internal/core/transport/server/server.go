@@ -45,6 +45,31 @@ func (s *HTTPServer) ResisterApiVersionRouter(routers ...*APIVersionRouter) {
 
 }
 
+func (s *HTTPServer) AddFrond() {
+	s.mux.Handle(
+		"GET /css/",
+		http.StripPrefix(
+			"/css/",
+			http.FileServer(http.Dir("./public/css")),
+		),
+	)
+
+	s.mux.Handle(
+		"GET /js/",
+		http.StripPrefix(
+			"/js/",
+			http.FileServer(http.Dir("./public/js")),
+		),
+	)
+}
+
+func (s *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, route := range routes {
+		pattern := route.Method + " " + route.Path
+		s.mux.Handle(pattern, route.Handler)
+	}
+}
+
 func (s *HTTPServer) RegisterSwagger() {
 	s.mux.Handle(
 		"/swagger/",

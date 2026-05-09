@@ -27,6 +27,9 @@ import (
 	features_users_repository "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/postgres"
 	feature_user_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
 	features_users_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
+	feature_repository_file_system "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/repository/file_system"
+	feature_service_web "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/service"
+	feature_transport_web "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/transport"
 	"go.uber.org/zap"
 
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/docs"
@@ -93,12 +96,17 @@ func main() {
 	staticTransport := feature_transport_static.NewStaticHTTPHandler(staticService)
 	staticRouters := staticTransport.Router()
 
+	fileRepository := feature_repository_file_system.NewWebRepository()
+	webService := feature_service_web.NewWebService(fileRepository)
+	webTransport := feature_transport_web.NewWebTransport(webService)
+	webRouters := webTransport.Router()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
-	apiVersionRouter.RegisterRoutes(userRouters...)
-	apiVersionRouter.RegisterRoutes(categoryRouters...)
-	apiVersionRouter.RegisterRoutes(transactionRouters...)
-	apiVersionRouter.RegisterRoutes(limitRouters...)
-	apiVersionRouter.RegisterRoutes(staticRouters...)
+	apiVersionRouter.RegisterAPIRoutes(userRouters...)
+	apiVersionRouter.RegisterAPIRoutes(categoryRouters...)
+	apiVersionRouter.RegisterAPIRoutes(transactionRouters...)
+	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
+	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
 
 	serverConfig := core_transport_server.MustNewConfigServer()
 	httpServer := core_transport_server.NewServer(
@@ -112,6 +120,8 @@ func main() {
 	)
 
 	httpServer.ResisterApiVersionRouter(apiVersionRouter)
+	httpServer.AddFrond()
+	httpServer.RegisterRoutes(webRouters...)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Start(ctx); err != nil {

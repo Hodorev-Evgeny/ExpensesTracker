@@ -637,7 +637,9 @@ paths:
         "200":
           description: Get transaction successfully
           schema:
-            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+            items:
+              $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+            type: array
         "400":
           description: Bad request
           schema:

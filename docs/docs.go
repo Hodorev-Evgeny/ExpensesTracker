@@ -585,7 +585,10 @@ const docTemplate = `{
                     "200": {
                         "description": "Get transaction successfully",
                         "schema": {
-                            "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_features_transaction_transport.TransactionResponse"
+                            }
                         }
                     },
                     "400": {

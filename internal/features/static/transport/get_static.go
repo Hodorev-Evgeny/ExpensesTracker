@@ -44,6 +44,7 @@ func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	staticFilters, err := GetStaticFilters(r)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting static filters")
+		return
 	}
 
 	staticDomain, err := h.StaticService.GetStatic(ctx, staticFilters)

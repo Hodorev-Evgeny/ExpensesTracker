@@ -63,5 +63,7 @@ func (h *CategoryHTTPHandler) RenameCategory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusOK, categoryDomain)
+	resp := DomainFromResponse(categoryDomain)
+
+	ResponseHandler.JSONResponseHandler(http.StatusOK, resp)
 }
