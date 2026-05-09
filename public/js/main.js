@@ -1,6 +1,18 @@
 import { categoriesApi, limitsApi, statsApi, transactionsApi, usersApi } from "./api.js";
 import { DEFAULT_PAGE_SIZE } from "./config.js";
-import { getCategoryId, getCategoryTitle, setActiveUserId, state } from "./state.js";
+import {
+  getCategoryByLimitId,
+  getCategoryId,
+  getCategoryLimitId,
+  getCategoryTitle,
+  getLimitId,
+  getUserId,
+  setActiveUserId,
+  setCategoryLimitId,
+  setTheme,
+  state,
+  toggleTheme,
+} from "./state.js";
 import {
   assertDateTimeLocal,
   assertPositiveInteger,
@@ -9,6 +21,7 @@ import {
   nowToLocalDateTimeInputValue,
   toApiDateTime,
   validateCategoryName,
+  validateUserPatchPayload,
   validateUserPayload,
 } from "./validators.js";
 import {
@@ -17,6 +30,7 @@ import {
   fillCategoryForm,
   fillLimitForm,
   fillTransactionForm,
+  fillUserForm,
   renderCategories,
   renderCategorySelects,
   renderLimits,
@@ -26,9 +40,13 @@ import {
   resetCategoryForm,
   resetLimitForm,
   resetTransactionForm,
+  resetUserForm,
   setLoading,
   showToast,
+  updateThemeButton,
 } from "./render.js";
+
+const CATEGORY_LIMIT_PATCH_FIELD = "limit_id";
 
 function getFormData(form) {
   return Object.fromEntries(new FormData(form).entries());
@@ -38,6 +56,38 @@ function onlyFilled(object) {
   return Object.fromEntries(
     Object.entries(object).filter(([, value]) => value !== undefined && value !== null && value !== ""),
   );
+}
+
+function getEntityId(entity) {
+  return entity?.id ?? entity?.ID ?? entity?.Id;
+}
+
+function getTransactionCategoryId(transaction) {
+  return transaction?.category_id ?? transaction?.categoryId ?? transaction?.CategoryID ?? transaction?.CategoryId;
+}
+
+function getTransactionType(transaction) {
+  return transaction?.type ?? transaction?.Type;
+}
+
+function getTransactionDate(transaction) {
+  return transaction?.date ?? transaction?.Date;
+}
+
+function getTransactionSum(transaction) {
+  return transaction?.sum ?? transaction?.Sum;
+}
+
+function getTransactionUserId(transaction) {
+  return transaction?.user_id ?? transaction?.userId ?? transaction?.UserID ?? transaction?.UserId;
+}
+
+function getTransactionComments(transaction) {
+  return transaction?.comments ?? transaction?.Comments ?? "";
+}
+
+function findCategoryById(categoryId) {
+  return state.categories.find((category) => Number(getCategoryId(category)) === Number(categoryId));
 }
 
 async function runSafely(action, successMessage) {
@@ -85,62 +135,31 @@ function activateTab(tabName) {
   });
 }
 
-function prepareTransactionQuery(filterData = {}) {
-  return onlyFilled({
-    user_id: state.userId,
-    category_id: filterData.category_id,
-    sum: filterData.sum,
-    from: dateInputToRFC3339(filterData.from),
-    to: dateInputToRFC3339(filterData.to, true),
-    limit: filterData.limit || DEFAULT_PAGE_SIZE,
-    offset: filterData.offset || 0,
-  });
-}
-
 function applyLocalTransactionFilters(transactions, filterData = {}) {
   let filtered = Array.isArray(transactions) ? [...transactions] : [];
 
   filtered = filtered.filter((item) => {
-    const itemUserId = item.user_id ?? item.userId ?? item.UserID ?? item.UserId;
-
-    if (!itemUserId) {
-      return true;
-    }
-
-    return Number(itemUserId) === Number(state.userId);
+    const itemUserId = getTransactionUserId(item);
+    return !itemUserId || Number(itemUserId) === Number(state.userId);
   });
 
   if (filterData.type) {
-    filtered = filtered.filter((item) => {
-      const type = item.type ?? item.Type;
-      return type === filterData.type;
-    });
+    filtered = filtered.filter((item) => getTransactionType(item) === filterData.type);
   }
 
   if (filterData.category_id) {
-    filtered = filtered.filter((item) => {
-      const categoryId =
-          item.category_id ??
-          item.categoryId ??
-          item.CategoryID ??
-          item.CategoryId;
-
-      return Number(categoryId) === Number(filterData.category_id);
-    });
+    filtered = filtered.filter((item) => Number(getTransactionCategoryId(item)) === Number(filterData.category_id));
   }
 
   if (filterData.sum) {
-    filtered = filtered.filter((item) => {
-      const sum = item.sum ?? item.Sum;
-      return Number(sum) >= Number(filterData.sum);
-    });
+    filtered = filtered.filter((item) => Number(getTransactionSum(item)) >= Number(filterData.sum));
   }
 
   if (filterData.from) {
     const from = new Date(dateInputToRFC3339(filterData.from)).getTime();
 
     filtered = filtered.filter((item) => {
-      const date = new Date(item.date ?? item.Date).getTime();
+      const date = new Date(getTransactionDate(item)).getTime();
       return !Number.isNaN(date) && date >= from;
     });
   }
@@ -149,24 +168,19 @@ function applyLocalTransactionFilters(transactions, filterData = {}) {
     const to = new Date(dateInputToRFC3339(filterData.to, true)).getTime();
 
     filtered = filtered.filter((item) => {
-      const date = new Date(item.date ?? item.Date).getTime();
+      const date = new Date(getTransactionDate(item)).getTime();
       return !Number.isNaN(date) && date <= to;
     });
   }
 
   if (filterData.comment) {
     const needle = filterData.comment.trim().toLowerCase();
-
-    filtered = filtered.filter((item) => {
-      const comments = item.comments ?? item.Comments ?? "";
-      return String(comments).toLowerCase().includes(needle);
-    });
+    filtered = filtered.filter((item) => String(getTransactionComments(item)).toLowerCase().includes(needle));
   }
 
   filtered.sort((a, b) => {
-    const dateA = new Date(a.date ?? a.Date ?? 0).getTime();
-    const dateB = new Date(b.date ?? b.Date ?? 0).getTime();
-
+    const dateA = new Date(getTransactionDate(a) ?? 0).getTime();
+    const dateB = new Date(getTransactionDate(b) ?? 0).getTime();
     return dateB - dateA;
   });
 
@@ -192,17 +206,15 @@ async function loadTransactions(filterData = state.filters.transactions) {
   const transactions = await transactionsApi.list();
 
   state.transactions = Array.isArray(transactions)
-      ? transactions
-      : transactions
-          ? [transactions]
-          : [];
+    ? transactions
+    : transactions
+      ? [transactions]
+      : [];
 
-  const visibleTransactions = applyLocalTransactionFilters(
-      state.transactions,
-      state.filters.transactions,
-  );
+  const visibleTransactions = applyLocalTransactionFilters(state.transactions, state.filters.transactions);
 
   renderTransactions(visibleTransactions);
+  renderLimits();
 }
 
 async function loadStats(filterData = {}) {
@@ -226,6 +238,39 @@ async function loadUsers() {
   renderUsers();
 }
 
+async function attachLimitToCategory(categoryId, limitId) {
+  const category = findCategoryById(categoryId);
+
+  if (!category) {
+    throw new Error("Категория для лимита не найдена");
+  }
+
+  setCategoryLimitId(categoryId, limitId);
+
+  try {
+    await categoriesApi.update(categoryId, {
+      title: getCategoryTitle(category),
+      [CATEGORY_LIMIT_PATCH_FIELD]: limitId,
+    });
+  } catch (error) {
+    console.warn("Не удалось сохранить limit_id в категории на backend", error);
+    showToast("Лимит сохранён. Привязка к категории сохранена локально, но backend её не принял.", "warning");
+  }
+}
+
+async function detachLimitFromCategory(limitId) {
+  const category = getCategoryByLimitId(limitId);
+  if (!category) return;
+
+  const categoryId = getCategoryId(category);
+  setCategoryLimitId(categoryId, null);
+
+  await categoriesApi.update(categoryId, {
+    title: getCategoryTitle(category),
+    [CATEGORY_LIMIT_PATCH_FIELD]: null,
+  });
+}
+
 async function reloadMainData() {
   const app = $(".app");
   setLoading(app, true);
@@ -245,6 +290,8 @@ async function reloadMainData() {
         console.error(result.reason);
       }
     });
+
+    renderLimits();
   } finally {
     setLoading(app, false);
   }
@@ -256,6 +303,16 @@ function setupTabs() {
   });
 }
 
+function setupTheme() {
+  setTheme(state.theme);
+  updateThemeButton();
+
+  $("#themeToggleBtn")?.addEventListener("click", () => {
+    toggleTheme();
+    updateThemeButton();
+  });
+}
+
 function setupUserPanel() {
   const input = $("#activeUserId");
   input.value = state.userId;
@@ -263,7 +320,12 @@ function setupUserPanel() {
   $("#saveUserIdBtn").addEventListener("click", () => {
     runSafely(async () => {
       setActiveUserId(input.value);
-      await Promise.allSettled([loadCategories(), loadTransactions(), loadStats(getFormData($("#statsFilterForm")))]);
+      await Promise.allSettled([
+        loadCategories(),
+        loadTransactions(),
+        loadLimits(),
+        loadStats(getFormData($("#statsFilterForm"))),
+      ]);
     }, "Пользователь выбран");
   });
 }
@@ -272,6 +334,18 @@ function setupStats() {
   $("#statsFilterForm").addEventListener("submit", (event) => {
     event.preventDefault();
     runSafely(() => loadStats(getFormData(event.currentTarget)), "Статистика обновлена");
+  });
+
+  $("#resetStatsFiltersBtn").addEventListener("click", () => {
+    const form = $("#statsFilterForm");
+
+    form.reset();
+
+    $("#statsFrom").value = "";
+    $("#statsTo").value = "";
+    $("#statsCategoryId").value = "";
+
+    runSafely(() => loadStats({}), "Фильтры статистики сброшены");
   });
 }
 
@@ -340,7 +414,7 @@ function setupTransactions() {
     const row = button.closest("tr");
     const id = row?.dataset.id;
     const action = button.dataset.action;
-    const transaction = state.transactions.find((item) => Number(item.id) === Number(id));
+    const transaction = state.transactions.find((item) => Number(getEntityId(item)) === Number(id));
 
     if (!id || !transaction) return;
 
@@ -379,7 +453,11 @@ function setupCategories() {
       const categoryName = validateCategoryName(data.category_name);
 
       if (id) {
-        await categoriesApi.update(id, { title: categoryName });
+        const category = findCategoryById(id);
+        await categoriesApi.update(id, onlyFilled({
+          title: categoryName,
+          [CATEGORY_LIMIT_PATCH_FIELD]: getCategoryLimitId(category),
+        }));
       } else {
         await categoriesApi.create({
           category_name: categoryName,
@@ -426,6 +504,7 @@ function setupCategories() {
 
       runSafely(async () => {
         await categoriesApi.delete(id);
+        setCategoryLimitId(id, null);
         await loadCategories();
       }, "Категория удалена");
     }
@@ -439,6 +518,7 @@ function setupLimits() {
     runSafely(async () => {
       const data = getFormData(event.currentTarget);
       const id = data.id;
+      const categoryId = assertPositiveInteger(data.category_id, "Категория лимита");
       const amountLimit = assertPositiveInteger(data.amount_limit, "Сумма лимита");
       assertDateTimeLocal(data.duration, "Период лимита");
 
@@ -447,19 +527,37 @@ function setupLimits() {
         duration: toApiDateTime(data.duration),
       };
 
+      let savedLimit;
+
       if (id) {
-        await limitsApi.update(id, payload);
+        savedLimit = await limitsApi.update(id, payload);
       } else {
-        await limitsApi.create(payload);
+        savedLimit = await limitsApi.create(payload);
       }
 
+      const savedLimitId = getLimitId(savedLimit) ?? Number(id);
+
+      if (!savedLimitId) {
+        throw new Error("Backend не вернул id лимита");
+      }
+
+      await attachLimitToCategory(categoryId, savedLimitId);
+
       resetLimitForm();
-      await loadLimits();
-    }, "Лимит сохранён");
+
+      await Promise.allSettled([
+        loadCategories(),
+        loadLimits(),
+        loadTransactions(),
+        loadStats(getFormData($("#statsFilterForm"))),
+      ]);
+    }, "Лимит сохранён и привязан к категории");
   });
 
   $("#reloadLimitsBtn").addEventListener("click", () => {
-    runSafely(() => loadLimits(), "Лимиты обновлены");
+    runSafely(async () => {
+      await Promise.allSettled([loadCategories(), loadLimits(), loadTransactions()]);
+    }, "Лимиты обновлены");
   });
 
   $("#resetLimitFormBtn").addEventListener("click", () => {
@@ -472,7 +570,7 @@ function setupLimits() {
 
     const id = button.closest("tr")?.dataset.id;
     const action = button.dataset.action;
-    const limit = state.limits.find((item) => Number(item.id) === Number(id));
+    const limit = state.limits.find((item) => Number(getLimitId(item)) === Number(id));
 
     if (!id || !limit) return;
 
@@ -483,16 +581,26 @@ function setupLimits() {
     }
 
     if (action === "delete") {
+      const linkedCategory = getCategoryByLimitId(id);
+
       const confirmed = await confirmAction({
         title: "Удалить лимит?",
-        text: `Лимит #${id} будет удалён.`,
+        text: linkedCategory
+          ? `Лимит #${id}, привязанный к категории «${getCategoryTitle(linkedCategory)}», будет удалён.`
+          : `Лимит #${id} будет удалён.`,
       });
 
       if (!confirmed) return;
 
       runSafely(async () => {
         await limitsApi.delete(id);
-        await loadLimits();
+        await detachLimitFromCategory(id).catch((error) => console.warn("Не удалось отвязать лимит от категории", error));
+        await Promise.allSettled([
+          loadCategories(),
+          loadLimits(),
+          loadTransactions(),
+          loadStats(getFormData($("#statsFilterForm"))),
+        ]);
       }, "Лимит удалён");
     }
   });
@@ -502,12 +610,25 @@ function setupUsers() {
   $("#userForm").addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const data = getFormData(event.currentTarget);
+    const isEdit = Boolean(data.id);
+
     runSafely(async () => {
-      const payload = validateUserPayload(getFormData(event.currentTarget));
-      await usersApi.create(payload);
-      event.currentTarget.reset();
+      if (isEdit) {
+        const payload = validateUserPatchPayload(data);
+        await usersApi.update(data.id, payload);
+      } else {
+        const payload = validateUserPayload(data);
+        await usersApi.create(payload);
+      }
+
+      resetUserForm();
       await loadUsers();
-    }, "Пользователь создан");
+    }, isEdit ? "Пользователь изменён" : "Пользователь создан");
+  });
+
+  $("#resetUserFormBtn").addEventListener("click", () => {
+    window.setTimeout(resetUserForm);
   });
 
   $("#reloadUsersBtn").addEventListener("click", () => {
@@ -520,6 +641,7 @@ function setupUsers() {
 
     const id = button.closest("tr")?.dataset.id;
     const action = button.dataset.action;
+    const user = state.users.find((item) => Number(getUserId(item)) === Number(id));
 
     if (!id) return;
 
@@ -527,8 +649,20 @@ function setupUsers() {
       runSafely(async () => {
         setActiveUserId(id);
         $("#activeUserId").value = id;
-        await Promise.allSettled([loadCategories(), loadTransactions(), loadStats(getFormData($("#statsFilterForm")))]);
+        await Promise.allSettled([
+          loadCategories(),
+          loadTransactions(),
+          loadLimits(),
+          loadStats(getFormData($("#statsFilterForm"))),
+        ]);
       }, `Выбран пользователь #${id}`);
+      return;
+    }
+
+    if (action === "edit") {
+      if (!user) return;
+      fillUserForm(user);
+      window.scrollTo({ top: $("#userForm").offsetTop - 40, behavior: "smooth" });
       return;
     }
 
@@ -563,6 +697,7 @@ function setDefaultDates() {
 }
 
 function setupApp() {
+  setupTheme();
   setupTabs();
   setupUserPanel();
   setupStats();

@@ -1,5 +1,21 @@
-import { getCategoryId, getCategoryName, getCategoryTitle, getCategoryUserId, state } from "./state.js";
 import { TRANSACTION_TYPES } from "./config.js";
+import {
+  getCategoryByLimitId,
+  getCategoryId,
+  getCategoryLimitId,
+  getCategoryName,
+  getCategoryTitle,
+  getCategoryUserId,
+  getLimitAmount,
+  getLimitDuration,
+  getLimitId,
+  getUserEmail,
+  getUserFullName,
+  getUserId,
+  getUserPhone,
+  getUserTimeAdd,
+  state,
+} from "./state.js";
 import { nowToLocalDateTimeInputValue, toLocalDateTimeInputValue } from "./validators.js";
 
 const formatter = new Intl.NumberFormat("ru-RU", {
@@ -84,6 +100,14 @@ export function setLoading(element, isLoading) {
   element.classList.toggle("loading", isLoading);
 }
 
+export function updateThemeButton() {
+  const button = $("#themeToggleBtn");
+  if (!button) return;
+
+  button.textContent = state.theme === "dark" ? "Светлая тема" : "Тёмная тема";
+  button.setAttribute("aria-pressed", String(state.theme === "dark"));
+}
+
 export function renderCategorySelects() {
   const selects = [
     $("#transactionCategoryId"),
@@ -94,11 +118,9 @@ export function renderCategorySelects() {
 
   selects.forEach((select) => {
     const currentValue = select.value;
-    const firstOptionText = select.id === "transactionCategoryId"
+    const firstOptionText = select.id === "transactionCategoryId" || select.id === "limitCategoryId"
       ? "Выберите категорию"
-      : select.id === "limitCategoryId"
-        ? "Привязка к категории пока не описана в API"
-        : "Все категории";
+      : "Все категории";
 
     select.innerHTML = `<option value="">${firstOptionText}</option>`;
 
@@ -137,11 +159,13 @@ export function renderCategories() {
 
   categories.forEach((category) => {
     const categoryId = getCategoryId(category);
+    const limitId = getCategoryLimitId(category);
     const row = template.content.firstElementChild.cloneNode(true);
     row.dataset.id = categoryId ?? "";
     row.querySelector('[data-cell="id"]').textContent = categoryId ?? "—";
     row.querySelector('[data-cell="category_name"]').textContent = getCategoryTitle(category) ?? "—";
     row.querySelector('[data-cell="user_id"]').textContent = getCategoryUserId(category) ?? "—";
+    row.title = limitId ? `Лимит: #${limitId}` : "";
     tbody.append(row);
   });
 }
@@ -185,28 +209,81 @@ export function renderTransactions(transactions = state.transactions) {
   });
 }
 
+function getExpenseSumByCategory(categoryId, duration) {
+  const durationTime = duration ? new Date(duration).getTime() : null;
+
+  return state.transactions.reduce((sum, transaction) => {
+    const transactionCategoryId = transaction.category_id ?? transaction.categoryId ?? transaction.CategoryID ?? transaction.CategoryId;
+    const transactionType = transaction.type ?? transaction.Type;
+
+    if (Number(transactionCategoryId) !== Number(categoryId)) return sum;
+    if (!String(transactionType).toLowerCase().includes("expenditure")) return sum;
+
+    if (durationTime) {
+      const transactionTime = new Date(transaction.date ?? transaction.Date).getTime();
+      if (!Number.isNaN(transactionTime) && transactionTime > durationTime) return sum;
+    }
+
+    return sum + Number(transaction.sum ?? transaction.Sum ?? 0);
+  }, 0);
+}
+
+function getLimitStatus(spent, amount) {
+  if (!amount) {
+    return { label: "Нет суммы", className: "badge-neutral" };
+  }
+
+  const progress = spent / amount;
+
+  if (progress >= 1) {
+    return { label: "Лимит превышен", className: "badge-expense" };
+  }
+
+  if (progress >= 0.8) {
+    return { label: "Почти достигнут", className: "badge-warning" };
+  }
+
+  return { label: "Не достигнут", className: "badge-positive" };
+}
+
 export function renderLimits() {
   const tbody = $("#limitsTbody");
   const count = $("#limitsCount");
   const template = $("#limitRowTemplate");
 
-  if (count) count.textContent = `${state.limits.length} записей`;
+  const limits = Array.isArray(state.limits) ? state.limits : [];
+
+  if (count) count.textContent = `${limits.length} записей`;
   if (!tbody || !template) return;
 
   tbody.innerHTML = "";
 
-  if (!state.limits.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-cell">Лимиты пока не созданы.</td></tr>`;
+  if (!limits.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Лимиты пока не созданы.</td></tr>`;
     return;
   }
 
-  state.limits.forEach((limit) => {
+  limits.forEach((limit) => {
+    const limitId = getLimitId(limit);
+    const amount = Number(getLimitAmount(limit)) || 0;
+    const duration = getLimitDuration(limit);
+    const linkedCategory = getCategoryByLimitId(limitId);
+    const categoryId = linkedCategory
+      ? getCategoryId(linkedCategory)
+      : limit.category_id ?? limit.categoryId ?? limit.CategoryID ?? limit.CategoryId;
+    const spent = categoryId ? getExpenseSumByCategory(categoryId, duration) : 0;
+    const status = categoryId
+      ? getLimitStatus(spent, amount)
+      : { label: "Не привязан", className: "badge-neutral" };
+
     const row = template.content.firstElementChild.cloneNode(true);
-    row.dataset.id = limit.id;
-    row.querySelector('[data-cell="id"]').textContent = limit.id ?? "—";
-    row.querySelector('[data-cell="amount_limit"]').textContent = formatMoney(limit.amount_limit);
-    row.querySelector('[data-cell="duration"]').textContent = formatDate(limit.duration);
-    row.querySelector('[data-cell="status"]').innerHTML = `<span class="badge badge-neutral">Нет данных</span>`;
+    row.dataset.id = limitId ?? "";
+    row.querySelector('[data-cell="id"]').textContent = limitId ?? "—";
+    row.querySelector('[data-cell="category"]').textContent = categoryId ? getCategoryName(categoryId) : "Не привязан";
+    row.querySelector('[data-cell="amount_limit"]').textContent = formatMoney(amount);
+    row.querySelector('[data-cell="duration"]').textContent = formatDate(duration);
+    row.querySelector('[data-cell="spent"]').textContent = categoryId ? formatMoney(spent) : "—";
+    row.querySelector('[data-cell="status"]').innerHTML = `<span class="badge ${status.className}">${status.label}</span>`;
     tbody.append(row);
   });
 }
@@ -216,24 +293,27 @@ export function renderUsers() {
   const count = $("#usersCount");
   const template = $("#userRowTemplate");
 
-  if (count) count.textContent = `${state.users.length} записей`;
+  const users = Array.isArray(state.users) ? state.users : [];
+
+  if (count) count.textContent = `${users.length} записей`;
   if (!tbody || !template) return;
 
   tbody.innerHTML = "";
 
-  if (!state.users.length) {
+  if (!users.length) {
     tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Пользователи не найдены.</td></tr>`;
     return;
   }
 
-  state.users.forEach((user) => {
+  users.forEach((user) => {
+    const userId = getUserId(user);
     const row = template.content.firstElementChild.cloneNode(true);
-    row.dataset.id = user.id;
-    row.querySelector('[data-cell="id"]').textContent = user.id ?? "—";
-    row.querySelector('[data-cell="full_name"]').textContent = user.full_name ?? "—";
-    row.querySelector('[data-cell="email"]').textContent = user.email ?? "—";
-    row.querySelector('[data-cell="phone"]').textContent = user.phone ?? "—";
-    row.querySelector('[data-cell="time_add"]').textContent = formatDate(user.time_add);
+    row.dataset.id = userId ?? "";
+    row.querySelector('[data-cell="id"]').textContent = userId ?? "—";
+    row.querySelector('[data-cell="full_name"]').textContent = getUserFullName(user) ?? "—";
+    row.querySelector('[data-cell="email"]').textContent = getUserEmail(user) ?? "—";
+    row.querySelector('[data-cell="phone"]').textContent = getUserPhone(user) ?? "—";
+    row.querySelector('[data-cell="time_add"]').textContent = formatDate(getUserTimeAdd(user));
     tbody.append(row);
   });
 }
@@ -279,12 +359,12 @@ export function renderStats() {
 }
 
 export function fillTransactionForm(transaction) {
-  $("#transactionId").value = transaction.id ?? "";
-  $("#transactionType").value = transaction.type ?? "Expenditure";
-  $("#transactionSum").value = transaction.sum ?? "";
-  $("#transactionDate").value = toLocalDateTimeInputValue(transaction.date);
-  $("#transactionCategoryId").value = transaction.category_id ?? "";
-  $("#transactionComments").value = transaction.comments ?? "";
+  $("#transactionId").value = transaction.id ?? transaction.ID ?? transaction.Id ?? "";
+  $("#transactionType").value = transaction.type ?? transaction.Type ?? "Expenditure";
+  $("#transactionSum").value = transaction.sum ?? transaction.Sum ?? "";
+  $("#transactionDate").value = toLocalDateTimeInputValue(transaction.date ?? transaction.Date);
+  $("#transactionCategoryId").value = transaction.category_id ?? transaction.categoryId ?? transaction.CategoryID ?? transaction.CategoryId ?? "";
+  $("#transactionComments").value = transaction.comments ?? transaction.Comments ?? "";
   $("#saveTransactionBtn").textContent = "Сохранить изменения";
 }
 
@@ -294,9 +374,24 @@ export function fillCategoryForm(category) {
 }
 
 export function fillLimitForm(limit) {
-  $("#limitId").value = limit.id ?? "";
-  $("#limitAmount").value = limit.amount_limit ?? "";
-  $("#limitDuration").value = toLocalDateTimeInputValue(limit.duration);
+  const limitId = getLimitId(limit);
+  const linkedCategory = getCategoryByLimitId(limitId);
+
+  $("#limitId").value = limitId ?? "";
+  $("#limitCategoryId").value = linkedCategory ? getCategoryId(linkedCategory) : "";
+  $("#limitAmount").value = getLimitAmount(limit) ?? "";
+  $("#limitDuration").value = toLocalDateTimeInputValue(getLimitDuration(limit));
+}
+
+export function fillUserForm(user) {
+  $("#userId").value = getUserId(user) ?? "";
+  $("#userFullName").value = getUserFullName(user) ?? "";
+  $("#userEmail").value = getUserEmail(user) ?? "";
+  $("#userPhone").value = getUserPhone(user) ?? "";
+  $("#userPassword").value = "";
+  $("#userPassword").required = false;
+  $("#userPassword").placeholder = "При изменении не нужен";
+  $("#saveUserBtn").textContent = "Сохранить изменения";
 }
 
 export function resetTransactionForm() {
@@ -314,4 +409,12 @@ export function resetCategoryForm() {
 export function resetLimitForm() {
   $("#limitForm").reset();
   $("#limitId").value = "";
+}
+
+export function resetUserForm() {
+  $("#userForm").reset();
+  $("#userId").value = "";
+  $("#userPassword").required = false;
+  $("#userPassword").placeholder = "Минимум 8 символов";
+  $("#saveUserBtn").textContent = "Создать";
 }

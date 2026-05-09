@@ -1064,6 +1064,10 @@ const docTemplate = `{
                     "minLength": 3,
                     "example": "Medicine"
                 },
+                "limit_id": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "user_id": {
                     "type": "integer",
                     "example": 1
@@ -1081,6 +1085,10 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 4
                 },
+                "limit_id": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "user_id": {
                     "type": "integer",
                     "example": 1
@@ -1090,9 +1098,13 @@ const docTemplate = `{
         "internal_features_category_transport_http.CategoryUpdateRequest": {
             "type": "object",
             "required": [
+                "limit_id",
                 "title"
             ],
             "properties": {
+                "limit_id": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 }

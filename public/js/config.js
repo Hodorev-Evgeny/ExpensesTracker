@@ -5,6 +5,8 @@ export const API_BASE = window.APP_CONFIG?.API_BASE
 export const STORAGE_KEYS = {
   activeUserId: "expensesTrackerActiveUserId",
   apiBase: "expensesTrackerApiBase",
+  theme: "expensesTrackerTheme",
+  categoryLimitMap: "expensesTrackerCategoryLimitMap",
 };
 
 export const TRANSACTION_TYPES = {
@@ -13,3 +15,8 @@ export const TRANSACTION_TYPES = {
 };
 
 export const DEFAULT_PAGE_SIZE = 20;
+
+export const THEMES = {
+  light: "light",
+  dark: "dark",
+};

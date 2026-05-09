@@ -102,10 +102,24 @@ export function validateCategoryName(value) {
 }
 
 export function validateUserPayload(payload) {
+  const password = assertRequiredString(payload.password, "Пароль");
+
+  if (password.length < 8 || password.length > 32) {
+    throw new Error("Пароль должен быть от 8 до 32 символов");
+  }
+
   return {
     full_name: assertRequiredString(payload.full_name, "Имя"),
     email: assertRequiredString(payload.email, "Email"),
     phone: assertRequiredString(payload.phone, "Телефон"),
-    password: assertRequiredString(payload.password, "Пароль"),
+    password,
+  };
+}
+
+export function validateUserPatchPayload(payload) {
+  return {
+    full_name: assertRequiredString(payload.full_name, "Имя"),
+    email: assertRequiredString(payload.email, "Email"),
+    phone: assertRequiredString(payload.phone, "Телефон"),
   };
 }

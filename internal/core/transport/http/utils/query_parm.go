@@ -31,7 +31,7 @@ func GetDateQueryParm(r *http.Request, key string) (*time.Time, error) {
 		return nil, nil
 	}
 
-	valueDate, err := time.Parse("2006-01-02 15:04:05", value)
+	valueDate, err := time.Parse(time.RFC3339Nano, value)
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for value %s: %e", key, core_errors.ErrorValidation)
 	}

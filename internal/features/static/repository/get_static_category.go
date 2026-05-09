@@ -27,15 +27,6 @@ func (r *StaticRepository) GetStaticCategories(
 		args = append(args, filters.CategoryID)
 	}
 
-	if filters.From != nil {
-		conditions = append(conditions, fmt.Sprintf("date>=$%d", len(args)+1))
-		args = append(args, *filters.From)
-	}
-	if filters.To != nil {
-		conditions = append(conditions, fmt.Sprintf("date<$%d", len(args)+1))
-		args = append(args, *filters.To)
-	}
-
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
