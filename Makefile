@@ -5,7 +5,7 @@ export PROJECT_ROOT=$(shell pwd)
 
 
 env-up:
-	@docker compose up -d data-base
+	@docker compose up -d data-base redis-db
 
 env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
@@ -64,11 +64,17 @@ database-start:
 database-down:
 	@docker compose down data-base
 
-port-forwarder-start:
+port-forwarder-postgres-start:
 	@docker compose up -d forwarder-port
 
-port-forwarder-stop:
+port-forwarder-postgres-stop:
 	@docker compose down forwarder-port
+
+port-forwarder-redis-start:
+	@docker compose up -d forwarder-port-redis
+
+port-forwarder-redis-stop:
+	@docker compose down forwarder-port-redis
 
 app-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \

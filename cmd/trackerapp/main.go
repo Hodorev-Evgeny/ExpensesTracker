@@ -11,6 +11,7 @@ import (
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_pgx_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
+	core_goredis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool/goredis"
 	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
 	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
@@ -70,6 +71,15 @@ func main() {
 	if err := pool.Ping(ctx); err != nil {
 		logger.Error("error pinging pool", zap.Error(err))
 		os.Exit(1)
+	}
+
+	logger.Debug("starting initialization redis connection")
+	redisConfig := core_goredis_pool.MustGetRedisConfig()
+	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
+
+	status, err := redisClient.Ping(ctx).Result()
+	if err != nil || status != "PONG" {
+		panic("error pinging redis pool")
 	}
 
 	logger.Debug("starting initialization user service")
