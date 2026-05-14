@@ -9,6 +9,7 @@ import (
 
 type WebService interface {
 	GetMainPage() (core_domain.File, error)
+	GetRegister() (core_domain.File, error)
 }
 
 type WebTransport struct {
@@ -29,6 +30,11 @@ func (h *WebTransport) Router() []core_transport_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/{$}",
 			Handler: h.GetMainPage,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/register",
+			Handler: h.GetRegisterPage,
 		},
 	}
 }

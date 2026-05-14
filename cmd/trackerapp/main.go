@@ -126,6 +126,7 @@ func main() {
 		serverConfig,
 		logger,
 		core_middleware.CORS(serverConfig.AllowedOrigins),
+		core_middleware.Authenticator(),
 		core_middleware.RequestId(),
 		core_middleware.Logger(logger),
 		core_middleware.Trace(),

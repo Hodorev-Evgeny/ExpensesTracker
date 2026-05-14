@@ -2,6 +2,7 @@ package core_middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -36,6 +37,37 @@ func CORS(allowedList []string) Middleware {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func Authenticator() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if whitelist(r.URL.Path) {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			if _, err := r.Cookie("sessionId"); err != nil {
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func whitelist(path string) bool {
+	if strings.HasPrefix(path, "/css/") ||
+		strings.HasPrefix(path, "/js/") ||
+		strings.HasPrefix(path, "/swagger/") {
+		return true
+	}
+
+	if path == "/register" {
+		return true
+	}
+	return false
 }
 
 func RequestId() Middleware {
