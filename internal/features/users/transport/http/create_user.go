@@ -48,6 +48,18 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Info("End processing creating new user")
 
+	sessionID, er := h.userService.CreateCache(ctx, userDomain)
+	if er != nil {
+		RsponceHandler.ErrorResponse(er, "error creating string session id")
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  "sessionID",
+		Value: sessionID,
+		Path:  "/",
+	})
+
 	log.Info("Start writing response")
 	respons := DomainFromResponse(userDomain)
 	if err := json.NewEncoder(w).Encode(respons); err != nil {

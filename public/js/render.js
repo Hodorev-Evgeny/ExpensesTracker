@@ -288,6 +288,63 @@ export function renderLimits() {
   });
 }
 
+function getActiveUser() {
+  return state.users.find((user) => Number(getUserId(user)) === Number(state.userId));
+}
+
+function getInitials(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!parts.length) return "?";
+
+  return parts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function renderActiveUserProfile() {
+  const user = getActiveUser();
+  const profileName = $("#profileName");
+  const profileEmail = $("#profileEmail");
+  const profilePhone = $("#profilePhone");
+  const profileId = $("#profileId");
+  const profileCreated = $("#profileCreated");
+  const profileAvatar = $("#profileAvatar");
+  const profileBadge = $("#profileActiveBadge");
+
+  if (!profileName) return;
+
+  if (!user) {
+    profileName.textContent = "Профиль не выбран";
+    profileEmail.textContent = "Выберите пользователя из таблицы ниже или создайте новый аккаунт.";
+    if (profilePhone) profilePhone.textContent = "—";
+    if (profileId) profileId.textContent = state.userId ? `#${state.userId}` : "—";
+    if (profileCreated) profileCreated.textContent = "—";
+    if (profileAvatar) profileAvatar.textContent = "?";
+    if (profileBadge) {
+      profileBadge.textContent = "Не найден";
+      profileBadge.className = "badge badge-warning";
+    }
+    return;
+  }
+
+  const name = getUserFullName(user) ?? `Пользователь #${getUserId(user)}`;
+  profileName.textContent = name;
+  profileEmail.textContent = getUserEmail(user) ?? "Email не указан";
+  if (profilePhone) profilePhone.textContent = getUserPhone(user) ?? "—";
+  if (profileId) profileId.textContent = `#${getUserId(user) ?? "—"}`;
+  if (profileCreated) profileCreated.textContent = formatDate(getUserTimeAdd(user));
+  if (profileAvatar) profileAvatar.textContent = getInitials(name);
+  if (profileBadge) {
+    profileBadge.textContent = "Активный";
+    profileBadge.className = "badge badge-positive";
+  }
+}
+
 export function renderUsers() {
   const tbody = $("#usersTbody");
   const count = $("#usersCount");
@@ -295,13 +352,15 @@ export function renderUsers() {
 
   const users = Array.isArray(state.users) ? state.users : [];
 
+  renderActiveUserProfile();
+
   if (count) count.textContent = `${users.length} записей`;
   if (!tbody || !template) return;
 
   tbody.innerHTML = "";
 
   if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Пользователи не найдены.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Профили не найдены.</td></tr>`;
     return;
   }
 
@@ -309,6 +368,7 @@ export function renderUsers() {
     const userId = getUserId(user);
     const row = template.content.firstElementChild.cloneNode(true);
     row.dataset.id = userId ?? "";
+    row.classList.toggle("is-active-row", Number(userId) === Number(state.userId));
     row.querySelector('[data-cell="id"]').textContent = userId ?? "—";
     row.querySelector('[data-cell="full_name"]').textContent = getUserFullName(user) ?? "—";
     row.querySelector('[data-cell="email"]').textContent = getUserEmail(user) ?? "—";
@@ -391,7 +451,7 @@ export function fillUserForm(user) {
   $("#userPassword").value = "";
   $("#userPassword").required = false;
   $("#userPassword").placeholder = "При изменении не нужен";
-  $("#saveUserBtn").textContent = "Сохранить изменения";
+  $("#saveUserBtn").textContent = "Сохранить профиль";
 }
 
 export function resetTransactionForm() {
@@ -415,6 +475,6 @@ export function resetUserForm() {
   $("#userForm").reset();
   $("#userId").value = "";
   $("#userPassword").required = false;
-  $("#userPassword").placeholder = "Минимум 8 символов";
-  $("#saveUserBtn").textContent = "Создать";
+  $("#userPassword").placeholder = "Для изменения профиля оставьте пустым";
+  $("#saveUserBtn").textContent = "Создать профиль";
 }

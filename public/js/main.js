@@ -321,12 +321,13 @@ function setupUserPanel() {
     runSafely(async () => {
       setActiveUserId(input.value);
       await Promise.allSettled([
+        loadUsers(),
         loadCategories(),
         loadTransactions(),
         loadLimits(),
         loadStats(getFormData($("#statsFilterForm"))),
       ]);
-    }, "Пользователь выбран");
+    }, "Профиль выбран");
   });
 }
 
@@ -336,9 +337,8 @@ function setupStats() {
     runSafely(() => loadStats(getFormData(event.currentTarget)), "Статистика обновлена");
   });
 
-  $("#resetStatsFiltersBtn").addEventListener("click", () => {
+  $("#resetStatsFiltersBtn")?.addEventListener("click", () => {
     const form = $("#statsFilterForm");
-
     form.reset();
 
     $("#statsFrom").value = "";
@@ -624,15 +624,27 @@ function setupUsers() {
 
       resetUserForm();
       await loadUsers();
-    }, isEdit ? "Пользователь изменён" : "Пользователь создан");
+    }, isEdit ? "Профиль изменён" : "Профиль создан");
   });
 
   $("#resetUserFormBtn").addEventListener("click", () => {
     window.setTimeout(resetUserForm);
   });
 
+  $("#editActiveUserBtn")?.addEventListener("click", () => {
+    const user = state.users.find((item) => Number(getUserId(item)) === Number(state.userId));
+
+    if (!user) {
+      showToast("Активный профиль не найден. Сначала выберите пользователя из таблицы.", "warning");
+      return;
+    }
+
+    fillUserForm(user);
+    window.scrollTo({ top: $("#userForm").offsetTop - 40, behavior: "smooth" });
+  });
+
   $("#reloadUsersBtn").addEventListener("click", () => {
-    runSafely(() => loadUsers(), "Пользователи обновлены");
+    runSafely(() => loadUsers(), "Профиль обновлён");
   });
 
   $("#usersTbody").addEventListener("click", async (event) => {
@@ -650,12 +662,13 @@ function setupUsers() {
         setActiveUserId(id);
         $("#activeUserId").value = id;
         await Promise.allSettled([
+          loadUsers(),
           loadCategories(),
           loadTransactions(),
           loadLimits(),
           loadStats(getFormData($("#statsFilterForm"))),
         ]);
-      }, `Выбран пользователь #${id}`);
+      }, `Выбран профиль #${id}`);
       return;
     }
 
@@ -668,8 +681,8 @@ function setupUsers() {
 
     if (action === "delete") {
       const confirmed = await confirmAction({
-        title: "Удалить пользователя?",
-        text: `Пользователь #${id} будет удалён.`,
+        title: "Удалить профиль?",
+        text: `Профиль #${id} будет удалён.`,
       });
 
       if (!confirmed) return;
@@ -677,7 +690,7 @@ function setupUsers() {
       runSafely(async () => {
         await usersApi.delete(id);
         await loadUsers();
-      }, "Пользователь удалён");
+      }, "Профиль удалён");
     }
   });
 }

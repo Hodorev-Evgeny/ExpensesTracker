@@ -1,7 +1,7 @@
 import { API_BASE } from "./config.js";
 
 function buildUrl(path, query = {}) {
-  const url = new URL(`${API_BASE}${path}`);
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
 
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === null || value === "") return;
@@ -55,6 +55,7 @@ async function request(path, options = {}) {
   const { query, body, headers, ...fetchOptions } = options;
 
   const response = await fetch(buildUrl(path, query), {
+    credentials: "include",
     ...fetchOptions,
     headers: {
       ...(body ? { "Content-Type": "application/json" } : {}),

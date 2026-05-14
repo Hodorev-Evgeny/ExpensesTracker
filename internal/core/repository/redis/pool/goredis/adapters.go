@@ -4,18 +4,18 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type StringCmd struct {
+type CustomStringCmd struct {
 	*redis.StringCmd
 }
 
-type StatusCmd struct {
+type CustomStatusCmd struct {
 	*redis.StatusCmd
 }
 
-func (cmd *StringCmd) Result() (string, error) {
+func (cmd *CustomStringCmd) Result() (string, error) {
 	return cmd.StringCmd.Result()
 }
 
-func (status *StatusCmd) Err() error {
+func (status *CustomStatusCmd) Err() error {
 	return status.StatusCmd.Err()
 }

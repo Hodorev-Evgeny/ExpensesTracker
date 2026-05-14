@@ -6,16 +6,16 @@ import (
 )
 
 type RedisPool interface {
-	Ping(ctx context.Context) *StatusCmd
-	Get(ctx context.Context, key string) *StringCmd
-	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *StatusCmd
+	Ping(ctx context.Context) CustomStatusCmd
+	Get(ctx context.Context, key string) CustomStringCmd
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) CustomStatusCmd
 	Close() error
 }
 
-type StatusCmd interface {
+type CustomStatusCmd interface {
 	Err() error
 }
 
-type StringCmd interface {
+type CustomStringCmd interface {
 	Result() (string, error)
 }

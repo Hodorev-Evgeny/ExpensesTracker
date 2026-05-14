@@ -1,4 +1,4 @@
-package core_pgx_pool
+package ExpensesTracker
 
 import (
 	"fmt"

@@ -25,6 +25,7 @@ func CORS(allowedList []string) Middleware {
 
 			if _, ok := allowedOrigins[origin]; ok {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
 				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
 				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			}
@@ -42,12 +43,12 @@ func CORS(allowedList []string) Middleware {
 func Authenticator() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if whitelist(r.URL.Path) {
+			if whitelist(r.URL.Path) || r.Method == http.MethodOptions {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			if _, err := r.Cookie("sessionId"); err != nil {
+			if _, err := r.Cookie("sessionID"); err != nil {
 				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
@@ -64,7 +65,7 @@ func whitelist(path string) bool {
 		return true
 	}
 
-	if path == "/register" {
+	if path == "/register" || path == "/api/v1/users" {
 		return true
 	}
 	return false

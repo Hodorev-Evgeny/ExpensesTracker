@@ -6,10 +6,6 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
-type UserService struct {
-	userRepository UserRepository
-}
-
 type UserRepository interface {
 	AddUser(
 		ctx context.Context,
@@ -39,9 +35,23 @@ type UserRepository interface {
 	) (core_domain.User, error)
 }
 
+type RedisRepository interface {
+	CreateCache(
+		ctx context.Context,
+		user core_domain.User,
+	) (string, error)
+}
+
+type UserService struct {
+	userRepository      UserRepository
+	userRedisRepository RedisRepository
+}
+
 func NewUserService(
-	userRepository UserRepository) *UserService {
+	userRepository UserRepository,
+	repository RedisRepository) *UserService {
 	return &UserService{
-		userRepository: userRepository,
+		userRepository:      userRepository,
+		userRedisRepository: repository,
 	}
 }

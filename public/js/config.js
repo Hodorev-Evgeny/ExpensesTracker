@@ -1,6 +1,4 @@
-export const API_BASE = window.APP_CONFIG?.API_BASE
-  ?? localStorage.getItem("expensesTrackerApiBase")
-  ?? "http://127.0.0.1:8080/api/v1";
+export const API_BASE = window.APP_CONFIG?.API_BASE ?? "/api/v1";
 
 export const STORAGE_KEYS = {
   activeUserId: "expensesTrackerActiveUserId",

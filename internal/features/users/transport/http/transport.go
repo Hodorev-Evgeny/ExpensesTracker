@@ -39,6 +39,11 @@ type userService interface {
 		id int,
 		req core_domain.UserPatch,
 	) (core_domain.User, error)
+
+	CreateCache(
+		ctx context.Context,
+		user core_domain.User,
+	) (string, error)
 }
 
 func NewUserHTTPHandler(

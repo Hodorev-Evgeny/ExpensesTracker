@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Hodorev-Evgeny/ExpensesTracker"
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -14,7 +15,7 @@ type Pool struct {
 	timeout time.Duration
 }
 
-func CreatePool(ctx context.Context, config PostgresConfig) (*Pool, error) {
+func CreatePool(ctx context.Context, config ExpensesTracker.PostgresConfig) (*Pool, error) {
 	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Username,
 		config.Password,
@@ -68,7 +69,7 @@ func (c *Pool) Query(ctx context.Context, sql string, args ...any) (core_reposit
 	return Rows{ans}, nil
 }
 
-func CreatePoolMust(ctx context.Context, config PostgresConfig) *Pool {
+func CreatePoolMust(ctx context.Context, config ExpensesTracker.PostgresConfig) *Pool {
 	poolconnect, err := CreatePool(ctx, config)
 	if err != nil {
 		panic(err)
