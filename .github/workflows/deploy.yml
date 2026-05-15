@@ -19,6 +19,13 @@ jobs:
     needs: [start]
     runs-on: ubuntu-24.04
     steps:
+      - name: Prepare SSH key
+        env:
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
       - name: Checkout
         uses: actions/checkout@v3
       - name: Add server
