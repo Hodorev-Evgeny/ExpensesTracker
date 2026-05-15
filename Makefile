@@ -83,8 +83,7 @@ app-run:
 	go run ${PROJECT_ROOT}/cmd/trackerapp/main.go
 
 tracker-deploy-run:
-	@make env-up && \
-	docker compose up -d --build tracker-app
+	@docker compose up -d --build tracker-app
 
 tracker-deploy-stop:
 	@docker compose down tracker-app
