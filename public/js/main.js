@@ -417,7 +417,7 @@ async function reloadMainData() {
     renderUsers();
     showToast(error.message || "Не удалось загрузить профиль", "error");
     window.setTimeout(() => {
-      window.location.href = "/login.html";
+      window.location.href = "/login";
     }, 900);
   } finally {
     setLoading(app, false);

@@ -52,7 +52,7 @@ form?.addEventListener("submit", async (event) => {
       console.warn("Аккаунт создан, но автоматический вход не выполнен", loginError);
       showAuthMessage(message, "Аккаунт создан. Теперь войдите через страницу входа.");
       window.setTimeout(() => {
-        window.location.href = "/login.html";
+        window.location.href = "/login";
       }, 1000);
     }
   } catch (error) {

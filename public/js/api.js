@@ -83,7 +83,7 @@ async function request(path, options = {}) {
   });
 
   if (response.redirected && !response.url.includes(API_BASE)) {
-    window.location.href = "/login.html";
+    window.location.href = "/login";
     throw new Error("Нужно войти в аккаунт");
   }
 
@@ -94,7 +94,7 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      window.location.href = "/login.html";
+      window.location.href = "/login";
     }
     throw new Error(getErrorMessage(payload, `Ошибка запроса: ${response.status}`));
   }
