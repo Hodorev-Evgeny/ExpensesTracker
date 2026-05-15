@@ -9,7 +9,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - data-base
+      data-base:
+        condition: service_healthy
 
   data-base:
     image: postgres:18.3-bookworm
@@ -21,6 +22,11 @@ services:
     volumes:
       - ${PROJECT_ROOT}/out/pgdata:/var/lib/postgresql
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   migrate:
     image: migrate/migrate:v4.19.1
