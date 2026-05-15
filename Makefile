@@ -7,9 +7,6 @@ export PROJECT_ROOT=$(shell pwd)
 env-up:
 	@docker compose up -d data-base redis-db
 
-env-down:
-	@docker compose stop data-base redis-db
-
 env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
@@ -90,8 +87,7 @@ tracker-deploy-run:
 	docker compose up -d --build tracker-app
 
 tracker-deploy-stop:
-	@make env-down && \
-	docker compose down tracker-app
+	@docker compose down tracker-app
 
 tracker-deploy-check:
 	@docker compose up -d --build tracker-app
