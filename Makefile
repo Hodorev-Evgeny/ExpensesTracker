@@ -82,6 +82,30 @@ tracker-deploy-run:
 tracker-deploy-stop:
 	@docker compose down tracker-app
 
+tracker-deploy-check:
+	@docker compose up -d --build tracker-app
+	@for i in 1 2 3 4 5; do \
+		if curl -fsSL http://localhost:8080/; then \
+			exit 0; \
+		fi; \
+		echo "App is not ready"; \
+		sleep 2; \
+  	done && \
+  	echo "App failed check" && \
+  	exit 1
+
+test-app-server-run:
+	@for i in 1 2 3 4 5; do \
+		if curl -fsSL ${IP_SERVER_TEST}; then \
+			exit 0; \
+		fi; \
+		echo "App is not ready"; \
+
+		sleep 2; \
+  	done && \
+  	echo "App failed check" && \
+  	exit 1
+
 swagger-generate:
 	@docker compose run --rm swagger \
 	init \

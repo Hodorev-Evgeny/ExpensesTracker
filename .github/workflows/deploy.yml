@@ -1,0 +1,31 @@
+name: CheckStart
+on:
+  push:
+    branches:
+      - master
+jobs:
+  start:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run project
+        run: make tracker-deploy-check
+  deploy:
+    needs: [start]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy on server
+        run: |
+          ssh ${{secrets.KEY_SERVER}} "
+          cd ${{secrets.PROJECT_ROOT}} && \
+          git fetch origin master && \
+          git reset --hard origin/master && \
+          make tracker-deploy-stop && \
+          make tracker-deploy-run "
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Test work
+        env:
+          IP_SERVER_TEST: ${{secrets.IP_SERVER_TEST}}
+        run: make test-app-server-run
