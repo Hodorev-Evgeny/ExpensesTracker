@@ -33,6 +33,11 @@ type UserRepository interface {
 		id int,
 		patch core_domain.User,
 	) (core_domain.User, error)
+
+	FindByEmail(
+		ctx context.Context,
+		user core_domain.User,
+	) (int, error)
 }
 
 type RedisRepository interface {

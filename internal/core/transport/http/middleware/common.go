@@ -65,9 +65,21 @@ func whitelist(path string) bool {
 		return true
 	}
 
-	if path == "/register" || path == "/api/v1/users" {
+	allowedPaths := map[string]bool{
+		"/register":           true,
+		"/api/v1/users":       true,
+		"/api/v1/users/login": true,
+		"/users/login":        true,
+	}
+
+	if allowedPaths[path] {
 		return true
 	}
+
+	if strings.HasPrefix(path, "/api/v1/session") {
+		return true
+	}
+
 	return false
 }
 

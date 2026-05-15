@@ -11,15 +11,11 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
-type CookieData struct {
-	UserID int `redis:"user_id"`
-}
-
 func (r *RepositoryRedis) CreateCache(ctx context.Context, user core_domain.User) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	jsonBytes, err := json.Marshal(CookieData{
+	jsonBytes, err := json.Marshal(core_domain.CookieData{
 		UserID: user.ID,
 	})
 	if err != nil {
@@ -30,7 +26,7 @@ func (r *RepositoryRedis) CreateCache(ctx context.Context, user core_domain.User
 	if err != nil {
 		return "", fmt.Errorf("generate session id: %w", err)
 	}
-	key := "sessionID" + sid
+	key := "sessionID:" + sid
 	cmd := r.rbd.Set(ctx, key, string(jsonBytes), time.Hour)
 	if cmd.Err() != nil {
 		return "", fmt.Errorf("set session id: %w", cmd)

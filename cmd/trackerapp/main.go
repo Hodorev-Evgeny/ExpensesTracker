@@ -21,6 +21,9 @@ import (
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
+	feature_repository_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/repository"
+	feature_service_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/service"
+	feature_transport_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/transport"
 	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
 	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
 	feature_transport_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/transport"
@@ -116,12 +119,18 @@ func main() {
 	webTransport := feature_transport_web.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
+	sessionRepository := feature_repository_session.NewSessionRepository(redisClient)
+	sessionService := feature_service_session.NewSessionService(sessionRepository)
+	sessionTransport := feature_transport_session.NewSessionHandler(sessionService)
+	sessionRouters := sessionTransport.Route()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
 	apiVersionRouter.RegisterAPIRoutes(userRouters...)
 	apiVersionRouter.RegisterAPIRoutes(categoryRouters...)
 	apiVersionRouter.RegisterAPIRoutes(transactionRouters...)
 	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
+	apiVersionRouter.RegisterAPIRoutes(sessionRouters...)
 
 	httpServer := core_transport_server.NewServer(
 		serverConfig,

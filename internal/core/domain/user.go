@@ -52,6 +52,29 @@ func CreateUnincelizedUser(
 	)
 }
 
+func CreateLoginUser(
+	full_name string,
+	email string,
+	password string,
+) User {
+	return CreateUser(
+		UnincelizedID,
+		full_name,
+		email,
+		nil,
+		password,
+	)
+}
+
+func (u *User) ChangeID(id int) error {
+	if id == UnincelizedID || id <= 0 {
+		return fmt.Errorf("invalid id")
+	}
+
+	u.ID = id
+	return nil
+}
+
 func (u *User) Validate() error {
 	if u.Full_name == "" {
 		return fmt.Errorf("invalid user full_name")
