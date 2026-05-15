@@ -187,8 +187,8 @@ definitions:
           format: float64
           type: number
         example:
-          Medic: 11.6
-          Medicine: 12.4
+          Medic: 0.58
+          Medicine: 0.42
         type: object
       sum_expenditure:
         example: 1230
@@ -612,7 +612,7 @@ paths:
       summary: Get cookie data
       tags:
       - session
-  /static:
+  /static/{user_id}:
     get:
       consumes:
       - application/json

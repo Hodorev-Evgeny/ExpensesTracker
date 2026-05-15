@@ -1,10 +1,9 @@
 export const API_BASE = window.APP_CONFIG?.API_BASE ?? "/api/v1";
 
 export const STORAGE_KEYS = {
-  activeUserId: "expensesTrackerActiveUserId",
-  apiBase: "expensesTrackerApiBase",
   theme: "expensesTrackerTheme",
   categoryLimitMap: "expensesTrackerCategoryLimitMap",
+  currentUserId: "expensesTrackerCurrentUserId",
 };
 
 export const TRANSACTION_TYPES = {

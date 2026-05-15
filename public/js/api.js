@@ -1,4 +1,4 @@
-import { API_BASE } from "./config.js";
+import { API_BASE } from "./config.js?v=11";
 
 function buildUrl(path, query = {}) {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
@@ -33,7 +33,11 @@ function normalizeArray(payload) {
 
 function getErrorMessage(payload, fallback) {
   if (!payload) return fallback;
-  return payload.message || payload.massage || payload.error || fallback;
+  return payload.message || payload.massage || payload.error || payload.detail || fallback;
+}
+
+function looksLikeHtml(text) {
+  return /^\s*<!doctype html/i.test(text) || /^\s*<html/i.test(text);
 }
 
 function parseResponseBody(text, response) {
@@ -42,6 +46,10 @@ function parseResponseBody(text, response) {
   try {
     return JSON.parse(text);
   } catch (error) {
+    if (response.redirected || looksLikeHtml(text)) {
+      throw new Error("Сессия не найдена или истекла. Войдите в аккаунт заново.");
+    }
+
     console.error("Backend вернул невалидный JSON");
     console.error("URL:", response.url);
     console.error("STATUS:", response.status);
@@ -49,6 +57,16 @@ function parseResponseBody(text, response) {
 
     throw new Error("Backend вернул невалидный JSON. Подробности в Console.");
   }
+}
+
+export function getCookie(name) {
+  const encodedName = `${encodeURIComponent(name)}=`;
+  const item = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(encodedName));
+
+  return item ? decodeURIComponent(item.slice(encodedName.length)) : "";
 }
 
 async function request(path, options = {}) {
@@ -64,12 +82,20 @@ async function request(path, options = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  if (response.redirected && !response.url.includes(API_BASE)) {
+    window.location.href = "/login.html";
+    throw new Error("Нужно войти в аккаунт");
+  }
+
   if (response.status === 204) return null;
 
   const text = await response.text();
   const payload = parseResponseBody(text, response);
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      window.location.href = "/login.html";
+    }
     throw new Error(getErrorMessage(payload, `Ошибка запроса: ${response.status}`));
   }
 
@@ -83,6 +109,13 @@ export const usersApi = {
 
   async create(data) {
     return request("/users", {
+      method: "POST",
+      body: data,
+    });
+  },
+
+  async login(data) {
+    return request("/users/login", {
       method: "POST",
       body: data,
     });
@@ -103,6 +136,22 @@ export const usersApi = {
     return request(`/users/${id}`, {
       method: "DELETE",
     });
+  },
+};
+
+export const sessionApi = {
+  async get(sessionID) {
+    return request(`/session/${encodeURIComponent(sessionID)}`);
+  },
+
+  async current() {
+    const sessionID = getCookie("sessionID");
+
+    if (!sessionID) {
+      throw new Error("Cookie sessionID не найдена. Войдите в аккаунт.");
+    }
+
+    return this.get(sessionID);
   },
 };
 
@@ -197,7 +246,11 @@ export const limitsApi = {
 };
 
 export const statsApi = {
-  async get(query = {}) {
-    return request("/static", { query });
+  async get(userId, query = {}) {
+    if (!userId) {
+      return request("/static", { query });
+    }
+
+    return request(`/static/${encodeURIComponent(userId)}`, { query });
   },
 };

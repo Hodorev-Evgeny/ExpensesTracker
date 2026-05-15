@@ -1,29 +1,29 @@
-import { categoriesApi, limitsApi, statsApi, transactionsApi, usersApi } from "./api.js";
-import { DEFAULT_PAGE_SIZE } from "./config.js";
+import { categoriesApi, getCookie, limitsApi, sessionApi, statsApi, transactionsApi, usersApi } from "./api.js?v=11";
+import { DEFAULT_PAGE_SIZE, STORAGE_KEYS } from "./config.js?v=11";
 import {
   getCategoryByLimitId,
   getCategoryId,
   getCategoryLimitId,
   getCategoryTitle,
+  getCategoryUserId,
   getLimitId,
   getUserId,
-  setActiveUserId,
   setCategoryLimitId,
+  setCurrentUser,
   setTheme,
   state,
   toggleTheme,
-} from "./state.js";
+} from "./state.js?v=11";
 import {
   assertDateTimeLocal,
   assertPositiveInteger,
   assertTransactionType,
-  dateInputToRFC3339,
+  dateInputToUnixSeconds,
   nowToLocalDateTimeInputValue,
   toApiDateTime,
   validateCategoryName,
   validateUserPatchPayload,
-  validateUserPayload,
-} from "./validators.js";
+} from "./validators.js?v=11";
 import {
   $,
   $$,
@@ -44,7 +44,7 @@ import {
   setLoading,
   showToast,
   updateThemeButton,
-} from "./render.js";
+} from "./render.js?v=11";
 
 const CATEGORY_LIMIT_PATCH_FIELD = "limit_id";
 
@@ -84,6 +84,52 @@ function getTransactionUserId(transaction) {
 
 function getTransactionComments(transaction) {
   return transaction?.comments ?? transaction?.Comments ?? "";
+}
+
+function getSessionUserId(cookieData) {
+  return cookieData?.userID
+    ?? cookieData?.userId
+    ?? cookieData?.user_id
+    ?? cookieData?.UserID
+    ?? cookieData?.id
+    ?? cookieData?.ID;
+}
+
+function getStoredCurrentUserId() {
+  const raw = localStorage.getItem(STORAGE_KEYS.currentUserId);
+  const numericId = Number(raw);
+  return Number.isFinite(numericId) && numericId > 0 ? numericId : null;
+}
+
+function setStoredCurrentUserId(userId) {
+  const numericId = Number(userId);
+  if (Number.isFinite(numericId) && numericId > 0) {
+    localStorage.setItem(STORAGE_KEYS.currentUserId, String(numericId));
+  }
+}
+
+async function resolveCurrentUserId() {
+  const sessionID = getCookie("sessionID");
+
+  if (sessionID) {
+    try {
+      const session = await sessionApi.get(sessionID);
+      const userId = getSessionUserId(session);
+      if (userId) {
+        setStoredCurrentUserId(userId);
+        return userId;
+      }
+    } catch (error) {
+      console.warn("Не удалось получить пользователя по sessionID, пробую локальный fallback", error);
+    }
+  }
+
+  const storedUserId = getStoredCurrentUserId();
+  if (storedUserId) {
+    return storedUserId;
+  }
+
+  throw new Error("Не удалось определить пользователя. Войдите в аккаунт заново.");
 }
 
 function findCategoryById(categoryId) {
@@ -135,6 +181,88 @@ function activateTab(tabName) {
   });
 }
 
+function requireSessionUserId() {
+  if (!state.userId) {
+    throw new Error("Пользователь не определён. Войдите в аккаунт заново.");
+  }
+  return state.userId;
+}
+
+async function loadCurrentUser() {
+  const userId = await resolveCurrentUserId();
+  const user = await usersApi.get(userId);
+  setCurrentUser(userId, user);
+  setStoredCurrentUserId(userId);
+  renderUsers();
+  fillUserForm(user);
+}
+
+function filterCurrentUserCategories(categories) {
+  const userId = state.userId;
+  return categories.filter((category) => {
+    const categoryUserId = getCategoryUserId(category);
+    return !categoryUserId || Number(categoryUserId) === Number(userId);
+  });
+}
+
+function getLimitCategoryId(limit) {
+  return limit?.category_id ?? limit?.categoryId ?? limit?.CategoryID ?? limit?.CategoryId;
+}
+
+function getLimitUserId(limit) {
+  return limit?.user_id ?? limit?.userId ?? limit?.UserID ?? limit?.UserId;
+}
+
+function filterCurrentUserLimits(limits) {
+  const currentCategoryIds = new Set(
+    state.categories
+      .map((category) => Number(getCategoryId(category)))
+      .filter((id) => Number.isFinite(id) && id > 0),
+  );
+
+  const currentLimitIds = new Set(
+    state.categories
+      .map((category) => Number(getCategoryLimitId(category)))
+      .filter((id) => Number.isFinite(id) && id > 0),
+  );
+
+  return (Array.isArray(limits) ? limits : []).filter((limit) => {
+    const limitId = Number(getLimitId(limit));
+    const limitUserId = Number(getLimitUserId(limit));
+    const limitCategoryId = Number(getLimitCategoryId(limit));
+
+    if (Number.isFinite(limitUserId) && limitUserId > 0) {
+      return Number(limitUserId) === Number(state.userId);
+    }
+
+    if (Number.isFinite(limitCategoryId) && limitCategoryId > 0) {
+      return currentCategoryIds.has(limitCategoryId);
+    }
+
+    return Number.isFinite(limitId) && currentLimitIds.has(limitId);
+  });
+}
+
+function prepareTransactionQuery(filterData = {}) {
+  return onlyFilled({
+    user_id: requireSessionUserId(),
+    category_id: filterData.category_id,
+    sum: filterData.sum,
+    from: dateInputToUnixSeconds(filterData.from),
+    to: dateInputToUnixSeconds(filterData.to, true),
+    limit: filterData.limit || DEFAULT_PAGE_SIZE,
+    offset: filterData.offset || 0,
+  });
+}
+
+function prepareStatsQuery(filterData = {}) {
+  return onlyFilled({
+    from: dateInputToUnixSeconds(filterData.from),
+    to: dateInputToUnixSeconds(filterData.to, true),
+    category_id: filterData.category_id,
+  });
+}
+
 function applyLocalTransactionFilters(transactions, filterData = {}) {
   let filtered = Array.isArray(transactions) ? [...transactions] : [];
 
@@ -156,8 +284,7 @@ function applyLocalTransactionFilters(transactions, filterData = {}) {
   }
 
   if (filterData.from) {
-    const from = new Date(dateInputToRFC3339(filterData.from)).getTime();
-
+    const from = dateInputToUnixSeconds(filterData.from) * 1000;
     filtered = filtered.filter((item) => {
       const date = new Date(getTransactionDate(item)).getTime();
       return !Number.isNaN(date) && date >= from;
@@ -165,8 +292,7 @@ function applyLocalTransactionFilters(transactions, filterData = {}) {
   }
 
   if (filterData.to) {
-    const to = new Date(dateInputToRFC3339(filterData.to, true)).getTime();
-
+    const to = dateInputToUnixSeconds(filterData.to, true) * 1000;
     filtered = filtered.filter((item) => {
       const date = new Date(getTransactionDate(item)).getTime();
       return !Number.isNaN(date) && date <= to;
@@ -191,7 +317,8 @@ function applyLocalTransactionFilters(transactions, filterData = {}) {
 }
 
 async function loadCategories() {
-  state.categories = await categoriesApi.list();
+  const categories = await categoriesApi.list();
+  state.categories = filterCurrentUserCategories(categories);
   renderCategories();
   renderCategorySelects();
 }
@@ -203,7 +330,8 @@ async function loadTransactions(filterData = state.filters.transactions) {
     ...filterData,
   };
 
-  const transactions = await transactionsApi.list();
+  const query = prepareTransactionQuery(state.filters.transactions);
+  const transactions = await transactionsApi.list(query);
 
   state.transactions = Array.isArray(transactions)
     ? transactions
@@ -218,24 +346,15 @@ async function loadTransactions(filterData = state.filters.transactions) {
 }
 
 async function loadStats(filterData = {}) {
-  const query = onlyFilled({
-    from: dateInputToRFC3339(filterData.from),
-    to: dateInputToRFC3339(filterData.to, true),
-    category_id: filterData.category_id,
-  });
-
-  state.stats = await statsApi.get(query);
+  state.filters.stats = { ...filterData };
+  state.stats = await statsApi.get(requireSessionUserId(), prepareStatsQuery(filterData));
   renderStats();
 }
 
 async function loadLimits() {
-  state.limits = await limitsApi.list({ limit: 100, offset: 0 });
+  const limits = await limitsApi.list({ limit: 100, offset: 0 });
+  state.limits = filterCurrentUserLimits(limits);
   renderLimits();
-}
-
-async function loadUsers() {
-  state.users = await usersApi.list({ limit: 100, offset: 0 });
-  renderUsers();
 }
 
 async function attachLimitToCategory(categoryId, limitId) {
@@ -276,22 +395,30 @@ async function reloadMainData() {
   setLoading(app, true);
 
   try {
+    await loadCurrentUser();
     await loadCategories();
 
     const results = await Promise.allSettled([
       loadTransactions(),
       loadLimits(),
-      loadUsers(),
       loadStats(getFormData($("#statsFilterForm"))),
     ]);
 
     results.forEach((result) => {
       if (result.status === "rejected") {
         console.error(result.reason);
+        showToast(result.reason?.message || "Часть данных не загрузилась", "warning");
       }
     });
 
     renderLimits();
+  } catch (error) {
+    console.error(error);
+    renderUsers();
+    showToast(error.message || "Не удалось загрузить профиль", "error");
+    window.setTimeout(() => {
+      window.location.href = "/login.html";
+    }, 900);
   } finally {
     setLoading(app, false);
   }
@@ -313,24 +440,6 @@ function setupTheme() {
   });
 }
 
-function setupUserPanel() {
-  const input = $("#activeUserId");
-  input.value = state.userId;
-
-  $("#saveUserIdBtn").addEventListener("click", () => {
-    runSafely(async () => {
-      setActiveUserId(input.value);
-      await Promise.allSettled([
-        loadUsers(),
-        loadCategories(),
-        loadTransactions(),
-        loadLimits(),
-        loadStats(getFormData($("#statsFilterForm"))),
-      ]);
-    }, "Профиль выбран");
-  });
-}
-
 function setupStats() {
   $("#statsFilterForm").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -340,11 +449,9 @@ function setupStats() {
   $("#resetStatsFiltersBtn")?.addEventListener("click", () => {
     const form = $("#statsFilterForm");
     form.reset();
-
     $("#statsFrom").value = "";
     $("#statsTo").value = "";
     $("#statsCategoryId").value = "";
-
     runSafely(() => loadStats({}), "Фильтры статистики сброшены");
   });
 }
@@ -376,7 +483,7 @@ function setupTransactions() {
           date: toApiDateTime(data.date),
           sum,
           type,
-          user_id: state.userId,
+          user_id: requireSessionUserId(),
         });
       }
 
@@ -461,7 +568,7 @@ function setupCategories() {
       } else {
         await categoriesApi.create({
           category_name: categoryName,
-          user_id: state.userId,
+          user_id: requireSessionUserId(),
         });
       }
 
@@ -610,21 +717,13 @@ function setupUsers() {
   $("#userForm").addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const data = getFormData(event.currentTarget);
-    const isEdit = Boolean(data.id);
-
     runSafely(async () => {
-      if (isEdit) {
-        const payload = validateUserPatchPayload(data);
-        await usersApi.update(data.id, payload);
-      } else {
-        const payload = validateUserPayload(data);
-        await usersApi.create(payload);
-      }
-
-      resetUserForm();
-      await loadUsers();
-    }, isEdit ? "Профиль изменён" : "Профиль создан");
+      const payload = validateUserPatchPayload(getFormData(event.currentTarget));
+      const updatedUser = await usersApi.update(requireSessionUserId(), payload);
+      state.currentUser = updatedUser;
+      renderUsers();
+      fillUserForm(updatedUser);
+    }, "Профиль изменён");
   });
 
   $("#resetUserFormBtn").addEventListener("click", () => {
@@ -632,66 +731,17 @@ function setupUsers() {
   });
 
   $("#editActiveUserBtn")?.addEventListener("click", () => {
-    const user = state.users.find((item) => Number(getUserId(item)) === Number(state.userId));
-
-    if (!user) {
-      showToast("Активный профиль не найден. Сначала выберите пользователя из таблицы.", "warning");
+    if (!state.currentUser) {
+      showToast("Профиль ещё не загружен", "warning");
       return;
     }
 
-    fillUserForm(user);
+    fillUserForm(state.currentUser);
     window.scrollTo({ top: $("#userForm").offsetTop - 40, behavior: "smooth" });
   });
 
   $("#reloadUsersBtn").addEventListener("click", () => {
-    runSafely(() => loadUsers(), "Профиль обновлён");
-  });
-
-  $("#usersTbody").addEventListener("click", async (event) => {
-    const button = event.target.closest("button[data-action]");
-    if (!button) return;
-
-    const id = button.closest("tr")?.dataset.id;
-    const action = button.dataset.action;
-    const user = state.users.find((item) => Number(getUserId(item)) === Number(id));
-
-    if (!id) return;
-
-    if (action === "select") {
-      runSafely(async () => {
-        setActiveUserId(id);
-        $("#activeUserId").value = id;
-        await Promise.allSettled([
-          loadUsers(),
-          loadCategories(),
-          loadTransactions(),
-          loadLimits(),
-          loadStats(getFormData($("#statsFilterForm"))),
-        ]);
-      }, `Выбран профиль #${id}`);
-      return;
-    }
-
-    if (action === "edit") {
-      if (!user) return;
-      fillUserForm(user);
-      window.scrollTo({ top: $("#userForm").offsetTop - 40, behavior: "smooth" });
-      return;
-    }
-
-    if (action === "delete") {
-      const confirmed = await confirmAction({
-        title: "Удалить профиль?",
-        text: `Профиль #${id} будет удалён.`,
-      });
-
-      if (!confirmed) return;
-
-      runSafely(async () => {
-        await usersApi.delete(id);
-        await loadUsers();
-      }, "Профиль удалён");
-    }
+    runSafely(loadCurrentUser, "Профиль обновлён");
   });
 }
 
@@ -712,7 +762,6 @@ function setDefaultDates() {
 function setupApp() {
   setupTheme();
   setupTabs();
-  setupUserPanel();
   setupStats();
   setupTransactions();
   setupCategories();

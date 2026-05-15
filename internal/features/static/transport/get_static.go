@@ -18,7 +18,7 @@ type StaticResponse struct {
 	AVGIncome      float64            `json:"avg_income" example:"123.53"`
 	AVGExpenditure float64            `json:"avg_expenditure" example:"632.12"`
 	CostCategory   string             `json:"cost_category" example:"Medicine"`
-	ShareCategory  map[string]float64 `json:"share_category" example:"Medicine:12.4,Medic:11.6"`
+	ShareCategory  map[string]float64 `json:"share_category" example:"Medicine:0.42,Medic:0.58"`
 	MaxIncome      int                `json:"max_income" example:"1200"`
 	MaxExpenditure int                `json:"max_expenditure" example:"155"`
 }
@@ -34,8 +34,8 @@ type StaticResponse struct {
 // @Param				category_id 	query int false "Category Id"
 // @Success				200	{object}	StaticResponse "Get static successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
-// @Failure      500 {object} response.ErrorResponse "Internal server error"
-// @Router 				/static			[get]
+// @Failure      		500 {object} response.ErrorResponse "Internal server error"
+// @Router 				/static/{user_id}			[get]
 func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -85,8 +85,12 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 	if err != nil {
 		return core_domain.FiltersStatic{}, fmt.Errorf("error getting query param: %w", err)
 	}
+	userID, err := core_http_utils.GetValuePathInt(r, "user_id")
+	if err != nil {
+		return core_domain.FiltersStatic{}, fmt.Errorf("error getting query param: %w", err)
+	}
 
-	filters := core_domain.NewFiltersStatic(to, from, categoryID)
+	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 
 	return filters, nil
 }

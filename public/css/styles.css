@@ -916,3 +916,51 @@ tr.is-active-row td:first-child::before {
     width: 100%;
   }
 }
+
+/* Account header */
+.account-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.account-mini {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--success));
+  font-weight: 950;
+}
+
+.account-mini strong,
+.account-mini small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-edit-card {
+  max-width: 760px;
+}
+
+@media (max-width: 640px) {
+  .account-actions .btn {
+    width: 100%;
+  }
+}

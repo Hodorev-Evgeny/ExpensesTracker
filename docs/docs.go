@@ -504,7 +504,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/static": {
+        "/static/{user_id}": {
             "get": {
                 "description": "Get all static about category and transaction",
                 "consumes": [
@@ -1376,8 +1376,8 @@ const docTemplate = `{
                         "format": "float64"
                     },
                     "example": {
-                        "Medic": 11.6,
-                        "Medicine": 12.4
+                        "Medic": 0.58,
+                        "Medicine": 0.42
                     }
                 },
                 "sum_expenditure": {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Регистрация — Expenses Tracker</title>
+  <title>Вход — Expenses Tracker</title>
   <link rel="stylesheet" href="/css/styles.css" />
   <style>
     .auth-page { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
@@ -28,28 +28,37 @@
     <section class="auth-card">
       <div class="auth-header">
         <p class="auth-kicker">Expenses Tracker</p>
-        <h1>Регистрация</h1>
-        <p>Создайте аккаунт для учёта доходов и расходов.</p>
+        <h1>Вход</h1>
+        <p>Войдите в аккаунт, чтобы открыть личные расходы.</p>
       </div>
 
-      <form class="auth-form" id="registerForm">
-        <div class="field"><label for="fullName">Имя *</label><input id="fullName" name="full_name" type="text" placeholder="Например: Иван Иванов" autocomplete="name" minlength="3" maxlength="32" required /></div>
-        <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" placeholder="example@mail.ru" autocomplete="email" required /></div>
-        <div class="field"><label for="phone">Телефон *</label><input id="phone" name="phone" type="tel" placeholder="+79990000000" autocomplete="tel" minlength="11" maxlength="12" required /></div>
-        <div class="field"><label for="password">Пароль *</label><input id="password" name="password" type="password" placeholder="От 8 до 32 символов" autocomplete="new-password" minlength="8" maxlength="32" required /></div>
-        <div class="field"><label for="passwordRepeat">Повторите пароль *</label><input id="passwordRepeat" name="password_repeat" type="password" placeholder="Повторите пароль" autocomplete="new-password" minlength="8" maxlength="32" required /></div>
+      <form class="auth-form" id="loginForm">
+        <div class="field">
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" placeholder="example@mail.ru" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="fullName">Имя, если требуется backend</label>
+          <input id="fullName" name="full_name" type="text" placeholder="Можно оставить пустым" autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="password">Пароль *</label>
+          <input id="password" name="password" type="password" placeholder="Введите пароль" autocomplete="current-password" required />
+        </div>
 
         <div class="auth-actions">
-          <button class="btn btn-primary" type="submit" id="registerBtn">Зарегистрироваться</button>
-          <a class="btn btn-secondary" href="/login.html">Уже есть аккаунт</a>
+          <button class="btn btn-primary" type="submit" id="loginBtn">Войти</button>
+          <a class="btn btn-secondary" href="/register.html">Регистрация</a>
           <a class="btn btn-ghost" href="/">На главную</a>
         </div>
       </form>
 
-      <div class="auth-message" id="registerMessage"></div>
+      <div class="auth-message" id="loginMessage"></div>
     </section>
   </main>
 
-  <script type="module" src="/js/register.js?v=11"></script>
+  <script type="module" src="/js/login.js?v=11"></script>
 </body>
 </html>
