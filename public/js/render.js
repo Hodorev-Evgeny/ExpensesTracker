@@ -1,11 +1,10 @@
-import { TRANSACTION_TYPES } from "./config.js";
+import { TRANSACTION_TYPES } from "./config.js?v=11";
 import {
   getCategoryByLimitId,
   getCategoryId,
   getCategoryLimitId,
   getCategoryName,
   getCategoryTitle,
-  getCategoryUserId,
   getLimitAmount,
   getLimitDuration,
   getLimitId,
@@ -15,8 +14,8 @@ import {
   getUserPhone,
   getUserTimeAdd,
   state,
-} from "./state.js";
-import { nowToLocalDateTimeInputValue, toLocalDateTimeInputValue } from "./validators.js";
+} from "./state.js?v=11";
+import { nowToLocalDateTimeInputValue, toLocalDateTimeInputValue } from "./validators.js?v=11";
 
 const formatter = new Intl.NumberFormat("ru-RU", {
   style: "currency",
@@ -164,8 +163,9 @@ export function renderCategories() {
     row.dataset.id = categoryId ?? "";
     row.querySelector('[data-cell="id"]').textContent = categoryId ?? "—";
     row.querySelector('[data-cell="category_name"]').textContent = getCategoryTitle(category) ?? "—";
-    row.querySelector('[data-cell="user_id"]').textContent = getCategoryUserId(category) ?? "—";
-    row.title = limitId ? `Лимит: #${limitId}` : "";
+    row.querySelector('[data-cell="limit_id"]').innerHTML = limitId
+      ? `<span class="badge badge-positive">Лимит #${escapeHtml(limitId)}</span>`
+      : `<span class="badge badge-neutral">Без лимита</span>`;
     tbody.append(row);
   });
 }
@@ -251,7 +251,28 @@ export function renderLimits() {
   const count = $("#limitsCount");
   const template = $("#limitRowTemplate");
 
-  const limits = Array.isArray(state.limits) ? state.limits : [];
+  const rawLimits = Array.isArray(state.limits) ? state.limits : [];
+  const currentLimitIds = new Set(
+    state.categories
+      .map((category) => Number(getCategoryLimitId(category)))
+      .filter((id) => Number.isFinite(id) && id > 0),
+  );
+  const currentCategoryIds = new Set(
+    state.categories
+      .map((category) => Number(getCategoryId(category)))
+      .filter((id) => Number.isFinite(id) && id > 0),
+  );
+  const limits = rawLimits.filter((limit) => {
+    const limitId = Number(getLimitId(limit));
+    const linkedCategory = getCategoryByLimitId(limitId);
+    const categoryId = Number(limit.category_id ?? limit.categoryId ?? limit.CategoryID ?? limit.CategoryId);
+    const userId = Number(limit.user_id ?? limit.userId ?? limit.UserID ?? limit.UserId);
+
+    if (Number.isFinite(userId) && userId > 0) return Number(userId) === Number(state.userId);
+    if (linkedCategory) return true;
+    if (Number.isFinite(categoryId) && categoryId > 0) return currentCategoryIds.has(categoryId);
+    return Number.isFinite(limitId) && currentLimitIds.has(limitId);
+  });
 
   if (count) count.textContent = `${limits.length} записей`;
   if (!tbody || !template) return;
@@ -259,7 +280,7 @@ export function renderLimits() {
   tbody.innerHTML = "";
 
   if (!limits.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Лимиты пока не созданы.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">Лимиты пока не созданы.</td></tr>`;
     return;
   }
 
@@ -288,34 +309,75 @@ export function renderLimits() {
   });
 }
 
-export function renderUsers() {
-  const tbody = $("#usersTbody");
-  const count = $("#usersCount");
-  const template = $("#userRowTemplate");
+function getActiveUser() {
+  return state.currentUser;
+}
 
-  const users = Array.isArray(state.users) ? state.users : [];
+function getInitials(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
-  if (count) count.textContent = `${users.length} записей`;
-  if (!tbody || !template) return;
+  if (!parts.length) return "?";
 
-  tbody.innerHTML = "";
+  return parts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
-  if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Пользователи не найдены.</td></tr>`;
+export function renderProfile() {
+  const user = getActiveUser();
+  const profileName = $("#profileName");
+  const profileEmail = $("#profileEmail");
+  const profileEmailMeta = $("#profileEmailMeta");
+  const profilePhone = $("#profilePhone");
+  const profileCreated = $("#profileCreated");
+  const profileAvatar = $("#profileAvatar");
+  const profileBadge = $("#profileActiveBadge");
+  const headerName = $("#headerProfileName");
+  const headerEmail = $("#headerProfileEmail");
+  const headerAvatar = $("#headerAvatar");
+
+  if (!user) {
+    if (profileName) profileName.textContent = "Профиль не загружен";
+    if (profileEmail) profileEmail.textContent = "Войдите в аккаунт, чтобы увидеть личную информацию.";
+    if (profileEmailMeta) profileEmailMeta.textContent = "—";
+    if (profilePhone) profilePhone.textContent = "—";
+    if (profileCreated) profileCreated.textContent = "—";
+    if (profileAvatar) profileAvatar.textContent = "?";
+    if (headerName) headerName.textContent = "Профиль не загружен";
+    if (headerEmail) headerEmail.textContent = "Нужен вход";
+    if (headerAvatar) headerAvatar.textContent = "?";
+    if (profileBadge) {
+      profileBadge.textContent = "Нет сессии";
+      profileBadge.className = "badge badge-warning";
+    }
     return;
   }
 
-  users.forEach((user) => {
-    const userId = getUserId(user);
-    const row = template.content.firstElementChild.cloneNode(true);
-    row.dataset.id = userId ?? "";
-    row.querySelector('[data-cell="id"]').textContent = userId ?? "—";
-    row.querySelector('[data-cell="full_name"]').textContent = getUserFullName(user) ?? "—";
-    row.querySelector('[data-cell="email"]').textContent = getUserEmail(user) ?? "—";
-    row.querySelector('[data-cell="phone"]').textContent = getUserPhone(user) ?? "—";
-    row.querySelector('[data-cell="time_add"]').textContent = formatDate(getUserTimeAdd(user));
-    tbody.append(row);
-  });
+  const name = getUserFullName(user) ?? "Пользователь";
+  const email = getUserEmail(user) ?? "Email не указан";
+  const initials = getInitials(name);
+
+  if (profileName) profileName.textContent = name;
+  if (profileEmail) profileEmail.textContent = email;
+  if (profileEmailMeta) profileEmailMeta.textContent = email;
+  if (profilePhone) profilePhone.textContent = getUserPhone(user) ?? "—";
+  if (profileCreated) profileCreated.textContent = formatDate(getUserTimeAdd(user));
+  if (profileAvatar) profileAvatar.textContent = initials;
+  if (headerName) headerName.textContent = name;
+  if (headerEmail) headerEmail.textContent = email;
+  if (headerAvatar) headerAvatar.textContent = initials;
+  if (profileBadge) {
+    profileBadge.textContent = "Активный";
+    profileBadge.className = "badge badge-positive";
+  }
+}
+
+export function renderUsers() {
+  renderProfile();
 }
 
 export function renderStats() {
@@ -388,10 +450,7 @@ export function fillUserForm(user) {
   $("#userFullName").value = getUserFullName(user) ?? "";
   $("#userEmail").value = getUserEmail(user) ?? "";
   $("#userPhone").value = getUserPhone(user) ?? "";
-  $("#userPassword").value = "";
-  $("#userPassword").required = false;
-  $("#userPassword").placeholder = "При изменении не нужен";
-  $("#saveUserBtn").textContent = "Сохранить изменения";
+  $("#saveUserBtn").textContent = "Сохранить профиль";
 }
 
 export function resetTransactionForm() {
@@ -412,9 +471,6 @@ export function resetLimitForm() {
 }
 
 export function resetUserForm() {
-  $("#userForm").reset();
-  $("#userId").value = "";
-  $("#userPassword").required = false;
-  $("#userPassword").placeholder = "Минимум 8 символов";
-  $("#saveUserBtn").textContent = "Создать";
+  fillUserForm(state.currentUser || {});
+  $("#saveUserBtn").textContent = "Сохранить профиль";
 }

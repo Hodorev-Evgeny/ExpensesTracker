@@ -1,9 +1,4 @@
-import { STORAGE_KEYS, THEMES } from "./config.js";
-
-function readNumberFromStorage(key, fallback) {
-  const value = Number(localStorage.getItem(key));
-  return Number.isFinite(value) && value > 0 ? value : fallback;
-}
+import { STORAGE_KEYS, THEMES } from "./config.js?v=11";
 
 function readThemeFromStorage() {
   const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
@@ -24,12 +19,12 @@ function writeCategoryLimitMap(map) {
 }
 
 export const state = {
-  userId: readNumberFromStorage(STORAGE_KEYS.activeUserId, 1),
+  userId: null,
+  currentUser: null,
   theme: readThemeFromStorage(),
   categories: [],
   transactions: [],
   limits: [],
-  users: [],
   stats: null,
   categoryLimitMap: readCategoryLimitMap(),
   filters: {
@@ -38,14 +33,14 @@ export const state = {
   },
 };
 
-export function setActiveUserId(value) {
-  const nextId = Number(value);
+export function setCurrentUser(userId, user = null) {
+  const nextId = Number(userId);
   if (!Number.isFinite(nextId) || nextId <= 0) {
-    throw new Error("ID пользователя должен быть положительным числом");
+    throw new Error("Не удалось определить пользователя из сессии");
   }
 
   state.userId = nextId;
-  localStorage.setItem(STORAGE_KEYS.activeUserId, String(nextId));
+  state.currentUser = user;
 }
 
 export function setTheme(theme) {

@@ -1,0 +1,1 @@
+package core_repository_redis_pool

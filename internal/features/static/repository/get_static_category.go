@@ -22,6 +22,9 @@ func (r *StaticRepository) GetStaticCategories(
 	args := []any{}
 	conditions := []string{}
 
+	conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
+	args = append(args, filters.UserID)
+
 	if filters.CategoryID != nil {
 		conditions = append(conditions, fmt.Sprintf(`id=$%d`, len(args)+1))
 		args = append(args, filters.CategoryID)
@@ -30,6 +33,7 @@ func (r *StaticRepository) GetStaticCategories(
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
+
 	query += " ORDER BY id ASC"
 
 	rows, err := r.pool.Query(ctx, query, args...)

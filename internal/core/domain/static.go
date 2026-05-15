@@ -20,17 +20,20 @@ type Static struct {
 type FiltersStatic struct {
 	To         *time.Time
 	From       *time.Time
+	UserID     int
 	CategoryID *int
 }
 
 func NewFiltersStatic(
 	to, from *time.Time,
 	categoryID *int,
+	userID int,
 ) FiltersStatic {
 	return FiltersStatic{
 		To:         to,
 		From:       from,
 		CategoryID: categoryID,
+		UserID:     userID,
 	}
 }
 
@@ -45,7 +48,6 @@ func NewStatic(
 	countOperation = len(transaction)
 	tmpShare := make(map[int][]int)
 	for _, t := range transaction {
-
 		if t.Type == "Income" {
 			if t.Sum > maxIcome {
 				maxIcome = t.Sum
@@ -60,12 +62,12 @@ func NewStatic(
 
 			sumExpenditure += t.Sum
 			countExpenditure++
-		}
 
-		if val, ok := tmpShare[t.CategoryID]; ok {
-			val = append(val, t.Sum)
-		} else {
-			tmpShare[t.CategoryID] = []int{t.Sum}
+			if val, ok := tmpShare[t.CategoryID]; ok {
+				tmpShare[t.CategoryID] = append(val, t.Sum)
+			} else {
+				tmpShare[t.CategoryID] = []int{t.Sum}
+			}
 		}
 	}
 
@@ -78,7 +80,7 @@ func NewStatic(
 				tmpCostCategory = s
 				costCategory = c.Name
 			}
-			shareCategory[c.Name] = float64(sum(val) / len(val))
+			shareCategory[c.Name] = float64(s) / float64(sumExpenditure) * 100
 		}
 	}
 
@@ -86,12 +88,12 @@ func NewStatic(
 	if countIcome == 0 {
 		avgIncome = 0
 	} else {
-		avgIncome = float64(sumIncome / countIcome)
+		avgIncome = float64(sumIncome) / float64(countIcome)
 	}
 	if countExpenditure == 0 {
 		avgExpenditure = 0
 	} else {
-		avgExpenditure = float64(sumExpenditure / countExpenditure)
+		avgExpenditure = float64(sumExpenditure) / float64(countExpenditure)
 	}
 
 	return &Static{

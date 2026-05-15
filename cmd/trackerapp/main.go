@@ -8,9 +8,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Hodorev-Evgeny/ExpensesTracker"
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_pgx_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
+	core_goredis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool/goredis"
 	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
 	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
@@ -19,6 +21,9 @@ import (
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
+	feature_repository_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/repository"
+	feature_service_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/service"
+	feature_transport_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/transport"
 	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
 	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
 	feature_transport_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/transport"
@@ -26,6 +31,7 @@ import (
 	feature_transaction_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service"
 	feature_transactio_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/transport"
 	features_users_repository "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/postgres"
+	feature_user_redis "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/redis"
 	feature_user_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
 	features_users_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
 	feature_repository_file_system "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/repository/file_system"
@@ -63,7 +69,7 @@ func main() {
 	logger.Debug("starting expenses app")
 
 	logger.Debug("starting initialization pool connection")
-	pgconfig := core_pgx_pool.MustPostgresConfig()
+	pgconfig := ExpensesTracker.MustPostgresConfig()
 	pool := core_pgx_pool.CreatePoolMust(ctx, pgconfig)
 	defer pool.Close()
 
@@ -72,9 +78,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	logger.Debug("starting initialization redis connection")
+	redisConfig := core_goredis_pool.MustGetRedisConfig()
+	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
+	defer redisClient.Close()
+
+	userRedis := feature_user_redis.NewRepositoryRedis(redisClient)
+
 	logger.Debug("starting initialization user service")
+
 	userRepo := features_users_repository.NewUserRepository(pool)
-	userServ := feature_user_service.NewUserService(userRepo)
+	userServ := feature_user_service.NewUserService(userRepo, userRedis)
 
 	logger.Debug("starting initialization user transport")
 	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ)
@@ -105,12 +119,18 @@ func main() {
 	webTransport := feature_transport_web.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
+	sessionRepository := feature_repository_session.NewSessionRepository(redisClient)
+	sessionService := feature_service_session.NewSessionService(sessionRepository)
+	sessionTransport := feature_transport_session.NewSessionHandler(sessionService)
+	sessionRouters := sessionTransport.Route()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
 	apiVersionRouter.RegisterAPIRoutes(userRouters...)
 	apiVersionRouter.RegisterAPIRoutes(categoryRouters...)
 	apiVersionRouter.RegisterAPIRoutes(transactionRouters...)
 	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
+	apiVersionRouter.RegisterAPIRoutes(sessionRouters...)
 
 	httpServer := core_transport_server.NewServer(
 		serverConfig,

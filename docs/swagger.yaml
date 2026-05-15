@@ -1,13 +1,11 @@
 basePath: /api/v1
 definitions:
-  github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse:
+  core_domain.CookieData:
     properties:
-      error:
-        type: string
-      massage:
-        type: string
+      userID:
+        type: integer
     type: object
-  internal_features_category_transport_http.CategoryRequest:
+  feature_category_transport.CategoryRequest:
     properties:
       category_name:
         example: Medicine
@@ -24,7 +22,7 @@ definitions:
     - category_name
     - user_id
     type: object
-  internal_features_category_transport_http.CategoryResponse:
+  feature_category_transport.CategoryResponse:
     properties:
       category_name:
         example: Medicine
@@ -39,7 +37,7 @@ definitions:
         example: 1
         type: integer
     type: object
-  internal_features_category_transport_http.CategoryUpdateRequest:
+  feature_category_transport.CategoryUpdateRequest:
     properties:
       limit_id:
         type: integer
@@ -49,80 +47,7 @@ definitions:
     - limit_id
     - title
     type: object
-  internal_features_limit_transport.LimitDTO:
-    properties:
-      amount_limit:
-        example: 1000
-        type: integer
-      duration:
-        example: "2006-01-02T15:04:05-07:00"
-        type: string
-    required:
-    - amount_limit
-    - duration
-    type: object
-  internal_features_limit_transport.LimitResponse:
-    properties:
-      amount_limit:
-        example: 1000
-        type: integer
-      duration:
-        example: "2006-01-02T15:04:05-07:00"
-        type: string
-      id:
-        type: integer
-    required:
-    - amount_limit
-    - duration
-    type: object
-  internal_features_limit_transport.PatchLimit:
-    properties:
-      amount_limit:
-        example: 1
-        type: integer
-      duration:
-        example: "2006-01-02T15:04:05-07:00"
-        type: string
-    type: object
-  internal_features_static_transport.StaticResponse:
-    properties:
-      avg_expenditure:
-        example: 632.12
-        type: number
-      avg_income:
-        example: 123.53
-        type: number
-      cost_category:
-        example: Medicine
-        type: string
-      count_operation:
-        example: 6
-        type: integer
-      difference:
-        example: 25
-        type: number
-      max_expenditure:
-        example: 155
-        type: integer
-      max_income:
-        example: 1200
-        type: integer
-      share_category:
-        additionalProperties:
-          format: float64
-          type: number
-        example:
-          Medic: 11.6
-          Medicine: 12.4
-        type: object
-      sum_expenditure:
-        example: 1230
-        type: integer
-      sum_income:
-        example: 1255
-        type: integer
-    type: object
-  internal_features_transaction_transport.TransactionPatchRequest:
+  feature_transactio_transport.TransactionPatchRequest:
     properties:
       categoryId:
         example: 1
@@ -137,7 +62,7 @@ definitions:
         example: Expenditure/Income
         type: string
     type: object
-  internal_features_transaction_transport.TransactionRequest:
+  feature_transactio_transport.TransactionRequest:
     properties:
       category_id:
         example: 1
@@ -165,7 +90,7 @@ definitions:
     - type
     - user_id
     type: object
-  internal_features_transaction_transport.TransactionResponse:
+  feature_transactio_transport.TransactionResponse:
     properties:
       category_id:
         example: 1
@@ -199,7 +124,80 @@ definitions:
     - type
     - user_id
     type: object
-  internal_features_users_transport_http.CreateUserRequest:
+  feature_transport_limit.LimitDTO:
+    properties:
+      amount_limit:
+        example: 1000
+        type: integer
+      duration:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+    required:
+    - amount_limit
+    - duration
+    type: object
+  feature_transport_limit.LimitResponse:
+    properties:
+      amount_limit:
+        example: 1000
+        type: integer
+      duration:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+      id:
+        type: integer
+    required:
+    - amount_limit
+    - duration
+    type: object
+  feature_transport_limit.PatchLimit:
+    properties:
+      amount_limit:
+        example: 1
+        type: integer
+      duration:
+        example: "2006-01-02T15:04:05-07:00"
+        type: string
+    type: object
+  feature_transport_static.StaticResponse:
+    properties:
+      avg_expenditure:
+        example: 632.12
+        type: number
+      avg_income:
+        example: 123.53
+        type: number
+      cost_category:
+        example: Medicine
+        type: string
+      count_operation:
+        example: 6
+        type: integer
+      difference:
+        example: 25
+        type: number
+      max_expenditure:
+        example: 155
+        type: integer
+      max_income:
+        example: 1200
+        type: integer
+      share_category:
+        additionalProperties:
+          format: float64
+          type: number
+        example:
+          Medic: 0.58
+          Medicine: 0.42
+        type: object
+      sum_expenditure:
+        example: 1230
+        type: integer
+      sum_income:
+        example: 1255
+        type: integer
+    type: object
+  features_users_transport.CreateUserRequest:
     properties:
       email:
         example: example@gmail.com
@@ -225,7 +223,7 @@ definitions:
     - password
     - phone
     type: object
-  internal_features_users_transport_http.CreateUserResponse:
+  features_users_transport.CreateUserResponse:
     properties:
       email:
         type: string
@@ -238,7 +236,16 @@ definitions:
       time_add:
         type: string
     type: object
-  internal_features_users_transport_http.RequestPatchUser:
+  features_users_transport.LoginHandler:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+    type: object
+  features_users_transport.RequestPatchUser:
     properties:
       email:
         example: example@gmai;.com
@@ -250,7 +257,12 @@ definitions:
         example: 555-555-5555
         type: string
     type: object
-  internal_features_users_transport_http.UserDTOResponse:
+  features_users_transport.StatusRequest:
+    properties:
+      status:
+        type: string
+    type: object
+  features_users_transport.UserDTOResponse:
     properties:
       email:
         type: string
@@ -261,6 +273,13 @@ definitions:
       phone:
         type: string
       time_add:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+      massage:
         type: string
     type: object
 host: 127.0.0.1:8080
@@ -282,16 +301,16 @@ paths:
           description: Get all category successfully
           schema:
             items:
-              $ref: '#/definitions/internal_features_category_transport_http.CategoryResponse'
+              $ref: '#/definitions/feature_category_transport.CategoryResponse'
             type: array
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get all category
       tags:
       - category
@@ -305,22 +324,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_category_transport_http.CategoryRequest'
+          $ref: '#/definitions/feature_category_transport.CategoryRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Create new category successfully
           schema:
-            $ref: '#/definitions/internal_features_category_transport_http.CategoryResponse'
+            $ref: '#/definitions/feature_category_transport.CategoryResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Create category
       tags:
       - category
@@ -339,11 +358,11 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Delete category
       tags:
       - category
@@ -363,19 +382,19 @@ paths:
         "200":
           description: Get category successfully
           schema:
-            $ref: '#/definitions/internal_features_category_transport_http.CategoryResponse'
+            $ref: '#/definitions/feature_category_transport.CategoryResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get category
       tags:
       - category
@@ -394,26 +413,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_category_transport_http.CategoryUpdateRequest'
+          $ref: '#/definitions/feature_category_transport.CategoryUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Patch category successfully
           schema:
-            $ref: '#/definitions/internal_features_category_transport_http.CategoryResponse'
+            $ref: '#/definitions/feature_category_transport.CategoryResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Patch category
       tags:
       - category
@@ -438,16 +457,16 @@ paths:
           description: Get limit successfully
           schema:
             items:
-              $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+              $ref: '#/definitions/feature_transport_limit.LimitResponse'
             type: array
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get Limit all
       tags:
       - limit
@@ -461,22 +480,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_limit_transport.LimitDTO'
+          $ref: '#/definitions/feature_transport_limit.LimitDTO'
       produces:
       - application/json
       responses:
         "201":
           description: Create new limit successfully
           schema:
-            $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+            $ref: '#/definitions/feature_transport_limit.LimitResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Create new Limit
       tags:
       - limit
@@ -495,15 +514,15 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Delete Limit
       tags:
       - limit
@@ -521,15 +540,15 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get Limit by id
       tags:
       - limit
@@ -547,30 +566,53 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/internal_features_limit_transport.PatchLimit'
+          $ref: '#/definitions/feature_transport_limit.PatchLimit'
       produces:
       - application/json
       responses:
         "200":
           description: Patch limit successfully
           schema:
-            $ref: '#/definitions/internal_features_limit_transport.LimitResponse'
+            $ref: '#/definitions/feature_transport_limit.LimitResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Patch Limit
       tags:
       - limit
-  /static:
+  /session/{sessionID}:
+    get:
+      description: Get cookie by sessionID
+      parameters:
+      - description: ID for get something info
+        in: path
+        name: sessionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: session cookieData return
+          schema:
+            $ref: '#/definitions/core_domain.CookieData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get cookie data
+      tags:
+      - session
+  /static/{user_id}:
     get:
       consumes:
       - application/json
@@ -594,15 +636,15 @@ paths:
         "200":
           description: Get static successfully
           schema:
-            $ref: '#/definitions/internal_features_static_transport.StaticResponse'
+            $ref: '#/definitions/feature_transport_static.StaticResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get static
       tags:
       - static
@@ -647,16 +689,16 @@ paths:
           description: Get transaction successfully
           schema:
             items:
-              $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+              $ref: '#/definitions/feature_transactio_transport.TransactionResponse'
             type: array
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get all transaction
       tags:
       - transactions
@@ -670,22 +712,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_transaction_transport.TransactionRequest'
+          $ref: '#/definitions/feature_transactio_transport.TransactionRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Create transaction successfully
           schema:
-            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+            $ref: '#/definitions/feature_transactio_transport.TransactionResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Create transaction
       tags:
       - transactions
@@ -704,15 +746,15 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Delete transaction
       tags:
       - transactions
@@ -732,19 +774,19 @@ paths:
         "200":
           description: Get transaction successfully
           schema:
-            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+            $ref: '#/definitions/feature_transactio_transport.TransactionResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Get transaction
       tags:
       - transactions
@@ -763,26 +805,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_transaction_transport.TransactionPatchRequest'
+          $ref: '#/definitions/feature_transactio_transport.TransactionPatchRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Patch transaction successfully
           schema:
-            $ref: '#/definitions/internal_features_transaction_transport.TransactionResponse'
+            $ref: '#/definitions/feature_transactio_transport.TransactionResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Patch transaction
       tags:
       - transactions
@@ -805,16 +847,16 @@ paths:
           description: Успешное получение списка пользователей
           schema:
             items:
-              $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+              $ref: '#/definitions/features_users_transport.UserDTOResponse'
             type: array
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Список пользователей
       tags:
       - users
@@ -828,22 +870,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+          $ref: '#/definitions/features_users_transport.CreateUserRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Успешно созданный пользователь
           schema:
-            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+            $ref: '#/definitions/features_users_transport.CreateUserResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Создать пользователя
       tags:
       - users
@@ -862,15 +904,15 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Удаление пользователя
       tags:
       - users
@@ -888,19 +930,19 @@ paths:
         "200":
           description: Пользователь успешно найден
           schema:
-            $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+            $ref: '#/definitions/features_users_transport.UserDTOResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Получение пользователя
       tags:
       - users
@@ -925,31 +967,59 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_users_transport_http.RequestPatchUser'
+          $ref: '#/definitions/features_users_transport.RequestPatchUser'
       produces:
       - application/json
       responses:
         "200":
           description: Successfully changed user
           schema:
-            $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+            $ref: '#/definitions/features_users_transport.UserDTOResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/github_com_Hodorev-Evgeny_ExpensesTracker_internal_core_transport_http_response.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Изменение пользователя
+      tags:
+      - users
+  /users/login:
+    post:
+      description: Create session when user register
+      parameters:
+      - description: This Body need to login user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/features_users_transport.LoginHandler'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: session created
+          schema:
+            $ref: '#/definitions/features_users_transport.StatusRequest'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create session
       tags:
       - users
 swagger: "2.0"

@@ -39,6 +39,16 @@ type userService interface {
 		id int,
 		req core_domain.UserPatch,
 	) (core_domain.User, error)
+
+	CreateCache(
+		ctx context.Context,
+		user core_domain.User,
+	) (string, error)
+
+	LoginUser(
+		ctx context.Context,
+		user core_domain.User,
+	) (string, error)
 }
 
 func NewUserHTTPHandler(
@@ -75,6 +85,11 @@ func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
 			Method:  http.MethodPatch,
 			Path:    "/users/{id}",
 			Handler: h.PatchUser,
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/users/login",
+			Handler: h.LoginUser,
 		},
 	}
 }

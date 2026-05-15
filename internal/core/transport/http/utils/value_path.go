@@ -21,3 +21,12 @@ func GetValuePathInt(r *http.Request, key string) (int, error) {
 
 	return valueInt, nil
 }
+
+func GetValuePathString(r *http.Request, key string) (string, error) {
+	value := r.PathValue(key)
+	if value == "" {
+		return "", fmt.Errorf(`path "%s" is required`, key)
+	}
+
+	return value, nil
+}

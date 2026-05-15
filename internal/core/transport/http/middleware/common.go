@@ -2,6 +2,7 @@ package core_middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -24,6 +25,7 @@ func CORS(allowedList []string) Middleware {
 
 			if _, ok := allowedOrigins[origin]; ok {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
 				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
 				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			}
@@ -36,6 +38,49 @@ func CORS(allowedList []string) Middleware {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func Authenticator() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if whitelist(r.URL.Path) || r.Method == http.MethodOptions {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			if _, err := r.Cookie("sessionID"); err != nil {
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func whitelist(path string) bool {
+	if strings.HasPrefix(path, "/css/") ||
+		strings.HasPrefix(path, "/js/") ||
+		strings.HasPrefix(path, "/swagger/") {
+		return true
+	}
+
+	allowedPaths := map[string]bool{
+		"/register":           true,
+		"/api/v1/users":       true,
+		"/api/v1/users/login": true,
+		"/users/login":        true,
+	}
+
+	if allowedPaths[path] {
+		return true
+	}
+
+	if strings.HasPrefix(path, "/api/v1/session") {
+		return true
+	}
+
+	return false
 }
 
 func RequestId() Middleware {

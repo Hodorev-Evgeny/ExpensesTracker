@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,14 +16,20 @@
         <p class="header-text">Учитывайте доходы и расходы, анализируйте траты и контролируйте бюджет.</p>
       </div>
 
-      <div class="user-panel" aria-label="Текущий пользователь">
-        <label for="activeUserId">ID пользователя</label>
-        <div class="inline-control">
-          <input id="activeUserId" name="activeUserId" type="number" min="1" value="1" placeholder="Например: 1" />
-          <button id="saveUserIdBtn" class="btn btn-secondary" type="button">Выбрать</button>
+      <div class="user-panel account-panel" aria-label="Аккаунт">
+        <div class="account-mini">
+          <div id="headerAvatar" class="account-avatar">?</div>
+          <div>
+            <strong id="headerProfileName">Профиль загружается</strong>
+            <small id="headerProfileEmail">Проверяем сессию</small>
+          </div>
         </div>
-        <button id="themeToggleBtn" class="btn btn-ghost theme-toggle" type="button" aria-pressed="false">Тёмная тема</button>
-        <small>Backend сейчас работает с <code>user_id</code>, поэтому ID нужен для запросов.</small>
+        <div class="account-actions">
+          <button id="themeToggleBtn" class="btn btn-ghost theme-toggle" type="button" aria-pressed="false">Тёмная тема</button>
+          <a class="btn btn-secondary" href="/login.html">Вход</a>
+          <a class="btn btn-secondary" href="/register.html">Регистрация</a>
+        </div>
+        <small>Данные берутся из cookie-сессии. Выбирать пользователя вручную больше не нужно.</small>
       </div>
     </header>
 
@@ -32,7 +38,7 @@
       <button class="tab" type="button" data-tab="transactions">Операции</button>
       <button class="tab" type="button" data-tab="categories">Категории</button>
       <button class="tab" type="button" data-tab="limits">Лимиты</button>
-      <button class="tab" type="button" data-tab="users">Пользователи</button>
+      <button class="tab" type="button" data-tab="users">Профиль</button>
     </nav>
 
     <main>
@@ -59,9 +65,7 @@
             </div>
             <div class="actions-row">
               <button class="btn btn-primary" type="submit">Обновить</button>
-              <button class="btn btn-secondary" type="button" id="resetStatsFiltersBtn">
-                Сбросить
-              </button>
+              <button class="btn btn-secondary" type="button" id="resetStatsFiltersBtn">Сбросить</button>
             </div>
           </form>
         </div>
@@ -125,7 +129,7 @@
               <div class="field"><label for="filterMinSum">Сумма от</label><input id="filterMinSum" name="sum" type="number" min="1" step="1" /></div>
               <div class="field"><label for="filterLimit">На странице</label><input id="filterLimit" name="limit" type="number" min="1" value="20" /></div>
               <div class="field"><label for="filterOffset">Смещение</label><input id="filterOffset" name="offset" type="number" min="0" value="0" /></div>
-              <div class="field"><label for="filterComment">Комментарий</label><input id="filterComment" name="comment" type="search" placeholder="Поиск по тексту на фронте" /></div>
+              <div class="field"><label for="filterComment">Комментарий</label><input id="filterComment" name="comment" type="search" placeholder="Поиск по тексту" /></div>
               <div class="form-actions"><button class="btn btn-primary" type="submit">Применить</button><button id="resetTransactionFiltersBtn" class="btn btn-ghost" type="reset">Сбросить</button></div>
             </form>
           </section>
@@ -155,7 +159,7 @@
           </section>
           <section class="card table-card">
             <div class="card-header"><h3>Список категорий</h3><span id="categoriesCount" class="muted">0 записей</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Название</th><th>User ID</th><th>Действия</th></tr></thead><tbody id="categoriesTbody"><tr><td colspan="4" class="empty-cell">Категории пока не загружены.</td></tr></tbody></table></div>
+            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Название</th><th>Лимит</th><th>Действия</th></tr></thead><tbody id="categoriesTbody"><tr><td colspan="4" class="empty-cell">Категории пока не загружены.</td></tr></tbody></table></div>
           </section>
         </div>
       </section>
@@ -181,24 +185,72 @@
       </section>
 
       <section id="users" class="page" aria-labelledby="usersTitle">
-        <div class="section-header"><div><p class="eyebrow">Аккаунт</p><h2 id="usersTitle">Пользователи</h2></div><button id="reloadUsersBtn" class="btn btn-secondary" type="button">Обновить пользователей</button></div>
-        <div class="layout-grid">
-          <section class="card">
-            <div class="card-header"><h3>Создать / изменить пользователя</h3><span class="muted">Редактирование отправляет PATCH /users/{id}</span></div>
-            <form id="userForm" class="form">
-              <input id="userId" name="id" type="hidden" />
-              <div class="field"><label for="userFullName">Имя *</label><input id="userFullName" name="full_name" type="text" minlength="3" maxlength="32" placeholder="Иван Иванов" required /></div>
-              <div class="field"><label for="userEmail">Email *</label><input id="userEmail" name="email" type="email" placeholder="example@gmail.com" required /></div>
-              <div class="field"><label for="userPhone">Телефон *</label><input id="userPhone" name="phone" type="tel" minlength="11" maxlength="12" placeholder="+71112223344" required /></div>
-              <div class="field"><label for="userPassword">Пароль * при создании</label><input id="userPassword" name="password" type="password" minlength="8" maxlength="32" placeholder="Минимум 8 символов" /></div>
-              <div class="form-actions"><button id="saveUserBtn" class="btn btn-primary" type="submit">Создать</button><button id="resetUserFormBtn" class="btn btn-ghost" type="reset">Очистить</button></div>
-            </form>
-          </section>
-          <section class="card table-card">
-            <div class="card-header"><h3>Список пользователей</h3><span id="usersCount" class="muted">0 записей</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Создан</th><th>Действия</th></tr></thead><tbody id="usersTbody"><tr><td colspan="6" class="empty-cell">Пользователи пока не загружены.</td></tr></tbody></table></div>
-          </section>
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Аккаунт</p>
+            <h2 id="usersTitle">Личная информация</h2>
+          </div>
+          <button id="reloadUsersBtn" class="btn btn-secondary" type="button">Обновить профиль</button>
         </div>
+
+        <section class="card profile-card">
+          <div class="profile-top">
+            <div id="profileAvatar" class="profile-avatar">?</div>
+            <div class="profile-title">
+              <p class="eyebrow">Текущий пользователь</p>
+              <h3 id="profileName">Профиль не загружен</h3>
+              <p id="profileEmail" class="muted">Войдите в аккаунт, чтобы увидеть личную информацию.</p>
+            </div>
+            <span id="profileActiveBadge" class="badge badge-neutral">Сессия</span>
+          </div>
+
+          <div class="profile-meta">
+            <div class="profile-meta-item">
+              <span>Email</span>
+              <strong id="profileEmailMeta">—</strong>
+            </div>
+            <div class="profile-meta-item">
+              <span>Телефон</span>
+              <strong id="profilePhone">—</strong>
+            </div>
+            <div class="profile-meta-item">
+              <span>Дата регистрации</span>
+              <strong id="profileCreated">—</strong>
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <button id="editActiveUserBtn" class="btn btn-primary" type="button">Редактировать профиль</button>
+            <a class="btn btn-secondary" href="/login.html">Войти</a>
+            <a class="btn btn-ghost" href="/register.html">Создать новый аккаунт</a>
+          </div>
+        </section>
+
+        <section class="card profile-edit-card">
+          <div class="card-header">
+            <h3>Данные профиля</h3>
+            <span class="muted">Изменения отправляются через PATCH /users/{id}</span>
+          </div>
+          <form id="userForm" class="form profile-form">
+            <input id="userId" name="id" type="hidden" />
+            <div class="field">
+              <label for="userFullName">Имя *</label>
+              <input id="userFullName" name="full_name" type="text" minlength="3" maxlength="32" placeholder="Иван Иванов" required />
+            </div>
+            <div class="field">
+              <label for="userEmail">Email *</label>
+              <input id="userEmail" name="email" type="email" placeholder="example@gmail.com" required />
+            </div>
+            <div class="field">
+              <label for="userPhone">Телефон *</label>
+              <input id="userPhone" name="phone" type="tel" minlength="11" maxlength="12" placeholder="+71112223344" required />
+            </div>
+            <div class="form-actions">
+              <button id="saveUserBtn" class="btn btn-primary" type="submit">Сохранить профиль</button>
+              <button id="resetUserFormBtn" class="btn btn-ghost" type="reset">Отменить</button>
+            </div>
+          </form>
+        </section>
       </section>
     </main>
   </div>
@@ -217,10 +269,9 @@
   </dialog>
 
   <template id="transactionRowTemplate"><tr><td data-cell="id"></td><td data-cell="date"></td><td data-cell="type"></td><td data-cell="category"></td><td data-cell="sum"></td><td data-cell="comments"></td><td data-cell="time_change"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
-  <template id="categoryRowTemplate"><tr><td data-cell="id"></td><td data-cell="category_name"></td><td data-cell="user_id"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
+  <template id="categoryRowTemplate"><tr><td data-cell="id"></td><td data-cell="category_name"></td><td data-cell="limit_id"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
   <template id="limitRowTemplate"><tr><td data-cell="id"></td><td data-cell="category"></td><td data-cell="amount_limit"></td><td data-cell="duration"></td><td data-cell="spent"></td><td data-cell="status"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
-  <template id="userRowTemplate"><tr><td data-cell="id"></td><td data-cell="full_name"></td><td data-cell="email"></td><td data-cell="phone"></td><td data-cell="time_add"></td><td><div class="row-actions"><button class="btn btn-small btn-secondary" type="button" data-action="select">Выбрать</button><button class="btn btn-small btn-secondary" type="button" data-action="edit">Изм.</button><button class="btn btn-small btn-danger" type="button" data-action="delete">Удал.</button></div></td></tr></template>
 
-  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/main.js?v=11"></script>
 </body>
 </html>

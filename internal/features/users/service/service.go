@@ -6,10 +6,6 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
-type UserService struct {
-	userRepository UserRepository
-}
-
 type UserRepository interface {
 	AddUser(
 		ctx context.Context,
@@ -37,11 +33,30 @@ type UserRepository interface {
 		id int,
 		patch core_domain.User,
 	) (core_domain.User, error)
+
+	FindByEmail(
+		ctx context.Context,
+		user core_domain.User,
+	) (int, error)
+}
+
+type RedisRepository interface {
+	CreateCache(
+		ctx context.Context,
+		user core_domain.User,
+	) (string, error)
+}
+
+type UserService struct {
+	userRepository      UserRepository
+	userRedisRepository RedisRepository
 }
 
 func NewUserService(
-	userRepository UserRepository) *UserService {
+	userRepository UserRepository,
+	repository RedisRepository) *UserService {
 	return &UserService{
-		userRepository: userRepository,
+		userRepository:      userRepository,
+		userRedisRepository: repository,
 	}
 }

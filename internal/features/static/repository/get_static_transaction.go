@@ -23,6 +23,9 @@ func (r *StaticRepository) GetStaticTransactions(
 	args := []any{}
 	conditions := []string{}
 
+	conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
+	args = append(args, filters.UserID)
+
 	if filters.CategoryID != nil {
 		conditions = append(conditions, fmt.Sprintf("category_id=$%d", len(args)+1))
 		args = append(args, *filters.CategoryID)

@@ -31,7 +31,7 @@ func (h *StaticHTTPHandler) Router() []core_transport_server.Route {
 	return []core_transport_server.Route{
 		{
 			Method:  http.MethodGet,
-			Path:    "/static",
+			Path:    "/static/{user_id}",
 			Handler: h.GetStatic,
 		},
 	}
