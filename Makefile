@@ -7,6 +7,9 @@ export PROJECT_ROOT=$(shell pwd)
 env-up:
 	@docker compose up -d data-base redis-db
 
+env-down:
+	@docker compose stop data-base redis-db
+
 env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
@@ -83,10 +86,12 @@ app-run:
 	go run ${PROJECT_ROOT}/cmd/trackerapp/main.go
 
 tracker-deploy-run:
-	@docker compose up -d --build tracker-app
+	@make env-up && \
+	docker compose up -d --build tracker-app
 
 tracker-deploy-stop:
-	@docker compose down tracker-app
+	@make env-down && \
+	docker compose down tracker-app
 
 tracker-deploy-check:
 	@docker compose up -d --build tracker-app
