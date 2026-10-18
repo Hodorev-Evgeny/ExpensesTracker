@@ -49,6 +49,7 @@ func (r *StaticRepository) GetStaticTransactions(
 	if err != nil {
 		return nil, fmt.Errorf("Error get all categories: %w", err)
 	}
+	defer rows.Close()
 
 	var list []core_domain.Transaction
 	for rows.Next() {

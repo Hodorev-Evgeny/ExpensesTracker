@@ -11,6 +11,8 @@ func (r *CategoryRepository) DeleteCategory(
 	ctx context.Context,
 	id int,
 ) error {
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
+	defer cancel()
 	query := `
 		DELETE 
 		FROM trackerapp.categories 

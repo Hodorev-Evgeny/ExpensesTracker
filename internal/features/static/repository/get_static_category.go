@@ -40,6 +40,7 @@ func (r *StaticRepository) GetStaticCategories(
 	if err != nil {
 		return nil, fmt.Errorf("Error get all categories: %w", err)
 	}
+	defer rows.Close()
 
 	list := make([]core_domain.Category, 0)
 	for rows.Next() {

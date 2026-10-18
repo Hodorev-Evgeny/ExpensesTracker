@@ -8,7 +8,7 @@ import (
 )
 
 func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `
