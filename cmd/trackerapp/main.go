@@ -82,6 +82,12 @@ func main() {
 	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
 	defer redisClient.Close()
 
+	_, errRedisPing := redisClient.Client.Ping(ctx).Result()
+	if errRedisPing != nil {
+		logger.Error("error pinging redis", zap.Error(errRedisPing))
+		os.Exit(1)
+	}
+
 	userRedis := feature_user_redis.NewRepositoryRedis(redisClient)
 
 	logger.Debug("starting initialization user service")
