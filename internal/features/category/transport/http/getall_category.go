@@ -28,6 +28,7 @@ func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Req
 	listCategory, err := h.CategoryService.GetAllCategories(ctx)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting all categories")
+		return
 	}
 
 	listResponse := CategoryDomainListToResponse(listCategory)

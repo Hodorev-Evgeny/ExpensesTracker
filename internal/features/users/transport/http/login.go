@@ -56,5 +56,5 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		Status: "session created",
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusCreated, req)
+	ResponseHandler.JSONResponseHandler(http.StatusOK, req)
 }
