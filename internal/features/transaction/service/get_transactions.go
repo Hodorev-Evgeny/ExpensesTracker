@@ -13,7 +13,7 @@ func (s *TransactionService) GetTransactions(
 	filters core_domain.FiltersTransaction,
 ) ([]core_domain.Transaction, error) {
 	if err := filters.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid filter parameters: %w: %w", err, core_errors.ErrorNotFoud)
+		return nil, fmt.Errorf("invalid filter parameters: %w: %w", err, core_errors.ErrorBadRequest)
 	}
 
 	list, err := s.transactionRepository.GetTransactions(ctx, filters)

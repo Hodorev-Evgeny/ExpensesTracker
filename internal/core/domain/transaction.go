@@ -82,6 +82,17 @@ func (f *FiltersTransaction) Validate() error {
 		return fmt.Errorf("invalid filter parameters categoryID/userID")
 	}
 
+	if f.Limit == nil {
+		defualt := 50
+		f.Limit = &defualt
+	} else if f.Limit != nil {
+		if *f.Limit < 0 {
+			return fmt.Errorf("invalid filter parameters limit is greater than zero")
+		} else if *f.Limit > 500 {
+			return fmt.Errorf("invalid filter parameters limit is greater than 500")
+		}
+	}
+
 	return nil
 }
 
