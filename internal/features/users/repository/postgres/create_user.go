@@ -2,9 +2,12 @@ package features_users_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
 func (r *UserRepository) AddUser(ctx context.Context, user core_domain.User) (core_domain.User, error) {
@@ -34,6 +37,9 @@ func (r *UserRepository) AddUser(ctx context.Context, user core_domain.User) (co
 		&userDomain.Time_add)
 
 	if err != nil {
+		if errors.Is(err, core_repository_pool.ErrErrConflict) {
+			return core_domain.User{}, fmt.Errorf("this user already exists: %w", core_errors.ErrorExists)
+		}
 		return core_domain.User{}, fmt.Errorf("error inserting user: %w", err)
 	}
 
