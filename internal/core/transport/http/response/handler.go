@@ -63,6 +63,10 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 		statusCode = http.StatusNotFound
 		logfunc = h.log.Warn
 
+	case errors.Is(err, core_errors.ErrorHealthCheck):
+		statusCode = http.StatusServiceUnavailable
+		logfunc = h.log.Warn
+
 	default:
 		statusCode = http.StatusInternalServerError
 		logfunc = h.log.Error

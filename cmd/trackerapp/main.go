@@ -18,6 +18,8 @@ import (
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
 	feature_service_categor "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
 	feature_category_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
+	feature_repository_health "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/repository"
+	feature_transport_health "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/transport"
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
@@ -130,6 +132,10 @@ func main() {
 	sessionTransport := feature_transport_session.NewSessionHandler(sessionService)
 	sessionRouters := sessionTransport.Route()
 
+	healthRepository := feature_repository_health.NewHealthRepository(redisClient, pool)
+	healthTransport := feature_transport_health.NewHealthTransport(healthRepository)
+	healthRouters := healthTransport.Router()
+
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
 	apiVersionRouter.RegisterAPIRoutes(userRouters...)
 	apiVersionRouter.RegisterAPIRoutes(categoryRouters...)
@@ -137,6 +143,7 @@ func main() {
 	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
 	apiVersionRouter.RegisterAPIRoutes(sessionRouters...)
+	apiVersionRouter.RegisterAPIRoutes(healthRouters...)
 
 	httpServer := core_transport_server.NewServer(
 		serverConfig,
