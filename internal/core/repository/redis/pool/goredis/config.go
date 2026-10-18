@@ -7,9 +7,9 @@ import (
 )
 
 type RedisConfig struct {
-	ADDR     string `envconfig:"ADDR"`
-	Password string `envconfig:"PASSWORD"`
-	Database int    `envconfig:"DATABASE"`
+	ADDR     string `envconfig:"ADDR" required:"true"`
+	Password string `envconfig:"PASSWORD" required:"true"`
+	Database int    `envconfig:"DATABASE" required:"true"`
 }
 
 func getRedisConfig() (RedisConfig, error) {
