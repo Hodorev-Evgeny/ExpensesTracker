@@ -42,5 +42,11 @@ func MappingError(err error) error {
 		}
 	}
 
+	if errors.As(err, &pgxErr) {
+		if pgxErr.Code == "23505" {
+			return core_repository_pool.ErrErrConflict
+		}
+	}
+
 	return err
 }
