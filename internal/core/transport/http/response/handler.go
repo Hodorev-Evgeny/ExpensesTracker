@@ -17,8 +17,8 @@ type HandlerResponse struct {
 }
 
 func (h *HandlerResponse) HTMLResponse(html []byte) {
-	h.rw.WriteHeader(http.StatusOK)
 	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.rw.WriteHeader(http.StatusOK)
 
 	if _, err := h.rw.Write(html); err != nil {
 		h.log.Error("Failed to write HTML response", zap.Error(err))
@@ -33,6 +33,9 @@ func NewHandlerResponse(logger *core_logger.Logger, rw http.ResponseWriter) *Han
 }
 
 func (h *HandlerResponse) JSONResponseHandler(statuscode int, data any) {
+	if statuscode != http.StatusNoContent {
+		h.rw.Header().Set("Content-Type", "application/json")
+	}
 	h.rw.WriteHeader(statuscode)
 
 	if err := json.NewEncoder(h.rw).Encode(data); err != nil {

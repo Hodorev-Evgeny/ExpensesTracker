@@ -34,5 +34,5 @@ func (h *TransactionHTTPHandler) DeleteTransaction(w http.ResponseWriter, r *htt
 		return
 	}
 
-	ResponseHandler.JSONResponseHandler(http.StatusNoContent, "")
+	ResponseHandler.JSONResponseHandler(http.StatusNoContent, nil)
 }

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
+	"github.com/go-playground/validator"
 )
 
 type CreateUserRequest struct {
@@ -32,11 +34,17 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	RsponceHandler := response.NewHandlerResponse(log, w)
+	validate := validator.New()
 
 	log.Info("Start decoding body")
 	var req CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RsponceHandler.ErrorResponse(err, "error decoding request body")
+		return
+	}
+
+	if err := validate.Struct(req); err != nil {
+		RsponceHandler.ErrorResponse(core_errors.ErrorBadRequest, "error validating request body")
 		return
 	}
 
@@ -62,9 +70,6 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Info("Start writing response")
 	respons := DomainFromResponse(userDomain)
-	if err := json.NewEncoder(w).Encode(respons); err != nil {
-		RsponceHandler.ErrorResponse(err, "error writing response")
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
+
+	RsponceHandler.JSONResponseHandler(http.StatusCreated, respons)
 }
