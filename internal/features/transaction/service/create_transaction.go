@@ -13,7 +13,7 @@ func (s *TransactionService) CreateTransaction(
 	transaction core_domain.Transaction,
 ) (core_domain.Transaction, error) {
 	if err := transaction.Validate(); err != nil {
-		return core_domain.Transaction{}, fmt.Errorf("invalid transaction comments: %d: %d",
+		return core_domain.Transaction{}, fmt.Errorf("invalid transaction comments: %w: %w",
 			err,
 			core_errors.ErrorNotFoud,
 		)

@@ -32,9 +32,9 @@ func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request
 	}
 
 	log.Info("Start processing get user")
-	domainUser, err := h.userService.ExtraditionUser(ctx, id)
-	if err != nil {
-		responseHandler.ErrorResponse(err, "error try extradition user")
+	domainUser, errGetDomain := h.userService.ExtraditionUser(ctx, id)
+	if errGetDomain != nil {
+		responseHandler.ErrorResponse(errGetDomain, "error try extradition user")
 		return
 	}
 	log.Info("End processing get user")
