@@ -14,6 +14,7 @@ type RedisPool interface {
 
 type CustomStatusCmd interface {
 	Err() error
+	Result() (string, error)
 }
 
 type CustomStringCmd interface {

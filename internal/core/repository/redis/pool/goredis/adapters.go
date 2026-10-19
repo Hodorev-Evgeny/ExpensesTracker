@@ -19,3 +19,7 @@ func (cmd *CustomStringCmd) Result() (string, error) {
 func (status *CustomStatusCmd) Err() error {
 	return status.StatusCmd.Err()
 }
+
+func (status *CustomStatusCmd) Result() (string, error) {
+	return status.StatusCmd.Result()
+}
