@@ -10,6 +10,7 @@ import (
 
 type RedisClient struct {
 	*redis.Client
+	ttl time.Duration
 }
 
 func newRedisClient(config RedisConfig) (*RedisClient, error) {
@@ -21,6 +22,7 @@ func newRedisClient(config RedisConfig) (*RedisClient, error) {
 
 	return &RedisClient{
 		rdb,
+		config.TTL,
 	}, nil
 }
 
@@ -53,6 +55,9 @@ func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis
 	return ans
 }
 
+func (r *RedisClient) GetTTL() time.Duration {
+	return r.ttl
+}
 func (r *RedisClient) Close() error {
 	return r.Client.Close()
 }

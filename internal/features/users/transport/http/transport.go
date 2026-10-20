@@ -3,6 +3,7 @@ package features_users_transport
 import (
 	"context"
 	"net/http"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
@@ -10,6 +11,8 @@ import (
 
 type UserHTTPHandler struct {
 	userService userService
+	isSecure    bool
+	ttlRedis    time.Duration
 }
 
 type userService interface {
@@ -58,9 +61,13 @@ type userService interface {
 
 func NewUserHTTPHandler(
 	userService userService,
+	isSecure bool,
+	ttlRedis time.Duration,
 ) *UserHTTPHandler {
 	return &UserHTTPHandler{
 		userService: userService,
+		isSecure:    isSecure,
+		ttlRedis:    ttlRedis,
 	}
 }
 
@@ -97,7 +104,7 @@ func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
 			Handler: h.LoginUser,
 		},
 		{
-			Method:  http.MethodDelete,
+			Method:  http.MethodPost,
 			Path:    "/users/logout",
 			Handler: h.LogoutUser,
 		},
