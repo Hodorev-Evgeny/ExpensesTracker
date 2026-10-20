@@ -151,6 +151,7 @@ func main() {
 		serverConfig,
 		logger,
 		core_middleware.CORS(serverConfig.AllowedOrigins),
+		core_middleware.Authenticator(redisClient),
 		core_middleware.RequestId(),
 		core_middleware.Logger(logger),
 		core_middleware.Trace(),
