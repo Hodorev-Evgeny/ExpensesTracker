@@ -8,9 +8,10 @@ import (
 )
 
 type RedisConfig struct {
-	ADDR     string        `envconfig:"ADDR" required:"true"`
-	Password string        `envconfig:"PASSWORD" required:"true"`
-	Database int           `envconfig:"DATABASE" required:"true"`
+	ADDR     string        `envconfig:"ADDR"`
+	Password string        `envconfig:"PASSWORD"`
+	Database int           `envconfig:"DATABASE"`
+	TTL      time.Duration `envconfig:"TTL"`
 	Timeout  time.Duration `envconfig:"TIMEOUT" default:"5s"`
 }
 

@@ -2,7 +2,6 @@ package features_users_transport
 
 import (
 	"net/http"
-	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -11,7 +10,6 @@ import (
 )
 
 type LoginHandler struct {
-	FullName string `json:"full_name"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
@@ -41,7 +39,7 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginUser := core_domain.CreateLoginUser(user.FullName, user.Email, user.Password)
+	loginUser := core_domain.CreateLoginUser(user.Email, user.Password)
 	sessionID, err := h.userService.LoginUser(ctx, loginUser)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error logging in")
@@ -52,10 +50,10 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		Name:     "sessionID",
 		Value:    sessionID,
 		Path:     "/",
-		MaxAge:   int(time.Hour.Seconds()),
+		MaxAge:   int(h.ttlRedis.Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		Secure:   true, // исправить на знач из конфига
+		Secure:   h.isSecure,
 	})
 
 	req := StatusRequest{

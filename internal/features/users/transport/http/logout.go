@@ -1,7 +1,6 @@
 package features_users_transport
 
 import (
-	"fmt"
 	"net/http"
 
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -13,10 +12,7 @@ func (h *UserHTTPHandler) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	ResponseHandler := response.NewHandlerResponse(log, w)
 
-	fmt.Println(123213)
-
 	sessionID, err := r.Cookie("sessionID")
-	fmt.Println(sessionID.Value)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting sessionID")
 		return

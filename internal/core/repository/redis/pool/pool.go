@@ -10,6 +10,7 @@ type RedisPool interface {
 	Get(ctx context.Context, key string) CustomStringCmd
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) CustomStatusCmd
 	Del(ctx context.Context, key string) CustomStatusCmd
+	GetTTL() time.Duration
 	Close() error
 }
 
