@@ -1,13 +1,18 @@
 package core_middleware
 
 import (
+	"context"
+	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -40,7 +45,7 @@ func CORS(allowedList []string) Middleware {
 	}
 }
 
-func Authenticator() Middleware {
+func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if whitelist(r.URL.Path) || r.Method == http.MethodOptions {
@@ -48,12 +53,28 @@ func Authenticator() Middleware {
 				return
 			}
 
-			if _, err := r.Cookie("sessionID"); err != nil {
-				http.Redirect(w, r, "/register", http.StatusSeeOther)
+			val, err := r.Cookie("sessionID")
+			if err != nil {
+				http.Redirect(w, r, "/register", http.StatusUnauthorized)
 				return
 			}
 
-			next.ServeHTTP(w, r)
+			key := "sessionID:" + val.Value
+			row := rbd.Get(r.Context(), key)
+			userID, err := row.Result()
+
+			if err != nil || errors.Is(err, redis.Nil) {
+				http.Redirect(w, r, "/register", http.StatusUnauthorized)
+				return
+			}
+			userIDInt, err := strconv.Atoi(userID)
+			if err != nil {
+				http.Redirect(w, r, "/register", http.StatusUnauthorized)
+			}
+
+			ctx := context.WithValue(r.Context(), "userID", userIDInt)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
