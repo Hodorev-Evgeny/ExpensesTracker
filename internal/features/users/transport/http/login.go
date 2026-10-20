@@ -2,6 +2,7 @@ package features_users_transport
 
 import (
 	"net/http"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
@@ -48,8 +49,13 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  "sessionID",
-		Value: sessionID,
+		Name:     "sessionID",
+		Value:    sessionID,
+		Path:     "/",
+		MaxAge:   int(time.Hour.Seconds()),
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   true, // исправить на знач из конфига
 	})
 
 	req := StatusRequest{

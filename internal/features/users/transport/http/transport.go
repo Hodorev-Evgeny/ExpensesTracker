@@ -49,6 +49,11 @@ type userService interface {
 		ctx context.Context,
 		user core_domain.User,
 	) (string, error)
+
+	LogoutUser(
+		ctx context.Context,
+		sessionID string,
+	) error
 }
 
 func NewUserHTTPHandler(
@@ -90,6 +95,11 @@ func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
 			Method:  http.MethodPost,
 			Path:    "/users/login",
 			Handler: h.LoginUser,
+		},
+		{
+			Method:  http.MethodDelete,
+			Path:    "/users/logout",
+			Handler: h.LogoutUser,
 		},
 	}
 }
