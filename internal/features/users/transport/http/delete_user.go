@@ -5,7 +5,6 @@ import (
 
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
-	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 // DeleteUser    godoc
@@ -24,11 +23,7 @@ func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	responseHandler := response.NewHandlerResponse(log, w)
 
 	log.Info("Start processing get value path")
-	id, err := core_http_query_parm.GetValuePathInt(r, "id")
-	if err != nil {
-		responseHandler.ErrorResponse(err, "id is required")
-		return
-	}
+	id := ctx.Value("userID").(int)
 
 	log.Info("End start processing delete user")
 	if err := h.userService.DeleteUser(ctx, id); err != nil {

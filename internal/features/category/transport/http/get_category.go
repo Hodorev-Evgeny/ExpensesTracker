@@ -31,7 +31,8 @@ func (h *CategoryHTTPHandler) GetCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	categoryDomain, err := h.CategoryService.GetCategoryByID(ctx, categoryID)
+	userID := ctx.Value("userID").(int)
+	categoryDomain, err := h.CategoryService.GetCategoryByID(ctx, categoryID, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting category id")
 		return

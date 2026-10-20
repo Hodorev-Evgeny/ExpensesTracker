@@ -13,6 +13,7 @@ import (
 func (r *TransactionRepository) GetTransaction(
 	ctx context.Context,
 	id int,
+	userID int,
 ) (core_domain.Transaction, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -20,9 +21,9 @@ func (r *TransactionRepository) GetTransaction(
 	query := `
 		SELECT id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes
 		FROM trackerapp.transactions
-		WHERE id = $1;`
+		WHERE id = $1 AND user_id = $2;`
 
-	row := r.pool.QueryRow(ctx, query, id)
+	row := r.pool.QueryRow(ctx, query, id, userID)
 
 	var transaction core_domain.Transaction
 	err := row.Scan(

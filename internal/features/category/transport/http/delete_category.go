@@ -28,7 +28,8 @@ func (h *CategoryHTTPHandler) DeleteCategory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := h.CategoryService.DeleteCategory(ctx, id); err != nil {
+	userID := ctx.Value("userID").(int)
+	if err := h.CategoryService.DeleteCategory(ctx, id, userID); err != nil {
 		ResponseHandler.ErrorResponse(err, "Error deleting Category")
 		return
 	}

@@ -10,6 +10,7 @@ import (
 func (r *TransactionRepository) DeleteTransaction(
 	ctx context.Context,
 	id int,
+	userID int,
 ) error {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -17,10 +18,10 @@ func (r *TransactionRepository) DeleteTransaction(
 	query := `
 		DELETE 
 		FROM trackerapp.transactions
-		WHERE id = $1;
+		WHERE id = $1 AND user_id = $2;
 		`
 
-	tag, err := r.pool.Exec(ctx, query, id)
+	tag, err := r.pool.Exec(ctx, query, id, userID)
 	if err != nil {
 		return fmt.Errorf("delete transaction: %w", err)
 	}

@@ -29,7 +29,8 @@ func (h *TransactionHTTPHandler) DeleteTransaction(w http.ResponseWriter, r *htt
 		return
 	}
 
-	if err := h.transactionService.DeleteTransaction(ctx, transactionID); err != nil {
+	userID := ctx.Value("userID").(int)
+	if err := h.transactionService.DeleteTransaction(ctx, transactionID, userID); err != nil {
 		ResponseHandler.ErrorResponse(err, "error deleting transaction")
 		return
 	}
