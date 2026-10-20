@@ -48,6 +48,11 @@ func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, ex
 	return &CustomStatusCmd{ans}
 }
 
+func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis_pool.CustomStatusCmd {
+	ans := r.Client.Del(ctx, key)
+	return ans
+}
+
 func (r *RedisClient) Close() error {
 	return r.Client.Close()
 }
