@@ -32,7 +32,8 @@ func (h *TransactionHTTPHandler) CreateTransaction(w http.ResponseWriter, r *htt
 		return
 	}
 
-	transactionDomain := ToDomainTransaction(request)
+	userID := ctx.Value("userID").(int)
+	transactionDomain := ToDomainTransaction(userID, request)
 
 	transactionCreated, err := h.transactionService.CreateTransaction(ctx, transactionDomain)
 	if err != nil {

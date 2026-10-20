@@ -62,7 +62,6 @@ func GetTransactionFilters(r *http.Request) (core_domain.FiltersTransaction, err
 	var filters core_domain.FiltersTransaction
 
 	intFields := map[string]**int{
-		"user_id":     &filters.UserId,
 		"category_id": &filters.CategoryId,
 		"sum":         &filters.Sum,
 		"limit":       &filters.Limit,

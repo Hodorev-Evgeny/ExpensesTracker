@@ -55,7 +55,7 @@ func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 
 			val, err := r.Cookie("sessionID")
 			if err != nil {
-				http.Redirect(w, r, "/register", http.StatusUnauthorized)
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
 
@@ -64,12 +64,12 @@ func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 			userID, err := row.Result()
 
 			if err != nil || errors.Is(err, redis.Nil) {
-				http.Redirect(w, r, "/register", http.StatusUnauthorized)
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
 			userIDInt, err := strconv.Atoi(userID)
 			if err != nil {
-				http.Redirect(w, r, "/register", http.StatusUnauthorized)
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
 			}
 
 			ctx := context.WithValue(r.Context(), "userID", userIDInt)
@@ -92,6 +92,7 @@ func whitelist(path string) bool {
 		"/api/v1/health":      true,
 		"/api/v1/users/login": true,
 		"/users/login":        true,
+		"/login":              true,
 	}
 
 	if allowedPaths[path] {
