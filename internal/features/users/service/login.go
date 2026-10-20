@@ -26,7 +26,7 @@ func (s *UserService) LoginUser(
 		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	sessionID, err := s.userRedisRepository.CreateCache(ctx, user)
+	sessionID, err := s.userRedisRepository.CreateCache(ctx, userLogin)
 	if err != nil {
 		return "", fmt.Errorf("create session cache: %w", err)
 	}
