@@ -9,6 +9,7 @@ import (
 func (r *CategoryRepository) RenameCategory(
 	ctx context.Context,
 	id int,
+	userId int,
 	category core_domain.Category,
 ) (core_domain.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
@@ -17,10 +18,10 @@ func (r *CategoryRepository) RenameCategory(
 	query := `
 		UPDATE trackerapp.categories 
 		SET title=$1, limit_id=$2
-		WHERE id=$3
+		WHERE id=$3 AND user_id = $4
 		RETURNING id, title, user_id, limit_id;`
 
-	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id)
+	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id, userId)
 
 	var categoryUpdated core_domain.Category
 	err := row.Scan(

@@ -35,7 +35,7 @@ type StaticResponse struct {
 // @Success				200	{object}	StaticResponse "Get static successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure      		500 {object} response.ErrorResponse "Internal server error"
-// @Router 				/static/{user_id}			[get]
+// @Router 				/static			[get]
 func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

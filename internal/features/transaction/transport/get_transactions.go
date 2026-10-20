@@ -38,7 +38,8 @@ func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.
 		return
 	}
 
-	list, err := h.transactionService.GetTransactions(ctx, filters)
+	userID := ctx.Value("userID").(int)
+	list, err := h.transactionService.GetTransactions(ctx, filters, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting transactions")
 		return
