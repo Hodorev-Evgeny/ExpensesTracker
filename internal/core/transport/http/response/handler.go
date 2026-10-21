@@ -75,7 +75,7 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 
 func (h *HandlerResponse) PanicResponse(p any, msg string) {
 	statuscode := http.StatusInternalServerError
-	err := fmt.Errorf("unexepted punic:", p)
+	err := fmt.Errorf("unexepted punic: %v", p)
 
 	h.log.Error(msg, zap.Error(err))
 	h.errorResponse(err, msg, statuscode)

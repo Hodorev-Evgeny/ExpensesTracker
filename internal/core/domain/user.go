@@ -5,6 +5,8 @@ import (
 	"net/mail"
 	"regexp"
 	"time"
+
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 var (
@@ -76,22 +78,29 @@ func (u *User) ChangeID(id int) error {
 }
 
 func (u *User) Validate() error {
+	if u.ID == UnincelizedID || u.ID <= 0 {
+		return fmt.Errorf("invalid id: %w", core_errors.ErrorBadRequest)
+	}
+
+	if u.Time_add == (time.Time{}) {
+		return fmt.Errorf("invalid time: %w", core_errors.ErrorBadRequest)
+	}
 	if u.Full_name == "" {
-		return fmt.Errorf("invalid user full_name")
+		return fmt.Errorf("invalid user full_name: %w", core_errors.ErrorBadRequest)
 	}
 
 	if _, err := mail.ParseAddress(u.Email); err != nil {
-		return fmt.Errorf("invalid user email")
+		return fmt.Errorf("invalid user email: %w", core_errors.ErrorBadRequest)
 	}
 
 	if u.Password == "" {
-		return fmt.Errorf("invalid user password for user")
+		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrorBadRequest)
 	}
 
 	if u.Phone_number != nil {
 		regular := regexp.MustCompile(`^\+[0-9]+$`)
 		if !regular.MatchString(*u.Phone_number) {
-			return fmt.Errorf("invalid user phone number")
+			return fmt.Errorf("invalid user phone number: %w", core_errors.ErrorBadRequest)
 		}
 	}
 
