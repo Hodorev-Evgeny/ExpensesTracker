@@ -91,7 +91,7 @@ func main() {
 	userServ := feature_user_service.NewUserService(userRepo, userRedis)
 
 	logger.Debug("starting initialization user transport")
-	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ)
+	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ, serverConfig.Secure, redisConfig.TTL)
 	userRouters := userTransporthttp.Routers()
 
 	categoryRepository := feature_repositor_category.NewCategoryRepository(pool)

@@ -27,7 +27,7 @@ func (r *RepositoryRedis) CreateCache(ctx context.Context, user core_domain.User
 		return "", fmt.Errorf("generate session id: %w", err)
 	}
 	key := "sessionID:" + sid
-	cmd := r.rbd.Set(ctx, key, string(jsonBytes), time.Hour)
+	cmd := r.rbd.Set(ctx, key, string(jsonBytes), r.rbd.GetTTL())
 	if cmd.Err() != nil {
 		return "", fmt.Errorf("set session id: %w", cmd)
 	}
