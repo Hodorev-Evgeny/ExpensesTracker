@@ -11,12 +11,13 @@ import (
 func (s *LimitService) DeleteLimit(
 	ctx context.Context,
 	limitID int,
+	userID int,
 ) error {
 	if limitID == core_domain.UnincelizedID {
 		return core_errors.ErrorBadRequest
 	}
 
-	if err := s.limitRepo.DeleteLimit(ctx, limitID); err != nil {
+	if err := s.limitRepo.DeleteLimit(ctx, limitID, userID); err != nil {
 		return fmt.Errorf("delete limit: %w", err)
 	}
 

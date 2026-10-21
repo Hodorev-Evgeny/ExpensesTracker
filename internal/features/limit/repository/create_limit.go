@@ -15,17 +15,18 @@ func (r *LimitRepository) CreateLimit(
 	defer cancel()
 
 	query := `
-		INSERT INTO trackerapp.spending_limit(duration, amount_limit)
-		VALUES ($1, $2)
-		RETURNING id, duration, amount_limit;`
+		INSERT INTO trackerapp.spending_limit(duration, amount_limit, user_id)
+		VALUES ($1, $2, $3)
+		RETURNING id, duration, amount_limit, user_id;`
 
-	row := r.pool.QueryRow(ctx, query, limit.Duration, limit.AmountLimit)
+	row := r.pool.QueryRow(ctx, query, limit.Duration, limit.AmountLimit, limit.UserID)
 
 	var limitDomain core_domain.Limit
 	err := row.Scan(
 		&limitDomain.ID,
 		&limitDomain.Duration,
 		&limitDomain.AmountLimit,
+		&limitDomain.UserID,
 	)
 	if err != nil {
 		return limitDomain, fmt.Errorf("error inserting limit: %w", err)

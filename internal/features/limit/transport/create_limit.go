@@ -30,7 +30,8 @@ func (h *LimitHTTPHandler) CreateLimit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	limitUnincelizd := LimitResponseToDomain(req)
+	userID := ctx.Value("userID").(int)
+	limitUnincelizd := LimitResponseToDomain(req, userID)
 
 	limitDomain, err := h.limitService.CreateLimit(ctx, limitUnincelizd)
 	if err != nil {

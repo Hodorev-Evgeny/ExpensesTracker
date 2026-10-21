@@ -29,7 +29,8 @@ func (h *LimitHTTPHandler) DeleteLimit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.limitService.DeleteLimit(ctx, limitID); err != nil {
+	userID := ctx.Value("userID").(int)
+	if err := h.limitService.DeleteLimit(ctx, limitID, userID); err != nil {
 		ResponseHandler.ErrorResponse(err, "error deleting limit")
 		return
 	}
