@@ -87,19 +87,19 @@ func (f *FiltersTransaction) Validate() error {
 
 func (t *Transaction) Validate() error {
 	if t.Sum <= 0 {
-		return fmt.Errorf("invalid transaction sum: %d", t.Sum)
+		return fmt.Errorf("invalid transaction sum: %d: %w", t.Sum, core_errors.ErrorBadRequest)
 	}
 
 	if t.CategoryID == UnincelizedID || t.UserID == UnincelizedID {
-		return fmt.Errorf("invalid transaction category id: %d", t.CategoryID)
+		return fmt.Errorf("invalid transaction category id: %d: %w", t.CategoryID, core_errors.ErrorBadRequest)
 	}
 
 	if t.Type != "Income" && t.Type != "Expenditure" {
-		return fmt.Errorf("invalid transaction type: %s", t.Type)
+		return fmt.Errorf("invalid transaction type: %s: %w", t.Type, core_errors.ErrorBadRequest)
 	}
 
 	if len(t.Comments) >= 1000 {
-		return fmt.Errorf("invalid transaction comments: %d", len(t.Comments))
+		return fmt.Errorf("invalid transaction comments: %d:%w", len(t.Comments), core_errors.ErrorBadRequest)
 	}
 
 	return nil
