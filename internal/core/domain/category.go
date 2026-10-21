@@ -2,6 +2,8 @@ package core_domain
 
 import (
 	"fmt"
+
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 type Category struct {
@@ -26,11 +28,21 @@ func (u *CategoryUpdate) Validate() error {
 
 func (c *Category) Validate() error {
 	if c.Name == "" {
-		return fmt.Errorf("name is required")
+		return fmt.Errorf("name is required: %w", core_errors.ErrorBadRequest)
 	}
 
-	if c.User_ID == UnincelizedID {
-		return fmt.Errorf("user_id is unincelized")
+	if c.User_ID == UnincelizedID || c.User_ID <= 0 {
+		return fmt.Errorf("user_id is unincelized: %w", core_errors.ErrorBadRequest)
+	}
+
+	if c.ID == UnincelizedID || c.ID <= 0 {
+		return fmt.Errorf("id is unincelized: %w", core_errors.ErrorBadRequest)
+	}
+
+	if c.Limit_id != nil {
+		if *c.Limit_id <= 0 {
+			return fmt.Errorf("limit_id is required: %w", core_errors.ErrorBadRequest)
+		}
 	}
 
 	return nil
