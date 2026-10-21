@@ -10,8 +10,8 @@ env-up:
 env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
-		docker compose down data-base forwarder-port && \
-		rm -rf ${PROJECT_ROOT}/out/pgdata && \
+		docker compose down data-base forwarder-port redis-db forwarder-port-redis && \
+		sudo rm -rf ~/.docker-data/expenses-trackert && \
 		echo "Файлы окружения очищены"; \
 	else \
 		echo "Очистка окружения отменена"; \

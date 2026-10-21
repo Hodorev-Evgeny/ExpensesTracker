@@ -11,6 +11,7 @@ func (r *LimitRepository) GetLimits(
 	ctx context.Context,
 	limit *int,
 	offset *int,
+	userID int,
 ) ([]core_domain.Limit, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -18,10 +19,11 @@ func (r *LimitRepository) GetLimits(
 	query := `
 		SELECT id, duration, amount_limit
 		FROM trackerapp.spending_limit
-		LIMIT $1
-		OFFSET $2;`
+		WHERE user_id = $1
+		LIMIT $2
+		OFFSET $3;`
 
-	rows, err := r.pool.Query(ctx, query, limit, offset)
+	rows, err := r.pool.Query(ctx, query, userID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("error scan rows in database: %w", err)
 	}

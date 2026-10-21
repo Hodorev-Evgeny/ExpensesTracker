@@ -46,8 +46,9 @@ func (h *LimitHTTPHandler) PatchLimit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	limitDomain := LimitResponseToPatch(patchLimit)
-
-	updateLimit, err := h.limitService.PatchLimit(ctx, id, limitDomain)
+	userID := ctx.Value("userID").(int)
+	
+	updateLimit, err := h.limitService.PatchLimit(ctx, id, limitDomain, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error patch limit")
 		return

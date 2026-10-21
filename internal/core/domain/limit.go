@@ -11,6 +11,7 @@ type Limit struct {
 	ID          int
 	Duration    time.Time
 	AmountLimit int
+	UserID      int
 }
 
 type PatchLimit struct {
@@ -22,19 +23,22 @@ func NewLimit(
 	id int,
 	duration time.Time,
 	amountLimit int,
+	userID int,
 ) Limit {
 	return Limit{
 		ID:          id,
 		Duration:    duration,
 		AmountLimit: amountLimit,
+		UserID:      userID,
 	}
 }
 
 func CreateUnincelizeLimit(
 	duration time.Time,
 	amountLimit int,
+	userID int,
 ) Limit {
-	return NewLimit(UnincelizedID, duration, amountLimit)
+	return NewLimit(UnincelizedID, duration, amountLimit, userID)
 }
 
 func CreatePatchLimit(

@@ -16,10 +16,11 @@ type LimitResponse struct {
 	LimitDTO
 }
 
-func LimitResponseToDomain(req LimitDTO) core_domain.Limit {
+func LimitResponseToDomain(req LimitDTO, userID int) core_domain.Limit {
 	return core_domain.CreateUnincelizeLimit(
 		req.Duration,
 		req.AmountLimit,
+		userID,
 	)
 }
 
