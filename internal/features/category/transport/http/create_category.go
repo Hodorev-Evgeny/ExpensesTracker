@@ -32,7 +32,8 @@ func (h *CategoryHTTPHandler) CreateNewCategory(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	categoryDomain := CategoryDTOFromDomain(req)
+	userID := ctx.Value("userID").(int)
+	categoryDomain := CategoryDTOFromDomain(userID, req)
 
 	category, err := h.CategoryService.CreateCategory(ctx, categoryDomain)
 	if err != nil {

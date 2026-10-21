@@ -5,7 +5,6 @@ import (
 
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
-	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 // ExtraditionUser       godoc
@@ -25,11 +24,7 @@ func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request
 	responseHandler := response.NewHandlerResponse(log, w)
 
 	log.Info("End processing get value path")
-	id, err := core_http_query_parm.GetValuePathInt(r, "id")
-	if err != nil {
-		responseHandler.ErrorResponse(err, "id is required")
-		return
-	}
+	id := ctx.Value("userID").(int)
 
 	log.Info("Start processing get user")
 	domainUser, err := h.userService.ExtraditionUser(ctx, id)

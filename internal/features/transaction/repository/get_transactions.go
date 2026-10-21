@@ -11,6 +11,7 @@ import (
 func (r *TransactionRepository) GetTransactions(
 	ctx context.Context,
 	filters core_domain.FiltersTransaction,
+	userID int,
 ) ([]core_domain.Transaction, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -23,13 +24,12 @@ func (r *TransactionRepository) GetTransactions(
 	args := []any{}
 	conditions := []string{}
 
+	conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
+	args = append(args, userID)
+
 	if filters.CategoryId != nil {
 		conditions = append(conditions, fmt.Sprintf("category_id=$%d", len(args)+1))
 		args = append(args, *filters.CategoryId)
-	}
-	if filters.UserId != nil {
-		conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
-		args = append(args, *filters.UserId)
 	}
 	if filters.Sum != nil {
 		conditions = append(conditions, fmt.Sprintf("sum>$%d", len(args)+1))
@@ -49,10 +49,10 @@ func (r *TransactionRepository) GetTransactions(
 	}
 	query += " ORDER BY id ASC"
 	if filters.Limit != nil {
-		query += fmt.Sprintf(" LIMIT %d", filters.Limit)
+		query += fmt.Sprintf(" LIMIT %d", *filters.Limit)
 	}
 	if filters.Offset != nil {
-		query += fmt.Sprintf(" OFFSET %d", filters.Offset)
+		query += fmt.Sprintf(" OFFSET %d", *filters.Offset)
 	}
 
 	rows, err := r.pool.Query(ctx, query, args...)

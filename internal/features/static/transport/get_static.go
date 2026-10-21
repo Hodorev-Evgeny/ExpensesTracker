@@ -35,7 +35,7 @@ type StaticResponse struct {
 // @Success				200	{object}	StaticResponse "Get static successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure      		500 {object} response.ErrorResponse "Internal server error"
-// @Router 				/static/{user_id}			[get]
+// @Router 				/static			[get]
 func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -85,11 +85,8 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 	if err != nil {
 		return core_domain.FiltersStatic{}, fmt.Errorf("error getting query param: %w", err)
 	}
-	userID, err := core_http_utils.GetValuePathInt(r, "user_id")
-	if err != nil {
-		return core_domain.FiltersStatic{}, fmt.Errorf("error getting query param: %w", err)
-	}
 
+	userID := r.Context().Value("userID").(int)
 	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 
 	return filters, nil

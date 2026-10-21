@@ -31,7 +31,8 @@ func (h *TransactionHTTPHandler) GetTransaction(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	transaction, err := h.transactionService.GetTransaction(ctx, transactionID)
+	userID := ctx.Value("userID").(int)
+	transaction, err := h.transactionService.GetTransaction(ctx, transactionID, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "failed getting transaction")
 		return

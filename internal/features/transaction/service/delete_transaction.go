@@ -11,12 +11,13 @@ import (
 func (s *TransactionService) DeleteTransaction(
 	ctx context.Context,
 	id int,
+	userID int,
 ) error {
 	if id == core_domain.UnincelizedID {
 		return core_errors.ErrorUnauthorized
 	}
 
-	if err := s.transactionRepository.DeleteTransaction(ctx, id); err != nil {
+	if err := s.transactionRepository.DeleteTransaction(ctx, id, userID); err != nil {
 		return fmt.Errorf("delete transaction: %w", err)
 	}
 

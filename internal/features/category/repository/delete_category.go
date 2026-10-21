@@ -10,13 +10,14 @@ import (
 func (r *CategoryRepository) DeleteCategory(
 	ctx context.Context,
 	id int,
+	userId int,
 ) error {
 	query := `
 		DELETE 
 		FROM trackerapp.categories 
-		WHERE id = $1;`
+		WHERE id = $1 AND user_id = $2;`
 
-	tag, err := r.pool.Exec(ctx, query, id)
+	tag, err := r.pool.Exec(ctx, query, id, userId)
 	if err != nil {
 		return fmt.Errorf(`user with id %d: %w`, id, err)
 	}

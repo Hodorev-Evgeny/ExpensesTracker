@@ -47,7 +47,8 @@ func (h *TransactionHTTPHandler) PatchTransaction(w http.ResponseWriter, r *http
 	}
 
 	patchDomain := ToDomainPatch(request)
-	updateTransaction, err := h.transactionService.PatchTransaction(ctx, transactionId, patchDomain)
+	userID := ctx.Value("userID").(int)
+	updateTransaction, err := h.transactionService.PatchTransaction(ctx, transactionId, patchDomain, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error patching transaction")
 		return
