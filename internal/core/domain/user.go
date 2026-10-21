@@ -53,13 +53,12 @@ func CreateUnincelizedUser(
 }
 
 func CreateLoginUser(
-	full_name string,
 	email string,
 	password string,
 ) User {
 	return CreateUser(
 		UnincelizedID,
-		full_name,
+		"TestUserName",
 		email,
 		nil,
 		password,

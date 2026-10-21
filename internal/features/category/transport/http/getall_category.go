@@ -40,7 +40,6 @@ func CategoryDomainListToResponse(list []core_domain.Category) []CategoryRespons
 		listResponse[i] = CategoryResponse{
 			ID:           item.ID,
 			CategoryName: item.Name,
-			User_id:      item.User_ID,
 		}
 	}
 

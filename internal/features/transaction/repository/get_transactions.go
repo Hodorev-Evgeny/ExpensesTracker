@@ -49,11 +49,13 @@ func (r *TransactionRepository) GetTransactions(
 	}
 	query += " ORDER BY id ASC"
 	if filters.Limit != nil {
-		query += fmt.Sprintf(" LIMIT %d", filters.Limit)
+		query += fmt.Sprintf(" LIMIT %d", *filters.Limit)
 	}
 	if filters.Offset != nil {
-		query += fmt.Sprintf(" OFFSET %d", filters.Offset)
+		query += fmt.Sprintf(" OFFSET %d", *filters.Offset)
 	}
+
+	fmt.Println(query, conditions, filters.UserId)
 
 	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
