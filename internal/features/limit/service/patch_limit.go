@@ -11,12 +11,13 @@ func (s *LimitService) PatchLimit(
 	ctx context.Context,
 	id int,
 	limit core_domain.PatchLimit,
+	userID int,
 ) (core_domain.Limit, error) {
 	if err := limit.Validate(); err != nil {
 		return core_domain.Limit{}, fmt.Errorf("limit validation failed: %w", err)
 	}
 
-	limitDomain, err := s.GetLimit(ctx, id)
+	limitDomain, err := s.GetLimit(ctx, id, userID)
 	if err != nil {
 		return core_domain.Limit{}, fmt.Errorf("limit get failed: %w", err)
 	}
@@ -24,7 +25,7 @@ func (s *LimitService) PatchLimit(
 	if err := limitDomain.ApplyPatch(limit); err != nil {
 		return core_domain.Limit{}, fmt.Errorf("limit apply patch error: %w", err)
 	}
-	updateLimit, err := s.limitRepo.PatchLimit(ctx, limitDomain)
+	updateLimit, err := s.limitRepo.PatchLimit(ctx, limitDomain, userID)
 	if err != nil {
 		return core_domain.Limit{}, fmt.Errorf("limit update failed: %w", err)
 	}

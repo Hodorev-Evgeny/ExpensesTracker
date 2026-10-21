@@ -37,7 +37,8 @@ func (h *LimitHTTPHandler) GetLimits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	limitDomain, err := h.limitService.GetLimits(ctx, limit, offset)
+	userID := ctx.Value("userID").(int)
+	limitDomain, err := h.limitService.GetLimits(ctx, limit, offset, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "getting limit domain")
 		return

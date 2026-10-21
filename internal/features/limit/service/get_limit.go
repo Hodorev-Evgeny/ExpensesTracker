@@ -11,12 +11,13 @@ import (
 func (s *LimitService) GetLimit(
 	ctx context.Context,
 	id int,
+	userID int,
 ) (core_domain.Limit, error) {
 	if id == core_domain.UnincelizedID {
 		return core_domain.Limit{}, core_errors.ErrorUnauthorized
 	}
 
-	limitDomain, err := s.limitRepo.GetLimit(ctx, id)
+	limitDomain, err := s.limitRepo.GetLimit(ctx, id, userID)
 	if err != nil {
 		return core_domain.Limit{}, fmt.Errorf("error getting in service: %w", err)
 	}
