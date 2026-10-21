@@ -38,7 +38,8 @@ func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.
 		return
 	}
 
-	list, err := h.transactionService.GetTransactions(ctx, filters)
+	userID := ctx.Value("userID").(int)
+	list, err := h.transactionService.GetTransactions(ctx, filters, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting transactions")
 		return
@@ -62,7 +63,6 @@ func GetTransactionFilters(r *http.Request) (core_domain.FiltersTransaction, err
 	var filters core_domain.FiltersTransaction
 
 	intFields := map[string]**int{
-		"user_id":     &filters.UserId,
 		"category_id": &filters.CategoryId,
 		"sum":         &filters.Sum,
 		"limit":       &filters.Limit,

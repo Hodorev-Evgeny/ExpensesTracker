@@ -25,7 +25,8 @@ func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Req
 	log := core_logger.FromContext(ctx)
 	ResponseHandler := response.NewHandlerResponse(log, w)
 
-	listCategory, err := h.CategoryService.GetAllCategories(ctx)
+	userID := ctx.Value("userID").(int)
+	listCategory, err := h.CategoryService.GetAllCategories(ctx, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting all categories")
 	}
@@ -40,7 +41,6 @@ func CategoryDomainListToResponse(list []core_domain.Category) []CategoryRespons
 		listResponse[i] = CategoryResponse{
 			ID:           item.ID,
 			CategoryName: item.Name,
-			User_id:      item.User_ID,
 		}
 	}
 

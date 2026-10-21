@@ -73,11 +73,7 @@ func (h *UserHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Info("Start processing patch user")
-	userId, err := core_http_utils.GetValuePathInt(r, "id")
-	if err != nil {
-		ResponseHandler.ErrorResponse(err, "error parsing id")
-		return
-	}
+	userId := ctx.Value("userID").(int)
 
 	log.Debug("PatchUser",
 		zap.Any("data", data),

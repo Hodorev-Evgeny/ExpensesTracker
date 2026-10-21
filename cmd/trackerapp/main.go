@@ -21,8 +21,6 @@ import (
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
-	feature_repository_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/repository"
-	feature_service_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/service"
 	feature_transport_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/transport"
 	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
 	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
@@ -91,7 +89,7 @@ func main() {
 	userServ := feature_user_service.NewUserService(userRepo, userRedis)
 
 	logger.Debug("starting initialization user transport")
-	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ)
+	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ, serverConfig.Secure, redisConfig.TTL)
 	userRouters := userTransporthttp.Routers()
 
 	categoryRepository := feature_repositor_category.NewCategoryRepository(pool)
@@ -119,9 +117,7 @@ func main() {
 	webTransport := feature_transport_web.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
-	sessionRepository := feature_repository_session.NewSessionRepository(redisClient)
-	sessionService := feature_service_session.NewSessionService(sessionRepository)
-	sessionTransport := feature_transport_session.NewSessionHandler(sessionService)
+	sessionTransport := feature_transport_session.NewSessionHandler()
 	sessionRouters := sessionTransport.Route()
 
 	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
@@ -136,6 +132,7 @@ func main() {
 		serverConfig,
 		logger,
 		core_middleware.CORS(serverConfig.AllowedOrigins),
+		core_middleware.Authenticator(redisClient),
 		core_middleware.RequestId(),
 		core_middleware.Logger(logger),
 		core_middleware.Trace(),

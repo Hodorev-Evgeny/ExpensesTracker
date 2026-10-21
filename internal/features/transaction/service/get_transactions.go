@@ -11,12 +11,13 @@ import (
 func (s *TransactionService) GetTransactions(
 	ctx context.Context,
 	filters core_domain.FiltersTransaction,
+	userID int,
 ) ([]core_domain.Transaction, error) {
 	if err := filters.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid filter parameters: %w: %w", err, core_errors.ErrorNotFoud)
 	}
 
-	list, err := s.transactionRepository.GetTransactions(ctx, filters)
+	list, err := s.transactionRepository.GetTransactions(ctx, filters, userID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting transactions: %w", err)
 	}
