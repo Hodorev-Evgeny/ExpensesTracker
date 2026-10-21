@@ -39,7 +39,9 @@ tracker-deploy-stop:
 tracker-deploy-check:
 	@docker compose up -d --build tracker-app
 	@for i in 1 2 3 4 5; do \
-		if curl -fsSL http://localhost:8080/; then \
+		if curl -fsSL http://localhost:8080/health; then \
+			echo "App is ready!"; \
+			go test ./...; \
 			exit 0; \
 		fi; \
 		echo "App is not ready"; \
@@ -50,14 +52,16 @@ tracker-deploy-check:
 
 test-app-server-run:
 	@for i in 1 2 3 4 5; do \
-		if curl -fsSL "$(IP_SERVER_TEST)"; then \
-			exit 0; \
-		fi; \
-		echo "App is not ready"; \
-		sleep 2; \
-  	done && \
-  	echo "App failed check" && \
-  	exit 1
+			if curl -fsSL "$(IP_SERVER_TEST)/health" > /dev/null; then \
+				echo "App is ready!"; \
+				go test ./...; \
+				exit 0; \
+			fi; \
+			echo "App is not ready"; \
+			sleep 2; \
+		done; \
+		echo "App failed check"; \
+		exit 1
 
 test-domain:
 	@go test ./internal/core/domain/ -cover
