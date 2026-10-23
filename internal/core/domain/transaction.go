@@ -115,7 +115,7 @@ func (p *PatchTransaction) Validate() error {
 	}
 
 	if p.TypeTransaction.Set && *p.TypeTransaction.Value != "Income" && *p.TypeTransaction.Value != "Expenditure" {
-		return fmt.Errorf("invalid transaction type: %s", p.TypeTransaction.Value)
+		return fmt.Errorf("invalid transaction type: %s", *p.TypeTransaction.Value)
 	}
 
 	if p.Comments.Set && len(*p.Comments.Value) >= 1000 {
