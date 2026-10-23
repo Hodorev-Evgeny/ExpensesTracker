@@ -15,7 +15,7 @@ func (s *UserService) ExtraditionUser(ctx context.Context, id int) (core_domain.
 
 	userDomain, err := s.userRepository.ExtraditionUser(ctx, id)
 	if err != nil {
-		return core_domain.User{}, fmt.Errorf("ExtraditionUser: %w", err)
+		return core_domain.User{}, fmt.Errorf("error getting user in service: %w", err)
 	}
 
 	return userDomain, nil

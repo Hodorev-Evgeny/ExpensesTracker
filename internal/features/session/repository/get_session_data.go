@@ -17,7 +17,6 @@ func (r *SessionRepository) GetSessionData(
 	defer cancel()
 
 	val, err := r.rbd.Get(ctx, key).Result()
-	fmt.Println("val", val)
 	if err != nil {
 		return core_domain.CookieData{}, err
 	}

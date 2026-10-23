@@ -8,7 +8,7 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
 func (r *UserRepository) ExtraditionUser(ctx context.Context, id int) (core_domain.User, error) {
@@ -31,7 +31,7 @@ func (r *UserRepository) ExtraditionUser(ctx context.Context, id int) (core_doma
 		&user.Password,
 		&user.Time_add)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
 			return core_domain.User{}, core_errors.ErrorNotFoud
 		}
 		return core_domain.User{}, fmt.Errorf("ExtraditionUser scan: %w", err)
