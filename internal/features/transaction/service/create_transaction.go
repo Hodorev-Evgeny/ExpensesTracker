@@ -15,7 +15,7 @@ func (s *TransactionService) CreateTransaction(
 	if err := transaction.Validate(); err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("invalid transaction comments: %w: %w",
 			err,
-			core_errors.ErrorNotFoud,
+			core_errors.ErrorBadRequest,
 		)
 	}
 

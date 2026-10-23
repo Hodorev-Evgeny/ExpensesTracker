@@ -18,7 +18,7 @@ func GetIntQueryParm(r *http.Request, key string) (*int, error) {
 
 	valueInt, err := strconv.Atoi(value)
 	if err != nil {
-		return nil, fmt.Errorf("invalid value for value %s: %e", key, core_errors.ErrorValidation)
+		return nil, fmt.Errorf("invalid value for value %s: %w", key, core_errors.ErrorValidation)
 	}
 
 	return &valueInt, nil
@@ -33,7 +33,7 @@ func GetDateQueryParm(r *http.Request, key string) (*time.Time, error) {
 
 	valueDate, err := time.Parse(time.RFC3339Nano, value)
 	if err != nil {
-		return nil, fmt.Errorf("invalid value for value %s: %e", key, core_errors.ErrorValidation)
+		return nil, fmt.Errorf("invalid value for value %s: %w", key, core_errors.ErrorValidation)
 	}
 
 	return &valueDate, nil

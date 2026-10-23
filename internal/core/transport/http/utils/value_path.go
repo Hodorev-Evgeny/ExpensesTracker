@@ -16,7 +16,7 @@ func GetValuePathInt(r *http.Request, key string) (int, error) {
 
 	valueInt, err := strconv.Atoi(value)
 	if err != nil {
-		return 0, fmt.Errorf("invalid value for path %s: %e", key, core_errors.ErrorValidation)
+		return 0, fmt.Errorf("invalid value for path %s: %w", key, core_errors.ErrorValidation)
 	}
 
 	return valueInt, nil

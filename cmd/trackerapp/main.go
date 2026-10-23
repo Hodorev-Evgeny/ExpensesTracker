@@ -53,7 +53,6 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM,
 	)
 	defer cancel()
-	fmt.Println("starting server")
 
 	serverConfig := core_transport_server.MustNewConfigServer()
 	time.Local = serverConfig.TimeZone
