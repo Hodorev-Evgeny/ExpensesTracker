@@ -3,6 +3,7 @@ package core_http_utils
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -19,7 +20,7 @@ type dataTest struct {
 func TestGetIntQueryParm(t *testing.T) {
 	testCase := []dataTest{
 		{
-			nameTest:  "dot valid query",
+			nameTest:  "not valid query",
 			queryData: "abc",
 			queryKey:  "limit",
 			expected:  core_errors.ErrorValidation,
@@ -28,7 +29,7 @@ func TestGetIntQueryParm(t *testing.T) {
 
 	for _, test := range testCase {
 		url := fmt.Sprintf("http://localhost:8080/test?%s=%s", test.queryKey, test.queryData)
-		r := httptest.NewRequest(test.queryKey, url, nil)
+		r := httptest.NewRequest(http.MethodGet, url, nil)
 		_, err := GetIntQueryParm(r, test.queryKey)
 
 		if !errors.Is(err, test.expected) {
