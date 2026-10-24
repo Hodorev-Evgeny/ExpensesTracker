@@ -18,7 +18,7 @@ type DataTestLogin struct {
 	withError          bool
 }
 
-func TestLogin(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	mockService := transport_user_mock.NewMockService()
 	handler := NewUserHTTPHandler(mockService)
 	logger := &core_logger.Logger{
@@ -27,7 +27,7 @@ func TestLogin(t *testing.T) {
 
 	tests := []DataTestLogin{
 		{
-			name:               "invalid json body",
+			name:               "test empty body",
 			body:               `{}`,
 			expectedStatusCode: http.StatusBadRequest,
 			withError:          true,
