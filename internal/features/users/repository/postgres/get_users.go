@@ -50,5 +50,9 @@ func (r *UserRepository) GetUsers(
 		users = append(users, user)
 	}
 
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
+	}
+
 	return users, nil
 }

@@ -58,5 +58,9 @@ func (r *StaticRepository) GetStaticCategories(
 		list = append(list, category)
 	}
 
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
+	}
+
 	return list, nil
 }
