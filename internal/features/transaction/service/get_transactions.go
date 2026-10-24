@@ -12,7 +12,6 @@ func (s *TransactionService) GetTransactions(
 	ctx context.Context,
 	filters core_domain.FiltersTransaction,
 ) ([]core_domain.Transaction, error) {
-	fmt.Println(filters)
 	if err := filters.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid filter parameters: %w: %w", err, core_errors.ErrorBadRequest)
 	}

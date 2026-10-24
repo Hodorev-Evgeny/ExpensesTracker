@@ -17,7 +17,7 @@ type TestData struct {
 	expectedResult [2]any // first is limit second is offset
 }
 
-func TestExtraditionUser(t *testing.T) {
+func TestGetTransactionsLimitOffset(t *testing.T) {
 	testPool := transaction_repository_mock.CreateTestPool()
 	repo := NewTransactionRepository(testPool)
 	testData := []TestData{
@@ -27,14 +27,30 @@ func TestExtraditionUser(t *testing.T) {
 			function: func(ctx context.Context, repo *TransactionRepository) (any, error) {
 				filters := core_domain.FiltersTransaction{
 					Limit:  new(5),
-					Offset: new(5),
+					Offset: new(7),
 				}
 				return repo.GetTransactions(
 					ctx,
 					filters,
 				)
 			},
-			expectedResult: [2]any{5, 5},
+			expectedResult: [2]any{5, 7},
+		},
+		{
+			name: "Test correct read args",
+			pool: testPool,
+			function: func(ctx context.Context, repo *TransactionRepository) (any, error) {
+				filters := core_domain.FiltersTransaction{
+					Limit:      new(2),
+					Offset:     new(3),
+					CategoryId: new(1),
+				}
+				return repo.GetTransactions(
+					ctx,
+					filters,
+				)
+			},
+			expectedResult: [2]any{2, 3},
 		},
 	}
 
@@ -57,10 +73,16 @@ func TestExtraditionUser(t *testing.T) {
 				t.Error("Args idx for limit query is not a number")
 				continue
 			}
+
+			if idx-1 < 0 || idx > len(args) {
+				t.Error("Args idx for limit query is out of range")
+			}
 			val := args[idx-1]
 			if val != test.expectedResult[0] {
 				t.Error("Args idx for limit query is not correct")
 			}
+		} else {
+			t.Fatalf("Dont find limit query: %s", query)
 		}
 
 		if len(matchOffset) > 1 {
@@ -69,10 +91,16 @@ func TestExtraditionUser(t *testing.T) {
 				t.Error("Args idx for offset query is not a number")
 				continue
 			}
+
+			if idx-1 < 0 || idx > len(args) {
+				t.Error("Args idx for offset query is out of range")
+			}
 			val := args[idx-1]
 			if val != test.expectedResult[1] {
 				t.Error("Args idx for offset query is not correct")
 			}
+		} else {
+			t.Fatalf("Dont find offset query: %s", query)
 		}
 
 	}
