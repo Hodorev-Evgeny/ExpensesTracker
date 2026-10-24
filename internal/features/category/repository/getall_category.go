@@ -36,6 +36,10 @@ func (r *CategoryRepository) GetAllCategories(
 			return list, fmt.Errorf("Error get list category: %w", err)
 		}
 
+		if rows.Err() != nil {
+			return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
+		}
+
 		list = append(list, category)
 	}
 

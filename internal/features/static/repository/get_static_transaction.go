@@ -72,5 +72,9 @@ func (r *StaticRepository) GetStaticTransactions(
 		list = append(list, transaction)
 	}
 
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
+	}
+
 	return list, nil
 }
