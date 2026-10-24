@@ -674,8 +674,11 @@ paths:
         in: query
         name: from
         type: integer
-      - description: Filter for pagination
+      - default: 50
+        description: Filter for pagination
         in: query
+        maximum: 500
+        minimum: 1
         name: limit
         type: integer
       - description: Filter for pagination

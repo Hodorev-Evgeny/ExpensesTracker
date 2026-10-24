@@ -74,6 +74,15 @@ func (f *FiltersTransaction) Validate() error {
 		return fmt.Errorf("invalid filter parameters limit/offset")
 	}
 
+	if f.Limit != nil && *f.Limit > 500 {
+		return fmt.Errorf("invalid filter parameters limit is greater than 500")
+	}
+
+	if f.Limit == nil {
+		defualt := 50
+		f.Limit = &defualt
+	}
+
 	if f.Sum != nil && *f.Sum < 0 {
 		return fmt.Errorf("invalid filter parameters sum")
 	}
