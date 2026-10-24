@@ -18,7 +18,7 @@ func (r *UserRepository) GetUsers(
 	defer close()
 
 	query := `
-		SELECT *
+		SELECT id, full_name, email, phone_number, password, time_add
 		FROM trackerapp.users
 		ORDER BY id
 		LIMIT $1 OFFSET $2;`

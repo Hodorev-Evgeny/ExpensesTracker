@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
@@ -12,11 +11,11 @@ import (
 )
 
 func (r *UserRepository) ExtraditionUser(ctx context.Context, id int) (core_domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `
-		SELECT * 
+		SELECT id, full_name, email, phone_number, password, time_add 
 		FROM trackerapp.users 
         WHERE id=$1;`
 

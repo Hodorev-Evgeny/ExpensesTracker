@@ -41,5 +41,9 @@ func (r *LimitRepository) GetLimits(
 		limits = append(limits, l)
 	}
 
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
+	}
+
 	return limits, nil
 }
