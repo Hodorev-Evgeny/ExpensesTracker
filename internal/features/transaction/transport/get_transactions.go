@@ -21,7 +21,7 @@ import (
 // @Param				sum 			query int false "Filter by more sum transaction"
 // @Param				to 				query int false "Filter by time to"
 // @Param				from 			query int false "Filter by time from"
-// @Param				limit 			query int false "Filter for pagination"
+// @Param				limit 			query int false "Filter for pagination" minimum(1) maximum(500) default(50)
 // @Param				offset 			query int false "Filter for pagination"
 // @Success				200	{array}		TransactionResponse "Get transaction successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
