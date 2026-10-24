@@ -25,7 +25,7 @@ type StatusRequest struct {
 // @Tags         users
 // @Produce      json
 // @Param        request body LoginHandler true      "This Body need to login user"
-// @Success 201		 {object} StatusRequest		 	 "session created"
+// @Success 200		 {object} StatusRequest		 	 "session created"
 // @Failure      400 {object} response.ErrorResponse "Bad request"
 // @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router       /users/login [post]

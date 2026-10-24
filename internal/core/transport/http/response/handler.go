@@ -33,10 +33,15 @@ func NewHandlerResponse(logger *core_logger.Logger, rw http.ResponseWriter) *Han
 }
 
 func (h *HandlerResponse) JSONResponseHandler(statuscode int, data any) {
-	if statuscode != http.StatusNoContent {
+	isContent := statuscode != http.StatusNoContent
+	if isContent {
 		h.rw.Header().Set("Content-Type", "application/json")
 	}
+
 	h.rw.WriteHeader(statuscode)
+	if !isContent {
+		return
+	}
 
 	if err := json.NewEncoder(h.rw).Encode(data); err != nil {
 		h.log.Error("Failed to encode response", zap.Error(err))

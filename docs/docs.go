@@ -949,7 +949,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "session created",
                         "schema": {
                             "$ref": "#/definitions/features_users_transport.StatusRequest"
@@ -1420,8 +1420,8 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string",
-                    "maxLength": 11,
-                    "minLength": 11,
+                    "maxLength": 15,
+                    "minLength": 10,
                     "example": "+71124234312"
                 }
             }

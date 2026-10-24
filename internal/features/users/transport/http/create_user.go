@@ -1,21 +1,20 @@
 package features_users_transport
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
-	"github.com/go-playground/validator"
+	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 type CreateUserRequest struct {
 	FullName string  `json:"full_name" validate:"required,min=3,max=32" example:"John Doe"`
 	Password string  `json:"password" validate:"required,min=8,max=32" example:"123456"`
 	Email    string  `json:"email" validate:"required,email" example:"example@gmail.com"`
-	Phone    *string `json:"phone" validate:"required,min=11,max=11, startswith=+" example:"+71124234312"`
+	Phone    *string `json:"phone" validate:"required,min=10,max=15,startswith=+" example:"+71124234312"`
 }
 
 type CreateUserResponse UserDTOResponse
@@ -35,17 +34,11 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	RsponceHandler := response.NewHandlerResponse(log, w)
-	validate := validator.New()
 
 	log.Info("Start decoding body")
 	var req CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RsponceHandler.ErrorResponse(err, "error decoding request body")
-		return
-	}
-
-	if err := validate.Struct(req); err != nil {
-		RsponceHandler.ErrorResponse(core_errors.ErrorBadRequest, "error validating request body")
+	if err := core_http_utils.DecodeJSON(&req, r); err != nil {
+		RsponceHandler.ErrorResponse(err, "Error read body")
 		return
 	}
 
