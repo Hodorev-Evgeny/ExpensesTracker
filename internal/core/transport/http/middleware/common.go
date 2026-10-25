@@ -68,6 +68,7 @@ func whitelist(path string) bool {
 	allowedPaths := map[string]bool{
 		"/register":           true,
 		"/api/v1/users":       true,
+		"/api/v1/health":      true,
 		"/api/v1/users/login": true,
 		"/users/login":        true,
 	}
