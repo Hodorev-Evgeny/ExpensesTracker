@@ -91,7 +91,7 @@ tracker-deploy-stop:
 tracker-deploy-check:
 	@docker compose up -d --build tracker-app
 	@for i in 1 2 3 4 5; do \
-		if curl -fsSL http://localhost:8080/; then \
+		if curl -fsSL http://localhost:8080/health; then \
 			exit 0; \
 		fi; \
 		echo "App is not ready"; \

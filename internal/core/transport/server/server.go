@@ -2,6 +2,7 @@ package core_transport_server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -104,7 +105,7 @@ func (s *HTTPServer) Start(ctx context.Context) error {
 
 		err := server.ListenAndServe()
 
-		if err != nil {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			ch <- err
 		}
 	}()

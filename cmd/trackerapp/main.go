@@ -84,7 +84,8 @@ func main() {
 	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
 	defer redisClient.Close()
 
-	_, errRedisPing := redisClient.Client.Ping(ctx).Result()
+	ctxCheckRedis, _ := context.WithTimeout(ctx, redisConfig.Timeout)
+	_, errRedisPing := redisClient.Client.Ping(ctxCheckRedis).Result()
 	if errRedisPing != nil {
 		logger.Error("error pinging redis", zap.Error(errRedisPing))
 		os.Exit(1)
@@ -161,5 +162,6 @@ func main() {
 
 	if err := httpServer.Start(ctx); err != nil {
 		logger.Error("HTTP server failed to start", zap.Error(err))
+		os.Exit(1)
 	}
 }
