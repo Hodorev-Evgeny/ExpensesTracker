@@ -9,5 +9,5 @@ var (
 	ErrorBadRequest   = errors.New("Bad request")
 	ErrorUnauthorized = errors.New("Unauthorized")
 	ErrorValidation   = errors.New("Validation error")
-	ErrorExists       = errors.New("User already exists")
+	ErrorConflict     = errors.New("already exists")
 )

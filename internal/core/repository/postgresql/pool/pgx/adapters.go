@@ -3,7 +3,9 @@ package core_pgx_pool
 import (
 	"errors"
 
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -37,14 +39,11 @@ func MappingError(err error) error {
 	}
 
 	if errors.As(err, &pgxErr) {
-		if pgxErr.Code == "23503" {
+		switch pgxErr.Code {
+		case pgerrcode.ForeignKeyViolation:
 			return core_repository_pool.ErrViolationKey
-		}
-	}
-
-	if errors.As(err, &pgxErr) {
-		if pgxErr.Code == "23505" {
-			return core_repository_pool.ErrErrConflict
+		case pgerrcode.UniqueViolation:
+			return core_errors.ErrorConflict
 		}
 	}
 

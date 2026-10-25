@@ -63,7 +63,7 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 		statusCode = http.StatusNotFound
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorExists):
+	case errors.Is(err, core_errors.ErrorConflict):
 		statusCode = http.StatusConflict
 		logfunc = h.log.Warn
 
