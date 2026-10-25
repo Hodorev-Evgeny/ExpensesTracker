@@ -84,7 +84,9 @@ func main() {
 	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
 	defer redisClient.Close()
 
-	ctxCheckRedis, _ := context.WithTimeout(ctx, redisConfig.Timeout)
+	ctxCheckRedis, cancelRedis := context.WithTimeout(ctx, redisConfig.Timeout)
+	defer cancelRedis()
+
 	_, errRedisPing := redisClient.Client.Ping(ctxCheckRedis).Result()
 	if errRedisPing != nil {
 		logger.Error("error pinging redis", zap.Error(errRedisPing))
