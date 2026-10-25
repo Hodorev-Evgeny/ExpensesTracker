@@ -1502,7 +1502,7 @@
                 "error": {
                     "type": "string"
                 },
-                "massage": {
+                "message": {
                     "type": "string"
                 }
             }

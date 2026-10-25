@@ -1508,7 +1508,7 @@ const docTemplate = `{
                 "error": {
                     "type": "string"
                 },
-                "massage": {
+                "message": {
                     "type": "string"
                 }
             }

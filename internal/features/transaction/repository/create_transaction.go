@@ -2,9 +2,12 @@ package feature_repository_transaction
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
 func (r *TransactionRepository) CreateTransaction(
@@ -43,6 +46,10 @@ func (r *TransactionRepository) CreateTransaction(
 	)
 
 	if err != nil {
+		if errors.Is(err, core_repository_pool.ErrViolationKey) {
+			return core_domain.Transaction{},
+				fmt.Errorf("transaction already exists or unique key violation: %w", core_errors.ErrorBadRequest)
+		}
 		return core_domain.Transaction{}, fmt.Errorf("Error scanning transaction: %w", err)
 	}
 
