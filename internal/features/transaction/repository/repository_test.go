@@ -75,7 +75,7 @@ func TestGetTransactionsLimitOffset(t *testing.T) {
 			}
 
 			if idx-1 < 0 || idx > len(args) {
-				t.Error("Args idx for limit query is out of range")
+				t.Fatalf("Args idx for limit query is out of range")
 			}
 			val := args[idx-1]
 			if val != test.expectedResult[0] {
@@ -93,7 +93,7 @@ func TestGetTransactionsLimitOffset(t *testing.T) {
 			}
 
 			if idx-1 < 0 || idx > len(args) {
-				t.Error("Args idx for offset query is out of range")
+				t.Fatalf("Args idx for offset query is out of range")
 			}
 			val := args[idx-1]
 			if val != test.expectedResult[1] {
