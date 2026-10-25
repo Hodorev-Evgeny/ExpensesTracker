@@ -17,7 +17,7 @@ type customValidator interface {
 
 func DecodeJSON(data any, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(data); err != nil {
-		return fmt.Errorf("error encoding JSON: %w", err)
+		return fmt.Errorf("error decoding JSON: %w: %w", core_errors.ErrorBadRequest, err)
 	}
 
 	var err error

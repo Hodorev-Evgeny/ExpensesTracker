@@ -54,6 +54,16 @@ func TestCreateUser(t *testing.T) {
 			expectedStatusCode: http.StatusCreated,
 			withError:          false,
 		},
+		{
+			name: "",
+			body: `{
+			"full_name": "John Doe",
+			"email": "test@gmail.com",
+			"password": "password123",
+			"phone": "+71124234312"`,
+			expectedStatusCode: http.StatusBadRequest,
+			withError:          true,
+		},
 	}
 
 	for _, test := range tests {
