@@ -13,7 +13,7 @@ func (s *LimitService) DeleteLimit(
 	limitID int,
 ) error {
 	if limitID == core_domain.UnincelizedID {
-		return core_errors.ErrorUnauthorized
+		return core_errors.ErrorBadRequest
 	}
 
 	if err := s.limitRepo.DeleteLimit(ctx, limitID); err != nil {

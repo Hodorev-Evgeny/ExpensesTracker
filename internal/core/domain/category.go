@@ -48,7 +48,6 @@ func (c *Category) Update(data CategoryUpdate) error {
 	}
 
 	if data.Limit_id.Set {
-		fmt.Println("limit_id:", *data.Limit_id.Value)
 		tmp.Limit_id = data.Limit_id.Value
 	}
 

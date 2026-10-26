@@ -13,7 +13,7 @@ func (s *LimitService) GetLimit(
 	id int,
 ) (core_domain.Limit, error) {
 	if id == core_domain.UnincelizedID {
-		return core_domain.Limit{}, core_errors.ErrorUnauthorized
+		return core_domain.Limit{}, core_errors.ErrorBadRequest
 	}
 
 	limitDomain, err := s.limitRepo.GetLimit(ctx, id)
