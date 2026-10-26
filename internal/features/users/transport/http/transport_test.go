@@ -55,7 +55,7 @@ func TestCreateUser(t *testing.T) {
 			withError:          false,
 		},
 		{
-			name: "",
+			name: "broken json body",
 			body: `{
 			"full_name": "John Doe",
 			"email": "test@gmail.com",
