@@ -604,7 +604,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "maximum": 500,
+                        "minimum": 1,
                         "type": "integer",
+                        "default": 50,
                         "description": "Filter for pagination",
                         "name": "limit",
                         "in": "query"
