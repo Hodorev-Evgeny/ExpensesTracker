@@ -1,20 +1,20 @@
 package features_users_transport
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
+	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 type CreateUserRequest struct {
 	FullName string  `json:"full_name" validate:"required,min=3,max=32" example:"John Doe"`
 	Password string  `json:"password" validate:"required,min=8,max=32" example:"123456"`
 	Email    string  `json:"email" validate:"required,email" example:"example@gmail.com"`
-	Phone    *string `json:"phone" validate:"required,min=11,max=11, startswith=+" example:"+71124234312"`
+	Phone    *string `json:"phone" validate:"required,min=10,max=15,startswith=+" example:"+71124234312"`
 }
 
 type CreateUserResponse UserDTOResponse
@@ -37,8 +37,8 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Info("Start decoding body")
 	var req CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RsponceHandler.ErrorResponse(err, "error decoding request body")
+	if err := core_http_utils.DecodeJSON(&req, r); err != nil {
+		RsponceHandler.ErrorResponse(err, "Error read body")
 		return
 	}
 
@@ -68,9 +68,6 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Info("Start writing response")
 	respons := DomainFromResponse(userDomain)
-	if err := json.NewEncoder(w).Encode(respons); err != nil {
-		RsponceHandler.ErrorResponse(err, "error writing response")
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
+
+	RsponceHandler.JSONResponseHandler(http.StatusCreated, respons)
 }
