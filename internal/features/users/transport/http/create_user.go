@@ -2,8 +2,10 @@ package features_users_transport
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 )
@@ -43,6 +45,10 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Info("Start processing creating new user")
 	userDomain, err := h.userService.CreateUser(ctx, DTOFromDomain(req))
 	if err != nil {
+		if errors.Is(err, core_errors.ErrorConflict) {
+			RsponceHandler.ErrorResponse(err, "this user email is already in use")
+			return
+		}
 		RsponceHandler.ErrorResponse(err, "error creating user")
 		return
 	}

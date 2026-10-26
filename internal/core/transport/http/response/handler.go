@@ -63,6 +63,10 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 		statusCode = http.StatusNotFound
 		logfunc = h.log.Warn
 
+	case errors.Is(err, core_errors.ErrorConflict):
+		statusCode = http.StatusConflict
+		logfunc = h.log.Warn
+
 	default:
 		statusCode = http.StatusInternalServerError
 		logfunc = h.log.Error
@@ -70,7 +74,7 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 
 	logfunc(msg, zap.Error(err))
 
-	h.errorResponse(err, msg, statusCode)
+	h.errorResponse(msg, statusCode)
 }
 
 func (h *HandlerResponse) PanicResponse(p any, msg string) {
@@ -78,15 +82,15 @@ func (h *HandlerResponse) PanicResponse(p any, msg string) {
 	err := fmt.Errorf("unexepted punic: %v", p)
 
 	h.log.Error(msg, zap.Error(err))
-	h.errorResponse(err, msg, statuscode)
+	h.errorResponse(msg, statuscode)
 }
 
-func (h *HandlerResponse) errorResponse(err error, msg string, status int) {
+func (h *HandlerResponse) errorResponse(msg string, status int) {
 	h.rw.WriteHeader(status)
 
 	response := ErrorResponse{
-		Error:   msg,
-		Massage: msg,
+		Error:   http.StatusText(status),
+		Message: msg,
 	}
 
 	if err := json.NewEncoder(h.rw).Encode(response); err != nil {

@@ -279,7 +279,7 @@ definitions:
     properties:
       error:
         type: string
-      massage:
+      message:
         type: string
     type: object
 host: 127.0.0.1:8080
