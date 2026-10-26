@@ -56,13 +56,11 @@ func CreateLoginUser(
 	email string,
 	password string,
 ) User {
-	return CreateUser(
-		UnincelizedID,
-		"TestUserName",
-		email,
-		nil,
-		password,
-	)
+	return User{
+		ID:       UnincelizedID,
+		Email:    email,
+		Password: password,
+	}
 }
 
 func (u *User) ChangeID(id int) error {
@@ -92,6 +90,18 @@ func (u *User) Validate() error {
 		if !regular.MatchString(*u.Phone_number) {
 			return fmt.Errorf("invalid user phone number")
 		}
+	}
+
+	return nil
+}
+
+func (u *User) LoginValidate() error {
+	if _, err := mail.ParseAddress(u.Email); err != nil {
+		return fmt.Errorf("invalid user email")
+	}
+
+	if u.Password == "" {
+		return fmt.Errorf("invalid user password for user")
 	}
 
 	return nil

@@ -12,7 +12,7 @@ type ServerConfig struct {
 	ShutdownTimeout time.Duration  `envconfig:"SHUTDOWN_TIMEOUT" required:"true"`
 	AllowedOrigins  []string       `envconfig:"ALLOWED_ORIGINS" required:"true"`
 	TimeZone        *time.Location `envconfig:"TIMEZONE" required:"true"`
-	Secure          bool           `envconfig:"SECURE" default:"true"`
+	Secure          bool           `envconfig:"SECURE" default:"false"`
 }
 
 func NewServerConfig() (ServerConfig, error) {

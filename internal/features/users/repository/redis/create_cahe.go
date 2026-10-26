@@ -6,13 +6,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
 func (r *RepositoryRedis) CreateCache(ctx context.Context, user core_domain.User) (string, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, r.rbd.GetTimeout())
 	defer cancel()
 
 	jsonBytes, err := json.Marshal(core_domain.CookieData{

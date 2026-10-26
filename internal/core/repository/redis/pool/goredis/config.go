@@ -11,8 +11,8 @@ type RedisConfig struct {
 	ADDR     string        `envconfig:"ADDR"`
 	Password string        `envconfig:"PASSWORD"`
 	Database int           `envconfig:"DATABASE"`
-	TTL      time.Duration `envconfig:"TTL"`
-	Timeout  time.Duration `envconfig:"TIMEOUT" default:"5s"`
+	TTL      time.Duration `envconfig:"TTL" default:"24h"`
+	TimeOut  time.Duration `envconfig:"TIMEOUT" default:"5s"`
 }
 
 func getRedisConfig() (RedisConfig, error) {

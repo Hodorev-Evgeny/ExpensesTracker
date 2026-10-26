@@ -9,7 +9,8 @@ type RedisPool interface {
 	Ping(ctx context.Context) CustomStatusCmd
 	Get(ctx context.Context, key string) CustomStringCmd
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) CustomStatusCmd
-	Del(ctx context.Context, key string) CustomStatusCmd
+	Del(ctx context.Context, key string) CustomIntCmd
+	GetTimeout() time.Duration
 	GetTTL() time.Duration
 	Close() error
 }
@@ -17,6 +18,10 @@ type RedisPool interface {
 type CustomStatusCmd interface {
 	Err() error
 	Result() (string, error)
+}
+
+type CustomIntCmd interface {
+	Err() error
 }
 
 type CustomStringCmd interface {

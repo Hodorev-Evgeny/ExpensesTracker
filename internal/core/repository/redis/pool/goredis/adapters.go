@@ -12,6 +12,10 @@ type CustomStatusCmd struct {
 	*redis.StatusCmd
 }
 
+type CustomIntCmd struct {
+	*redis.IntCmd
+}
+
 func (cmd *CustomStringCmd) Result() (string, error) {
 	return cmd.StringCmd.Result()
 }
@@ -22,4 +26,8 @@ func (status *CustomStatusCmd) Err() error {
 
 func (status *CustomStatusCmd) Result() (string, error) {
 	return status.StatusCmd.Result()
+}
+
+func (c *CustomIntCmd) Err() error {
+	return c.IntCmd.Err()
 }

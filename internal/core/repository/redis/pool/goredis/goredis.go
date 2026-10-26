@@ -10,7 +10,8 @@ import (
 
 type RedisClient struct {
 	*redis.Client
-	ttl time.Duration
+	ttl     time.Duration
+	timeout time.Duration
 }
 
 func newRedisClient(config RedisConfig) (*RedisClient, error) {
@@ -23,6 +24,7 @@ func newRedisClient(config RedisConfig) (*RedisClient, error) {
 	return &RedisClient{
 		rdb,
 		config.TTL,
+		config.TimeOut,
 	}, nil
 }
 
@@ -50,7 +52,7 @@ func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, ex
 	return &CustomStatusCmd{ans}
 }
 
-func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis_pool.CustomStatusCmd {
+func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis_pool.CustomIntCmd {
 	ans := r.Client.Del(ctx, key)
 	return ans
 }
@@ -58,6 +60,11 @@ func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis
 func (r *RedisClient) GetTTL() time.Duration {
 	return r.ttl
 }
+
+func (r *RedisClient) GetTimeout() time.Duration {
+	return r.timeout
+}
+
 func (r *RedisClient) Close() error {
 	return r.Client.Close()
 }

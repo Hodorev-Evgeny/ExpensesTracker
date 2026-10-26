@@ -3,14 +3,13 @@ package feature_user_redis
 import (
 	"context"
 	"fmt"
-	"time"
 )
 
 func (r *RepositoryRedis) DeleteCache(
 	ctx context.Context,
 	sessionID string,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, r.rbd.GetTimeout())
 	defer cancel()
 
 	key := "sessionID:" + sessionID
