@@ -80,7 +80,7 @@ func TestExtraditionUser(t *testing.T) {
 			t.Errorf("Test %s expected result %v, but got %v", test.name, test.expectedError, err)
 		}
 		if ans != test.expectedResult {
-			t.Errorf("Test %s expected result %v, but got %v", test.name, test.expectedError, ans)
+			t.Errorf("Test %s expected result %v, but got %v", test.name, test.expectedResult, ans)
 		}
 	}
 }
