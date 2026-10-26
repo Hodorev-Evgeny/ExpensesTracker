@@ -10,6 +10,9 @@ import (
 func (r *CategoryRepository) GetAllCategories(
 	ctx context.Context,
 ) ([]core_domain.Category, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
+	defer cancel()
+
 	query := `
 		SELECT id, title, user_id
 		FROM trackerapp.categories;`
@@ -18,6 +21,7 @@ func (r *CategoryRepository) GetAllCategories(
 	if err != nil {
 		return nil, fmt.Errorf("Error get all categories: %w", err)
 	}
+	defer rows.Close()
 
 	list := make([]core_domain.Category, 0)
 	for rows.Next() {
@@ -33,6 +37,10 @@ func (r *CategoryRepository) GetAllCategories(
 		}
 
 		list = append(list, category)
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", rows.Err())
 	}
 
 	return list, nil

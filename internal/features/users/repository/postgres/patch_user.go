@@ -11,6 +11,9 @@ func (r *UserRepository) PatchUser(ctx context.Context,
 	id int,
 	patch core_domain.User,
 ) (core_domain.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
+	defer cancel()
+
 	query := `
 			UPDATE trackerapp.users 
 			SET full_name=$1, email=$2, phone_number=$3

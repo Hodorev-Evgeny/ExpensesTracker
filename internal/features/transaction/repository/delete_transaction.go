@@ -3,7 +3,6 @@ package feature_repository_transaction
 import (
 	"context"
 	"fmt"
-	"time"
 
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
@@ -12,7 +11,7 @@ func (r *TransactionRepository) DeleteTransaction(
 	ctx context.Context,
 	id int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `
