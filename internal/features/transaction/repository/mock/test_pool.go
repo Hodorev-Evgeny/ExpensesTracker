@@ -29,6 +29,10 @@ func (p *TestPool) Exec(ctx context.Context, sql string, arguments ...any) (core
 	return nil, nil
 }
 
+func (p *TestPool) Ping(ctx context.Context) error {
+	return nil
+}
+
 func (p *TestPool) GetTimeout() time.Duration {
 	return time.Second
 }
