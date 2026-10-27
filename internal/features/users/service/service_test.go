@@ -8,28 +8,28 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var testUserInfo map[string]*core_domain.User = map[string]*core_domain.User{
-	"testcorrect@gmai.com": &core_domain.User{
-		Password: "VeryHardAndCorrectPass",
-	},
-}
+var testUserInfo map[string]*core_domain.User = map[string]*core_domain.User{}
 
 type TestCase struct {
-	name          string
-	inputUser     core_domain.User
-	expectedError error
+	name            string
+	inputUser       core_domain.User
+	expectedError   error
+	withCreateCache bool
 }
 
 type RepositoryRedisTestMock struct {
+	IncomingUser core_domain.User
 }
 
 func (r *RepositoryRedisTestMock) CreateCache(
 	ctx context.Context,
 	user core_domain.User,
 ) (string, error) {
+	r.IncomingUser = user
 	return "", nil
 }
 
@@ -86,7 +86,7 @@ func (r *RepositoryPostgresMock) FindByEmail(
 	if logUser, ok := testUserInfo[user.Email]; ok {
 		return *logUser, nil
 	}
-	return core_domain.User{}, fmt.Errorf("user not found")
+	return core_domain.User{}, fmt.Errorf("user not found: %w", core_repository_pool.ErrNoRows)
 }
 
 func HashTestPassword() error {
@@ -105,39 +105,58 @@ func TestUserLogin(t *testing.T) {
 		{
 			name: "Correct Login",
 			inputUser: core_domain.User{
+				ID:       -1,
 				Email:    "testcorrect@gmai.com",
 				Password: "VeryHardAndCorrectPass",
 			},
-			expectedError: nil,
+			expectedError:   nil,
+			withCreateCache: true,
 		}, {
 			name: "Incorrect password",
 			inputUser: core_domain.User{
+				ID:       -1,
 				Email:    "testcorrect@gmai.com",
 				Password: "VeryHardAndPass",
 			},
-			expectedError: core_errors.ErrorUnauthorized,
+			expectedError:   core_errors.ErrorUnauthorized,
+			withCreateCache: false,
 		},
 		{
 			name: "Unknown email",
 			inputUser: core_domain.User{
+				ID:       -1,
 				Email:    "testunknow@gmai.com",
 				Password: "VeryHardAndCorrectPass",
 			},
-			expectedError: core_errors.ErrorUnauthorized,
+			expectedError:   core_errors.ErrorUnauthorized,
+			withCreateCache: false,
 		},
+	}
+	testUserInfo["testcorrect@gmai.com"] = &core_domain.User{
+		ID:       123,
+		Email:    "testcorrect@gmai.com",
+		Password: "VeryHardAndCorrectPass",
 	}
 
 	if err := HashTestPassword(); err != nil {
 		t.Error(err)
 	}
-	t.Log(testUserInfo)
 
-	service := NewUserService(&RepositoryPostgresMock{}, &RepositoryRedisTestMock{})
 	for _, test := range testCase {
-		t.Log(test.inputUser)
+		redisMock := &RepositoryRedisTestMock{}
+		postgresMock := &RepositoryPostgresMock{}
+		service := NewUserService(postgresMock, redisMock)
+
 		_, err := service.LoginUser(context.Background(), test.inputUser)
+
 		if !errors.Is(err, test.expectedError) {
 			t.Errorf("Test case %s expected error: %s, got: %s", test.name, test.expectedError, err)
+		}
+
+		if expectedUser, ok := testUserInfo[test.inputUser.Email]; test.withCreateCache && ok {
+			if expectedUser.ID != redisMock.IncomingUser.ID {
+				t.Errorf("Test case %s expected user ID: %d, got: %d", test.name, expectedUser.ID, redisMock.IncomingUser.ID)
+			}
 		}
 	}
 }

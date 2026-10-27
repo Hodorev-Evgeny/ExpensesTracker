@@ -5,6 +5,8 @@ import (
 	"net/mail"
 	"regexp"
 	"time"
+
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 var (
@@ -97,11 +99,11 @@ func (u *User) Validate() error {
 
 func (u *User) LoginValidate() error {
 	if _, err := mail.ParseAddress(u.Email); err != nil {
-		return fmt.Errorf("invalid user email")
+		return fmt.Errorf("invalid user email: %w", core_errors.ErrorBadRequest)
 	}
 
 	if u.Password == "" {
-		return fmt.Errorf("invalid user password for user")
+		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrorBadRequest)
 	}
 
 	return nil

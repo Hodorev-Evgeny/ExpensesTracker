@@ -54,7 +54,7 @@ func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, ex
 
 func (r *RedisClient) Del(ctx context.Context, key string) core_repository_redis_pool.CustomIntCmd {
 	ans := r.Client.Del(ctx, key)
-	return ans
+	return &CustomIntCmd{ans}
 }
 
 func (r *RedisClient) GetTTL() time.Duration {

@@ -1,7 +1,6 @@
 package core_http_utils
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -16,7 +15,6 @@ func SetSessionCookie(w http.ResponseWriter, sessionID string, ttl int, isSecure
 		Secure:   isSecure,
 	})
 
-	log.Printf("Debug cookie set: %v", w.Header().Get("Set-Cookie"))
 }
 
 func DeleteSessionCookie(w http.ResponseWriter) {
