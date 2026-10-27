@@ -105,7 +105,7 @@ func (s *HTTPServer) Start(ctx context.Context) error {
 
 		err := server.ListenAndServe()
 
-		if errors.Is(err, http.ErrServerClosed) {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			ch <- err
 		}
 	}()

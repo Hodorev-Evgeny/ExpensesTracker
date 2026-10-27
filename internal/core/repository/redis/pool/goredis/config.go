@@ -2,14 +2,16 @@ package core_goredis_pool
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 )
 
 type RedisConfig struct {
-	ADDR     string `envconfig:"ADDR"`
-	Password string `envconfig:"PASSWORD"`
-	Database int    `envconfig:"DATABASE"`
+	ADDR     string        `envconfig:"ADDR" required:"true"`
+	Password string        `envconfig:"PASSWORD" required:"true"`
+	Database int           `envconfig:"DATABASE" required:"true"`
+	Timeout  time.Duration `envconfig:"TIMEOUT" default:"5s"`
 }
 
 func getRedisConfig() (RedisConfig, error) {
