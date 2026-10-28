@@ -17,8 +17,14 @@ func (r *CategoryRepository) RenameCategory(
 
 	query := `
 		UPDATE trackerapp.categories 
-		SET title=$1, limit_id=$2
-		WHERE id=$3 AND user_id = $4
+		SET title=$1::text, limit_id=$2::integer
+		WHERE id=$3::integer
+		  AND user_id = $4::integer
+		  AND ($2::integer IS NULL OR EXISTS (
+			  SELECT 1 
+			  FROM trackerapp.spending_limit 
+			  WHERE id = $2::integer AND user_id = $4::integer
+		))
 		RETURNING id, title, user_id, limit_id;`
 
 	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id, userId)
