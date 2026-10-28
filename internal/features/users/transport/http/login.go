@@ -10,7 +10,6 @@ import (
 )
 
 type LoginHandler struct {
-	FullName string `json:"full_name"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
@@ -40,17 +39,19 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginUser := core_domain.CreateLoginUser(user.FullName, user.Email, user.Password)
+	loginUser := core_domain.CreateLoginUser(user.Email, user.Password)
 	sessionID, err := h.userService.LoginUser(ctx, loginUser)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error logging in")
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:  "sessionID",
-		Value: sessionID,
-	})
+	core_http_utils.SetSessionCookie(
+		w,
+		sessionID,
+		int(h.ttlRedis.Seconds()),
+		h.isSecure,
+	)
 
 	req := StatusRequest{
 		Status: "session created",

@@ -11,6 +11,7 @@ type RedisConfig struct {
 	ADDR     string        `envconfig:"ADDR" required:"true"`
 	Password string        `envconfig:"PASSWORD" required:"true"`
 	Database int           `envconfig:"DATABASE" required:"true"`
+	TTL      time.Duration `envconfig:"TTL" default:"24h"`
 	Timeout  time.Duration `envconfig:"TIMEOUT" default:"5s"`
 }
 
