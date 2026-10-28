@@ -1,0 +1,144 @@
+package core_middleware
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"testing"
+	"time"
+
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
+	"github.com/redis/go-redis/v9"
+)
+
+var ValueSessionDb map[string]string = map[string]string{}
+
+type MockRedisClient struct {
+}
+
+type TestStringCmd struct {
+	ans string
+}
+
+func (s *TestStringCmd) Result() (string, error) {
+	if s.ans == "" {
+		return "", redis.Nil
+	}
+	return s.ans, nil
+}
+
+func (r *MockRedisClient) Ping(ctx context.Context) core_repository_redis_pool.CustomStatusCmd {
+	return nil
+}
+
+func (r *MockRedisClient) Get(ctx context.Context, key string) core_repository_redis_pool.CustomStringCmd {
+	if val, ok := ValueSessionDb[key]; ok {
+		return &TestStringCmd{ans: val}
+	}
+	return &TestStringCmd{ans: ""}
+}
+
+func (r *MockRedisClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) core_repository_redis_pool.CustomStatusCmd {
+	return nil
+}
+
+func (r *MockRedisClient) Del(ctx context.Context, key string) core_repository_redis_pool.CustomIntCmd {
+	return nil
+}
+
+func (r *MockRedisClient) GetTTL() time.Duration {
+	return time.Second
+}
+
+func (r *MockRedisClient) GetTimeout() time.Duration {
+	return time.Second
+}
+
+func (r *MockRedisClient) Close() error {
+	return nil
+}
+
+func TestAuthenticator(t *testing.T) {
+	redisMock := &MockRedisClient{}
+	ValueSessionDb["sessionID:testParam"] = "123"
+
+	t.Run("Correct authenticate", func(t *testing.T) {
+		var receivedUserid int
+		var CheckInCtx bool
+
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			receivedUserid, CheckInCtx = core_domain.UserIDFromContext(r.Context())
+			w.WriteHeader(http.StatusOK)
+		})
+
+		middleware := Authenticator(redisMock)
+		handlerTest := middleware(nextHandler)
+
+		r := httptest.NewRequest(http.MethodGet, "/api", nil)
+		w := httptest.NewRecorder()
+
+		r.AddCookie(&http.Cookie{
+			Name:  "sessionID",
+			Value: "testParam",
+		})
+
+		handlerTest.ServeHTTP(w, r)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("handler returned wrong status code: got %v want %v", w.Code, http.StatusOK)
+		}
+
+		expectedUserid, _ := strconv.Atoi(ValueSessionDb["sessionID:testParam"])
+		if !CheckInCtx {
+			t.Errorf("UserID from context was not set")
+		}
+
+		if expectedUserid != receivedUserid {
+			t.Errorf("UserID from context did not match: got %v want %v", receivedUserid, expectedUserid)
+		}
+	})
+
+	t.Run("Authenticate without cookie", func(t *testing.T) {
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+
+		middleware := Authenticator(redisMock)
+		handlerTest := middleware(nextHandler)
+
+		r := httptest.NewRequest(http.MethodGet, "/api", nil)
+		w := httptest.NewRecorder()
+
+		handlerTest.ServeHTTP(w, r)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Got status code %v want %v", w.Code, http.StatusUnauthorized)
+		}
+	})
+
+	t.Run("Authenticate with cookie for which there is no session in Redis", func(t *testing.T) {
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+
+		middleware := Authenticator(redisMock)
+		handlerTest := middleware(nextHandler)
+
+		r := httptest.NewRequest(http.MethodGet, "/api", nil)
+		w := httptest.NewRecorder()
+
+		r.AddCookie(&http.Cookie{
+			Name:  "sessionID",
+			Value: "NotParam",
+		})
+
+		handlerTest.ServeHTTP(w, r)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Got status code %v want %v", w.Code, http.StatusUnauthorized)
+		}
+	})
+}

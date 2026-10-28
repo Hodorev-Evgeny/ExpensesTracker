@@ -1,7 +1,6 @@
 package feature_transport_session
 
 import (
-	"fmt"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
@@ -15,8 +14,7 @@ import (
 // @Description  	Get cookie by sessionID
 // @Tags         	session
 // @Produce      	json
-// @Param        	sessionID  path string true         "ID for get something info"
-// @Success 201		{object} core_domain.CookieData		"session cookieData return"
+// @Success 200		{object} core_domain.CookieData		"session cookieData return"
 // @Failure      	500 {object} response.ErrorResponse "Internal server error"
 // @Router       	/users/me	[get]
 func (h *SessionHandler) GetSessionData(w http.ResponseWriter, r *http.Request) {
@@ -24,13 +22,12 @@ func (h *SessionHandler) GetSessionData(w http.ResponseWriter, r *http.Request) 
 	log := core_logger.FromContext(ctx)
 	ResponseHandler := response.NewHandlerResponse(log, w)
 
-	userID, ok := ctx.Value("userID").(int)
+	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorBadRequest, fmt.Sprintf("Error getting userId"))
+		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
 		return
 	}
 
-	fmt.Println(userID, 111111111111)
 	data := core_domain.CookieData{UserID: userID}
 
 	ResponseHandler.JSONResponseHandler(http.StatusOK, data)

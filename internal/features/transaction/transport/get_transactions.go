@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
@@ -32,7 +33,13 @@ func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.
 	log := core_logger.FromContext(ctx)
 	ResponseHandler := response.NewHandlerResponse(log, w)
 
-	filters, err := GetTransactionFilters(r)
+	userID, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		return
+	}
+
+	filters, err := GetTransactionFilters(r, &userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting transaction filters")
 		return
@@ -58,7 +65,7 @@ func ListDomainFromResponse(
 	return tmp
 }
 
-func GetTransactionFilters(r *http.Request) (core_domain.FiltersTransaction, error) {
+func GetTransactionFilters(r *http.Request, userID *int) (core_domain.FiltersTransaction, error) {
 	var filters core_domain.FiltersTransaction
 
 	intFields := map[string]**int{
@@ -78,6 +85,8 @@ func GetTransactionFilters(r *http.Request) (core_domain.FiltersTransaction, err
 			*field = val
 		}
 	}
+
+	filters.UserId = userID
 
 	to, err := core_http_utils.GetDateQueryParm(r, "to")
 	if err != nil {

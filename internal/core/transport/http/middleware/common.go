@@ -2,12 +2,14 @@ package core_middleware
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
@@ -53,29 +55,66 @@ func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 				return
 			}
 
+			isApi := r.URL.Path == "/api" || strings.HasPrefix(r.URL.Path, "/api/")
+
 			val, err := r.Cookie("sessionID")
 			if err != nil {
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "error getting sessionID")
+					return
+				}
 				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
 
 			key := "sessionID:" + val.Value
-			row := rbd.Get(r.Context(), key)
+			ctxRedis, cancel := context.WithTimeout(r.Context(), rbd.GetTimeout())
+			defer cancel()
+
+			row := rbd.Get(ctxRedis, key)
 			userID, err := row.Result()
 
-			if err != nil || errors.Is(err, redis.Nil) {
+			if errors.Is(err, redis.Nil) {
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "not found sessionID in database")
+					return
+				}
 				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
-			userIDInt, err := strconv.Atoi(userID)
+
 			if err != nil {
-				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				WriteError(w, http.StatusInternalServerError, "internal server error")
+				return
 			}
 
-			ctx := context.WithValue(r.Context(), "userID", userIDInt)
+			userIDInt, err := strconv.Atoi(userID)
+			if err != nil {
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "invalid user ID")
+					return
+				}
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				return
+			}
+
+			ctx := core_domain.UserIDToContext(r.Context(), userIDInt)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
+	}
+}
+
+func WriteError(w http.ResponseWriter, code int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	req := map[string]string{
+		"error":   http.StatusText(code),
+		"message": message,
+	}
+	if err := json.NewEncoder(w).Encode(req); err != nil {
+		return
 	}
 }
 
@@ -93,6 +132,7 @@ func whitelist(path string) bool {
 		"/api/v1/users/login": true,
 		"/users/login":        true,
 		"/login":              true,
+		"/api/v1/health":      true,
 	}
 
 	if allowedPaths[path] {
