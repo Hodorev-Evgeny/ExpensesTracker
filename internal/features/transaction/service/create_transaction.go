@@ -19,7 +19,7 @@ func (s *TransactionService) CreateTransaction(
 		)
 	}
 
-	exist, err := s.transactionRepository.CheckCategoryOwner(transaction.CategoryID, transaction.UserID)
+	exist, err := s.transactionRepository.CheckCategoryOwner(ctx, transaction.CategoryID, transaction.UserID)
 	if err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("failed to check transaction owner: %w", err)
 	}

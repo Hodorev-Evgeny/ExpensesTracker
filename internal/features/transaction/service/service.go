@@ -36,6 +36,7 @@ type TransactionRepository interface {
 	) error
 
 	CheckCategoryOwner(
+		ctx context.Context,
 		categoryID int,
 		userID int,
 	) (bool, error)

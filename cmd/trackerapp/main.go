@@ -23,7 +23,6 @@ import (
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
-	feature_transport_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/transport"
 	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
 	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
 	feature_transport_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/transport"
@@ -127,9 +126,6 @@ func main() {
 	webTransport := feature_transport_web.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
-	sessionTransport := feature_transport_session.NewSessionHandler()
-	sessionRouters := sessionTransport.Route()
-
 	healthRepository := feature_repository_health.NewHealthRepository(redisClient, pool)
 	healthTransport := feature_transport_health.NewHealthTransport(healthRepository)
 	healthRouters := healthTransport.Router()
@@ -140,7 +136,6 @@ func main() {
 	apiVersionRouter.RegisterAPIRoutes(transactionRouters...)
 	apiVersionRouter.RegisterAPIRoutes(limitRouters...)
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
-	apiVersionRouter.RegisterAPIRoutes(sessionRouters...)
 	apiVersionRouter.RegisterAPIRoutes(healthRouters...)
 
 	httpServer := core_transport_server.NewServer(

@@ -1,5 +1,5 @@
-import { categoriesApi, getCookie, limitsApi, sessionApi, statsApi, transactionsApi, usersApi } from "./api.js?v=11";
-import { DEFAULT_PAGE_SIZE, STORAGE_KEYS } from "./config.js?v=11";
+import { categoriesApi, limitsApi, statsApi, transactionsApi, usersApi } from "./api.js?v=11";
+import { DEFAULT_PAGE_SIZE } from "./config.js?v=11";
 import {
   getCategoryByLimitId,
   getCategoryId,
@@ -7,7 +7,6 @@ import {
   getCategoryTitle,
   getCategoryUserId,
   getLimitId,
-  getUserId,
   setCategoryLimitId,
   setCurrentUser,
   setTheme,
@@ -54,7 +53,7 @@ function getFormData(form) {
 
 function onlyFilled(object) {
   return Object.fromEntries(
-    Object.entries(object).filter(([, value]) => value !== undefined && value !== null && value !== ""),
+      Object.entries(object).filter(([, value]) => value !== undefined && value !== null && value !== ""),
   );
 }
 
@@ -86,52 +85,6 @@ function getTransactionComments(transaction) {
   return transaction?.comments ?? transaction?.Comments ?? "";
 }
 
-function getSessionUserId(cookieData) {
-  return cookieData?.userID
-    ?? cookieData?.userId
-    ?? cookieData?.user_id
-    ?? cookieData?.UserID
-    ?? cookieData?.id
-    ?? cookieData?.ID;
-}
-
-function getStoredCurrentUserId() {
-  const raw = localStorage.getItem(STORAGE_KEYS.currentUserId);
-  const numericId = Number(raw);
-  return Number.isFinite(numericId) && numericId > 0 ? numericId : null;
-}
-
-function setStoredCurrentUserId(userId) {
-  const numericId = Number(userId);
-  if (Number.isFinite(numericId) && numericId > 0) {
-    localStorage.setItem(STORAGE_KEYS.currentUserId, String(numericId));
-  }
-}
-
-async function resolveCurrentUserId() {
-  const sessionID = getCookie("sessionID");
-
-  if (sessionID) {
-    try {
-      const session = await sessionApi.get(sessionID);
-      const userId = getSessionUserId(session);
-      if (userId) {
-        setStoredCurrentUserId(userId);
-        return userId;
-      }
-    } catch (error) {
-      console.warn("Не удалось получить пользователя по sessionID, пробую локальный fallback", error);
-    }
-  }
-
-  const storedUserId = getStoredCurrentUserId();
-  if (storedUserId) {
-    return storedUserId;
-  }
-
-  throw new Error("Не удалось определить пользователя. Войдите в аккаунт заново.");
-}
-
 function findCategoryById(categoryId) {
   return state.categories.find((category) => Number(getCategoryId(category)) === Number(categoryId));
 }
@@ -160,11 +113,11 @@ function confirmAction({ title = "Подтвердите действие", text
 
   return new Promise((resolve) => {
     dialog.addEventListener(
-      "close",
-      () => {
-        resolve(dialog.returnValue === "ok");
-      },
-      { once: true },
+        "close",
+        () => {
+          resolve(dialog.returnValue === "ok");
+        },
+        { once: true },
     );
 
     dialog.showModal();
@@ -189,10 +142,14 @@ function requireSessionUserId() {
 }
 
 async function loadCurrentUser() {
-  const userId = await resolveCurrentUserId();
-  const user = await usersApi.get(userId);
+  const user = await getCurrentUser();
+  const userId = Number(getEntityId(user));
+
+  if (!Number.isSafeInteger(userId) || userId <= 0) {
+    throw new Error("Backend не вернул ID пользователя");
+  }
+
   setCurrentUser(userId, user);
-  setStoredCurrentUserId(userId);
   renderUsers();
   fillUserForm(user);
 }
@@ -215,15 +172,15 @@ function getLimitUserId(limit) {
 
 function filterCurrentUserLimits(limits) {
   const currentCategoryIds = new Set(
-    state.categories
-      .map((category) => Number(getCategoryId(category)))
-      .filter((id) => Number.isFinite(id) && id > 0),
+      state.categories
+          .map((category) => Number(getCategoryId(category)))
+          .filter((id) => Number.isFinite(id) && id > 0),
   );
 
   const currentLimitIds = new Set(
-    state.categories
-      .map((category) => Number(getCategoryLimitId(category)))
-      .filter((id) => Number.isFinite(id) && id > 0),
+      state.categories
+          .map((category) => Number(getCategoryLimitId(category)))
+          .filter((id) => Number.isFinite(id) && id > 0),
   );
 
   return (Array.isArray(limits) ? limits : []).filter((limit) => {
@@ -334,10 +291,10 @@ async function loadTransactions(filterData = state.filters.transactions) {
   const transactions = await transactionsApi.list(query);
 
   state.transactions = Array.isArray(transactions)
-    ? transactions
-    : transactions
-      ? [transactions]
-      : [];
+      ? transactions
+      : transactions
+          ? [transactions]
+          : [];
 
   const visibleTransactions = applyLocalTransactionFilters(state.transactions, state.filters.transactions);
 
@@ -693,8 +650,8 @@ function setupLimits() {
       const confirmed = await confirmAction({
         title: "Удалить лимит?",
         text: linkedCategory
-          ? `Лимит #${id}, привязанный к категории «${getCategoryTitle(linkedCategory)}», будет удалён.`
-          : `Лимит #${id} будет удалён.`,
+            ? `Лимит #${id}, привязанный к категории «${getCategoryTitle(linkedCategory)}», будет удалён.`
+            : `Лимит #${id} будет удалён.`,
       });
 
       if (!confirmed) return;
@@ -719,7 +676,7 @@ function setupUsers() {
 
     runSafely(async () => {
       const payload = validateUserPatchPayload(getFormData(event.currentTarget));
-      const updatedUser = await usersApi.update(requireSessionUserId(), payload);
+      const updatedUser = await usersApi.update(payload);
       state.currentUser = updatedUser;
       renderUsers();
       fillUserForm(updatedUser);
@@ -770,6 +727,19 @@ function setupApp() {
   setDefaultDates();
 
   runSafely(reloadMainData, "Данные загружены");
+}
+
+async function getCurrentUser() {
+  const response = await fetch("/api/v1/users", {
+    method: "GET",
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get user: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 document.addEventListener("DOMContentLoaded", setupApp);

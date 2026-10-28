@@ -6,10 +6,11 @@ import (
 )
 
 func (r *TransactionRepository) CheckCategoryOwner(
+	ctx context.Context,
 	categoryID int,
 	userID int,
 ) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), r.pool.GetTimeout())
+	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `

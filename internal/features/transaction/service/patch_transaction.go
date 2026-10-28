@@ -20,7 +20,7 @@ func (s *TransactionService) PatchTransaction(
 	}
 
 	if patch.CategoryId.Set {
-		exist, err := s.transactionRepository.CheckCategoryOwner(*patch.CategoryId.Value, userID)
+		exist, err := s.transactionRepository.CheckCategoryOwner(ctx, *patch.CategoryId.Value, userID)
 		if err != nil {
 			return core_domain.Transaction{}, fmt.Errorf("failed to check transaction owner: %w", err)
 		}
