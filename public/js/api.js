@@ -108,7 +108,7 @@ export const usersApi = {
   },
 
   async create(data) {
-    return request("/users", {
+    return request("/users/register", {
       method: "POST",
       body: data,
     });
@@ -121,19 +121,19 @@ export const usersApi = {
     });
   },
 
-  async get(id) {
-    return request(`/users/${id}`);
+  async get() {
+    return request(`/users`);
   },
 
-  async update(id, data) {
-    return request(`/users/${id}`, {
+  async update(data) {
+    return request(`/users`, {
       method: "PATCH",
       body: data,
     });
   },
 
   async delete(id) {
-    return request(`/users/${id}`, {
+    return request(`/users`, {
       method: "DELETE",
     });
   },

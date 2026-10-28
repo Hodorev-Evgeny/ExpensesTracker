@@ -14,7 +14,7 @@ func (r *TransactionRepository) CheckCategoryOwner(
 
 	query := `
 		SELECT EXISTS (
-			SELECT 1 FROM categories WHERE id = $1 AND user_id = $2);`
+			SELECT 1 FROM trackerapp.categories WHERE id = $1 AND user_id = $2);`
 
 	var exists bool
 	err := r.pool.QueryRow(ctx, query, categoryID, userID).Scan(&exists)

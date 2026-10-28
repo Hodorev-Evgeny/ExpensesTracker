@@ -10,8 +10,8 @@ import (
 func (s *CategoryService) RenameCategory(
 	ctx context.Context,
 	id int,
-	userId int,
 	patch core_domain.CategoryUpdate,
+	userId int,
 ) (core_domain.Category, error) {
 	category, err := s.GetCategoryByID(ctx, id, userId)
 	if err != nil {

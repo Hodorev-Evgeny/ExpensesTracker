@@ -8,6 +8,7 @@ import (
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
+	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 // DeleteUser    godoc
@@ -39,6 +40,16 @@ func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		responseHandler.ErrorResponse(err, err.Error())
 		return
 	}
+
+	sessionID, err := r.Cookie("sessionID")
+	if err == nil {
+		if err := h.userService.LogoutUser(ctx, sessionID.Value); err != nil {
+			responseHandler.ErrorResponse(err, "error delete session id")
+			return
+		}
+	}
+
+	core_http_utils.DeleteSessionCookie(w)
 	log.Info("End processing delete user")
 
 	responseHandler.JSONResponseHandler(http.StatusNoContent, nil)

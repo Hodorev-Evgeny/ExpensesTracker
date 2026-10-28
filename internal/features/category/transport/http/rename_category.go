@@ -66,7 +66,7 @@ func (h *CategoryHTTPHandler) RenameCategory(w http.ResponseWriter, r *http.Requ
 	}
 	categoryUpdate := core_domain.RequestUpdateFromDomain(request.Title.ToDomain(), request.Limit_id.ToDomain())
 
-	categoryDomain, err := h.CategoryService.RenameCategory(ctx, categoryID, userID, categoryUpdate)
+	categoryDomain, err := h.CategoryService.RenameCategory(ctx, categoryID, categoryUpdate, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error patching category")
 		return
