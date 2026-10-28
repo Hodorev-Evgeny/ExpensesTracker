@@ -1,6 +1,7 @@
 package core_domain
 
 import (
+	"context"
 	"fmt"
 	"net/mail"
 	"regexp"
@@ -21,6 +22,23 @@ type User struct {
 	Phone_number *string
 	Password     string
 	Time_add     time.Time
+}
+
+type KeyUserID struct{}
+
+var (
+	key = KeyUserID{}
+)
+
+func UserIDToContext(ctx context.Context, userID int) context.Context {
+	return context.WithValue(ctx, key, userID)
+}
+
+func UserIDFromContext(ctx context.Context) (int, bool) {
+	if userID, ok := ctx.Value(key).(int); ok {
+		return userID, true
+	}
+	return 0, false
 }
 
 func CreateUser(

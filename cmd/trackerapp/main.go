@@ -23,8 +23,6 @@ import (
 	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
 	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
 	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
-	feature_repository_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/repository"
-	feature_service_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/service"
 	feature_transport_session "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/session/transport"
 	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
 	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
@@ -129,9 +127,7 @@ func main() {
 	webTransport := feature_transport_web.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
-	sessionRepository := feature_repository_session.NewSessionRepository(redisClient)
-	sessionService := feature_service_session.NewSessionService(sessionRepository)
-	sessionTransport := feature_transport_session.NewSessionHandler(sessionService)
+	sessionTransport := feature_transport_session.NewSessionHandler()
 	sessionRouters := sessionTransport.Route()
 
 	healthRepository := feature_repository_health.NewHealthRepository(redisClient, pool)
@@ -155,6 +151,7 @@ func main() {
 		core_middleware.Logger(logger),
 		core_middleware.Trace(),
 		core_middleware.PanicRecovery(),
+		core_middleware.Authenticator(redisClient),
 	)
 
 	httpServer.ResisterApiVersionRouter(apiVersionRouter)

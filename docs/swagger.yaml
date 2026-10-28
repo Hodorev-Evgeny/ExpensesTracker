@@ -15,12 +15,8 @@ definitions:
       limit_id:
         example: 1
         type: integer
-      user_id:
-        example: 1
-        type: integer
     required:
     - category_name
-    - user_id
     type: object
   feature_category_transport.CategoryResponse:
     properties:
@@ -31,9 +27,6 @@ definitions:
         example: 4
         type: integer
       limit_id:
-        example: 1
-        type: integer
-      user_id:
         example: 1
         type: integer
     type: object
@@ -79,16 +72,12 @@ definitions:
       type:
         example: Expenditure/Income
         type: string
-      user_id:
-        example: 1
-        type: integer
     required:
     - category_id
     - comments
     - date
     - sum
     - type
-    - user_id
     type: object
   feature_transactio_transport.TransactionResponse:
     properties:
@@ -239,8 +228,6 @@ definitions:
   features_users_transport.LoginHandler:
     properties:
       email:
-        type: string
-      full_name:
         type: string
       password:
         type: string
@@ -589,29 +576,6 @@ paths:
       summary: Patch Limit
       tags:
       - limit
-  /session/{sessionID}:
-    get:
-      description: Get cookie by sessionID
-      parameters:
-      - description: ID for get something info
-        in: path
-        name: sessionID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: session cookieData return
-          schema:
-            $ref: '#/definitions/core_domain.CookieData'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Get cookie data
-      tags:
-      - session
   /static/{user_id}:
     get:
       consumes:
@@ -1025,4 +989,21 @@ paths:
       summary: Create session
       tags:
       - users
+  /users/me:
+    get:
+      description: Get cookie by sessionID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: session cookieData return
+          schema:
+            $ref: '#/definitions/core_domain.CookieData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get cookie data
+      tags:
+      - session
 swagger: "2.0"
