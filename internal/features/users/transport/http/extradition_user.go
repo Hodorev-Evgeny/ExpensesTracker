@@ -1,8 +1,11 @@
 package features_users_transport
 
 import (
+	"fmt"
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 )
@@ -24,7 +27,13 @@ func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request
 	responseHandler := response.NewHandlerResponse(log, w)
 
 	log.Info("End processing get value path")
-	id := ctx.Value("userID").(int)
+	id, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		responseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
+		return
+	}
 
 	log.Info("Start processing get user")
 	domainUser, err := h.userService.ExtraditionUser(ctx, id)

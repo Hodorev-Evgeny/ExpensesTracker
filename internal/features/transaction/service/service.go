@@ -34,6 +34,11 @@ type TransactionRepository interface {
 		id int,
 		userID int,
 	) error
+
+	CheckCategoryOwner(
+		categoryID int,
+		userID int,
+	) (bool, error)
 }
 
 type TransactionService struct {

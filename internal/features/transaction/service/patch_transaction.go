@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 func (s *TransactionService) PatchTransaction(
@@ -16,6 +17,16 @@ func (s *TransactionService) PatchTransaction(
 	transaction, err := s.GetTransaction(ctx, id, userID)
 	if err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("error getting transaction: %w", err)
+	}
+
+	if patch.CategoryId.Set {
+		exist, err := s.transactionRepository.CheckCategoryOwner(*patch.CategoryId.Value, userID)
+		if err != nil {
+			return core_domain.Transaction{}, fmt.Errorf("failed to check transaction owner: %w", err)
+		}
+		if !exist {
+			return core_domain.Transaction{}, fmt.Errorf("this category dont exists for this user: %w", core_errors.ErrorNotFoud)
+		}
 	}
 
 	if err := transaction.ApplyPatch(patch); err != nil {

@@ -1,8 +1,11 @@
 package feature_category_transport
 
 import (
+	"fmt"
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
@@ -28,7 +31,13 @@ func (h *CategoryHTTPHandler) DeleteCategory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	userID := ctx.Value("userID").(int)
+	userID, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		ResponseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
+		return
+	}
 	if err := h.CategoryService.DeleteCategory(ctx, id, userID); err != nil {
 		ResponseHandler.ErrorResponse(err, "Error deleting Category")
 		return
