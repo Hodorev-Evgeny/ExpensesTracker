@@ -19,7 +19,12 @@ func (r *CategoryRepository) CreateCategory(
 
 	query := `
 		INSERT INTO trackerapp.categories (title, user_id, limit_id)
-		VALUES ($1, $2, $3) 
+		SELECT $1::text, $2::integer, $3::integer
+		WHERE $3 IS NULL OR EXISTS (
+			SELECT 1
+			FROM trackerapp.spending_limit
+			WHERE id = $3 AND user_id = $2
+		)
 		RETURNING id, title, user_id, limit_id;`
 
 	row := r.pool.QueryRow(ctx,
