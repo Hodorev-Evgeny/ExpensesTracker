@@ -24,7 +24,7 @@ func newRedisClient(config RedisConfig) (*RedisClient, error) {
 	return &RedisClient{
 		rdb,
 		config.TTL,
-		config.TimeOut,
+		config.Timeout,
 	}, nil
 }
 
