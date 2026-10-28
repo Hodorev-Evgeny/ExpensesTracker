@@ -126,14 +126,14 @@ func WriteError(w http.ResponseWriter, code int, message string) {
 }
 
 func whitelist(path string, method string) bool {
-	if method != http.MethodPost {
-		return false
-	}
-
 	if strings.HasPrefix(path, "/css/") ||
 		strings.HasPrefix(path, "/js/") ||
 		strings.HasPrefix(path, "/swagger/") {
 		return true
+	}
+
+	if path == "/api/v1/users" {
+		return method == "POST"
 	}
 
 	allowedPaths := map[string]bool{

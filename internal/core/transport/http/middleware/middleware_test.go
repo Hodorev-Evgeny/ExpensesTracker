@@ -149,4 +149,44 @@ func TestAuthenticator(t *testing.T) {
 			t.Errorf("Got status code %v want %v", w.Code, http.StatusUnauthorized)
 		}
 	})
+
+	t.Run("Test whilelist in authenticate without cookie for", func(t *testing.T) {
+		tests := []struct {
+			name   string
+			method string
+			path   string
+			want   int
+		}{
+			{"register", http.MethodGet, "/register", http.StatusOK},
+			{"login", http.MethodGet, "/login", http.StatusOK},
+			{"css", http.MethodGet, "/css/style.css", http.StatusOK},
+			{"js", http.MethodGet, "/js/app.js", http.StatusOK},
+			{"swagger", http.MethodGet, "/swagger/index.html", http.StatusOK},
+			{"health", http.MethodGet, "/api/v1/health", http.StatusOK},
+			{"register user", http.MethodPost, "/api/v1/users", http.StatusOK},
+			{"get users", http.MethodGet, "/api/v1/users", http.StatusUnauthorized},
+		}
+
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+
+		middleware := Authenticator(redisMock)
+		handlerTest := middleware(nextHandler)
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				r := httptest.NewRequest(tt.method, tt.path, nil)
+				r = r.WithContext(core_logger.ToContext(r.Context(), logger))
+
+				w := httptest.NewRecorder()
+
+				handlerTest.ServeHTTP(w, r)
+
+				if w.Code != tt.want {
+					t.Errorf("Got status code %v want %v", w.Code, tt.want)
+				}
+			})
+		}
+	})
 }
