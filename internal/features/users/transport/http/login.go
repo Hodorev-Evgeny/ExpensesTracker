@@ -46,15 +46,7 @@ func (h *UserHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "sessionID",
-		Value:    sessionID,
-		Path:     "/",
-		MaxAge:   int(h.ttlRedis.Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-		Secure:   h.isSecure,
-	})
+	core_http_utils.SetSessionCookie(w, sessionID, int(h.ttlRedis.Seconds()), h.isSecure)
 
 	req := StatusRequest{
 		Status: "session created",

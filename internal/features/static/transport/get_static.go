@@ -86,7 +86,10 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 		return core_domain.FiltersStatic{}, fmt.Errorf("error getting query param: %w", err)
 	}
 
-	userID := r.Context().Value("userID").(int)
+	userID, ok := core_domain.UserIDFromContext(r.Context())
+	if !ok {
+		return core_domain.FiltersStatic{}, fmt.Errorf("error getting user id from context")
+	}
 	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 
 	return filters, nil

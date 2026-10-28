@@ -50,12 +50,13 @@ func CORS(allowedList []string) Middleware {
 func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if whitelist(r.URL.Path) || r.Method == http.MethodOptions {
+			if whitelist(r.URL.Path, r.Method) || r.Method == http.MethodOptions {
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			isApi := r.URL.Path == "/api" || strings.HasPrefix(r.URL.Path, "/api/")
+			log := core_logger.FromContext(r.Context())
 
 			val, err := r.Cookie("sessionID")
 			if err != nil {
@@ -90,6 +91,12 @@ func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 
 			userIDInt, err := strconv.Atoi(userID)
 			if err != nil {
+				log.Error("Error converting userID to int")
+				ctxDel, cancel := context.WithTimeout(r.Context(), rbd.GetTimeout())
+				defer cancel()
+
+				rbd.Del(ctxDel, key)
+
 				if isApi {
 					WriteError(w, http.StatusUnauthorized, "invalid user ID")
 					return
@@ -118,7 +125,11 @@ func WriteError(w http.ResponseWriter, code int, message string) {
 	}
 }
 
-func whitelist(path string) bool {
+func whitelist(path string, method string) bool {
+	if method != http.MethodPost {
+		return false
+	}
+
 	if strings.HasPrefix(path, "/css/") ||
 		strings.HasPrefix(path, "/js/") ||
 		strings.HasPrefix(path, "/swagger/") {
@@ -132,14 +143,9 @@ func whitelist(path string) bool {
 		"/api/v1/users/login": true,
 		"/users/login":        true,
 		"/login":              true,
-		"/api/v1/health":      true,
 	}
 
 	if allowedPaths[path] {
-		return true
-	}
-
-	if strings.HasPrefix(path, "/api/v1/session") {
 		return true
 	}
 
