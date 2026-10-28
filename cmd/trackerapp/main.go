@@ -84,7 +84,7 @@ func main() {
 	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
 	defer redisClient.Close()
 
-	ctxCheckRedis, cancelRedis := context.WithTimeout(ctx, redisConfig.Timeout)
+	ctxCheckRedis, cancelRedis := context.WithTimeout(ctx, redisConfig.TimeOut)
 	defer cancelRedis()
 
 	_, errRedisPing := redisClient.Client.Ping(ctxCheckRedis).Result()

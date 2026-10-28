@@ -63,3 +63,10 @@ func (s *MockService) LoginUser(
 ) (string, error) {
 	return "", nil
 }
+
+func (s *MockService) LogoutUser(
+	ctx context.Context,
+	sessionID string,
+) error {
+	return nil
+}

@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	transport_user_mock "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http/mock"
@@ -20,7 +21,7 @@ type DataTestLogin struct {
 
 func TestCreateUser(t *testing.T) {
 	mockService := transport_user_mock.NewMockService()
-	handler := NewUserHTTPHandler(mockService)
+	handler := NewUserHTTPHandler(mockService, false, 3*time.Second)
 	logger := &core_logger.Logger{
 		Logger: zap.NewNop(),
 	}
