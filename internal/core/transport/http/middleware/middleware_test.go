@@ -9,8 +9,10 @@ import (
 	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 var ValueSessionDb map[string]string = map[string]string{}
@@ -63,6 +65,9 @@ func (r *MockRedisClient) Close() error {
 func TestAuthenticator(t *testing.T) {
 	redisMock := &MockRedisClient{}
 	ValueSessionDb["sessionID:testParam"] = "123"
+	logger := &core_logger.Logger{
+		Logger: zap.NewNop(),
+	}
 
 	t.Run("Correct authenticate", func(t *testing.T) {
 		var receivedUserid int
@@ -79,6 +84,7 @@ func TestAuthenticator(t *testing.T) {
 
 		r := httptest.NewRequest(http.MethodGet, "/api", nil)
 		w := httptest.NewRecorder()
+		r = r.WithContext(core_logger.ToContext(r.Context(), logger))
 
 		r.AddCookie(&http.Cookie{
 			Name:  "sessionID",
@@ -111,6 +117,7 @@ func TestAuthenticator(t *testing.T) {
 
 		r := httptest.NewRequest(http.MethodGet, "/api", nil)
 		w := httptest.NewRecorder()
+		r = r.WithContext(core_logger.ToContext(r.Context(), logger))
 
 		handlerTest.ServeHTTP(w, r)
 
@@ -129,6 +136,7 @@ func TestAuthenticator(t *testing.T) {
 
 		r := httptest.NewRequest(http.MethodGet, "/api", nil)
 		w := httptest.NewRecorder()
+		r = r.WithContext(core_logger.ToContext(r.Context(), logger))
 
 		r.AddCookie(&http.Cookie{
 			Name:  "sessionID",
