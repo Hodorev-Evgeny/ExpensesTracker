@@ -57,7 +57,12 @@ func (p *PatchLimit) Validate() error {
 
 func (l *Limit) Validate() error {
 	if l.AmountLimit <= 0 {
-		return fmt.Errorf("amount limit must be greater than zero")
+		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrorBadRequest)
+	}
+
+
+	if l.Duration == (time.Time{}) {
+		return fmt.Errorf("invalid duration: %w", core_errors.ErrorBadRequest)
 	}
 
 	return nil
