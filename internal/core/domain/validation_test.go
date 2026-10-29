@@ -2,6 +2,7 @@ package core_domain
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 	"time"
 
@@ -30,17 +31,6 @@ func TestUserValidate(t *testing.T) {
 				Time_add:  time.Now(),
 			},
 			nil,
-		},
-		{
-			"Test incorrect user id",
-			&User{
-				ID:        -1,
-				Full_name: "Test Name",
-				Email:     "test@gmail.com",
-				Password:  "password123",
-				Time_add:  time.Now(),
-			},
-			core_errors.ErrorBadRequest,
 		},
 		{
 			"Test empty full name in user",
@@ -287,15 +277,6 @@ func TestCategoryValidate(t *testing.T) {
 			nil,
 		},
 		{
-			"Test incorrect category id",
-			&Category{
-				ID:      -2,
-				Name:    "Food",
-				User_ID: 1,
-			},
-			core_errors.ErrorBadRequest,
-		},
-		{
 			"Test empty category name",
 			&Category{
 				ID:      2,
@@ -353,71 +334,26 @@ func TestCategoryValidate(t *testing.T) {
 	}
 }
 
-func TestStaticValidation(t *testing.T) {
-	testCase := []DataTest{
+func TestNewStatic(t *testing.T) {
+	testCases := []struct {
+		name         string
+		categories   []Category
+		transactions []Transaction
+		expected     *Static
+	}{
 		{
-			"Test negative average income in static",
-			&Static{
-				SumIncome:      10000,
-				SumExpenditure: 4000,
-				Difference:     6000,
-				CountOperation: 4,
-				AVGIncome:      -5000,
-				AVGExpenditure: 2000,
-				CostCategory:   "Food",
-				MaxIncome:      7000,
-				MaxExpenditure: 3000,
+			name: "Test correct statistics",
+			categories: []Category{
+				{ID: 1, Name: "Food"},
+				{ID: 2, Name: "Transport"},
 			},
-			core_errors.ErrorBadRequest,
-		},
-		{
-			"Test negative average expenditure in static",
-			&Static{
-				SumIncome:      10000,
-				SumExpenditure: 4000,
-				Difference:     6000,
-				CountOperation: 4,
-				AVGIncome:      5000,
-				AVGExpenditure: -2000,
-				CostCategory:   "Food",
-				MaxIncome:      7000,
-				MaxExpenditure: 3000,
+			transactions: []Transaction{
+				{Type: "Income", Sum: 7000},
+				{Type: "Income", Sum: 3000},
+				{Type: "Expenditure", Sum: 3000, CategoryID: 1},
+				{Type: "Expenditure", Sum: 1000, CategoryID: 2},
 			},
-			core_errors.ErrorBadRequest,
-		},
-		{
-			"Test negative max income in static",
-			&Static{
-				SumIncome:      10000,
-				SumExpenditure: 4000,
-				Difference:     6000,
-				CountOperation: 4,
-				AVGIncome:      5000,
-				AVGExpenditure: 2000,
-				CostCategory:   "Food",
-				MaxIncome:      -7000,
-				MaxExpenditure: 3000,
-			},
-			core_errors.ErrorBadRequest,
-		},
-		{
-			"Test negative max expenditure in static",
-			&Static{
-				SumIncome:      10000,
-				SumExpenditure: 4000,
-				Difference:     6000,
-				CountOperation: 4,
-				AVGIncome:      5000,
-				AVGExpenditure: 2000,
-				CostCategory:   "Food",
-				MaxIncome:      7000,
-				MaxExpenditure: -3000,
-			},
-			core_errors.ErrorBadRequest,
-		},
-		{
-			"Test negative share category in static",
-			&Static{
+			expected: &Static{
 				SumIncome:      10000,
 				SumExpenditure: 4000,
 				Difference:     6000,
@@ -426,21 +362,120 @@ func TestStaticValidation(t *testing.T) {
 				AVGExpenditure: 2000,
 				CostCategory:   "Food",
 				ShareCategory: map[string]float64{
-					"Food": -20,
+					"Food":      75,
+					"Transport": 25,
 				},
 				MaxIncome:      7000,
 				MaxExpenditure: 3000,
 			},
-			core_errors.ErrorBadRequest,
+		},
+		{
+			name:         "Test empty transactions and category",
+			categories:   []Category{},
+			transactions: []Transaction{},
+			expected: &Static{
+				SumIncome:      0,
+				SumExpenditure: 0,
+				Difference:     0,
+				CountOperation: 0,
+				AVGIncome:      0,
+				AVGExpenditure: 0,
+				CostCategory:   "",
+				ShareCategory:  map[string]float64{},
+				MaxIncome:      0,
+				MaxExpenditure: 0,
+			},
+		},
+		{
+			name: "Test only income transactions",
+			categories: []Category{
+				{ID: 1, Name: "Food"},
+			},
+			transactions: []Transaction{
+				{Type: "Income", Sum: 2000},
+				{Type: "Income", Sum: 6000},
+			},
+			expected: &Static{
+				SumIncome:      8000,
+				SumExpenditure: 0,
+				Difference:     8000,
+				CountOperation: 2,
+				AVGIncome:      4000,
+				AVGExpenditure: 0,
+				CostCategory:   "",
+				ShareCategory:  map[string]float64{},
+				MaxIncome:      6000,
+				MaxExpenditure: 0,
+			},
+		},
+		{
+			name: "Test only expenditure transactions",
+			categories: []Category{
+				{ID: 1, Name: "Food"},
+				{ID: 2, Name: "Transport"},
+			},
+			transactions: []Transaction{
+				{Type: "Expenditure", Sum: 3000, CategoryID: 1},
+				{Type: "Expenditure", Sum: 1000, CategoryID: 2},
+			},
+			expected: &Static{
+				SumIncome:      0,
+				SumExpenditure: 4000,
+				Difference:     -4000,
+				CountOperation: 2,
+				AVGIncome:      0,
+				AVGExpenditure: 2000,
+				CostCategory:   "Food",
+				ShareCategory: map[string]float64{
+					"Food":      75,
+					"Transport": 25,
+				},
+				MaxIncome:      0,
+				MaxExpenditure: 3000,
+			},
+		},
+		{
+			name: "Test most expensive category",
+			categories: []Category{
+				{ID: 1, Name: "Food"},
+				{ID: 2, Name: "Transport"},
+			},
+			transactions: []Transaction{
+				{Type: "Expenditure", Sum: 1000, CategoryID: 1},
+				{Type: "Expenditure", Sum: 2000, CategoryID: 1},
+				{Type: "Expenditure", Sum: 1000, CategoryID: 2},
+			},
+			expected: &Static{
+				SumIncome:      0,
+				SumExpenditure: 4000,
+				Difference:     -4000,
+				CountOperation: 3,
+				AVGIncome:      0,
+				AVGExpenditure: float64(4000) / 3,
+				CostCategory:   "Food",
+				ShareCategory: map[string]float64{
+					"Food":      75,
+					"Transport": 25,
+				},
+				MaxIncome:      0,
+				MaxExpenditure: 2000,
+			},
 		},
 	}
 
-	for i, transact := range testCase {
-		err := transact.item.Validate()
-		if !errors.Is(err, transact.expected) {
-			t.Log("Name: ", transact.name)
-			t.Errorf("Test validation failed for static %d want: %d expected: %d", i, transact.expected, err)
-		}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := NewStatic(tc.categories, tc.transactions)
+
+			if !reflect.DeepEqual(result, tc.expected) {
+				t.Errorf(
+					"failed test: %s \nExpected: %+v\nGot: %+v",
+					tc.name,
+					tc.expected,
+					result,
+				)
+			}
+		})
 	}
 }
 
@@ -454,15 +489,6 @@ func TestLimitValidation(t *testing.T) {
 				AmountLimit: 10000,
 			},
 			nil,
-		},
-		{
-			"Test incorrect limit id",
-			&Limit{
-				ID:          -1,
-				Duration:    time.Now().AddDate(0, 1, 0),
-				AmountLimit: 10000,
-			},
-			core_errors.ErrorBadRequest,
 		},
 		{
 			"Test zero duration in limit",

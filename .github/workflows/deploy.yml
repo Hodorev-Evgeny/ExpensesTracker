@@ -15,6 +15,16 @@ jobs:
         run: printf '%s\n' "$ENV_FILE" > .env
       - name: Run project
         run: make tracker-deploy-check
+      - name: Test work
+        env:
+          IP_SERVER_TEST: ${{secrets.IP_SERVER_TEST}}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.KEY_SERVER }} "
+          cd ${{secrets.PROJECT_ROOT}} && \
+          make test-app-server-run && \
+          go test -v ./... && \
+          go vet ./...
+          "
   deploy:
     needs: [start]
     runs-on: ubuntu-24.04
@@ -40,7 +50,3 @@ jobs:
           git reset --hard origin/master && \
           make tracker-deploy-stop && \
           make tracker-deploy-run "
-      - name: Test work
-        env:
-          IP_SERVER_TEST: ${{secrets.IP_SERVER_TEST}}
-        run: make test-app-server-run

@@ -1,10 +1,7 @@
 package core_domain
 
 import (
-	"fmt"
 	"time"
-
-	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 type Static struct {
@@ -25,32 +22,6 @@ type FiltersStatic struct {
 	From       *time.Time
 	UserID     int
 	CategoryID *int
-}
-
-func (s *Static) Validate() error {
-	if s.SumIncome < 0 || s.SumExpenditure < 0 {
-		return fmt.Errorf("sum operations cannot be negative: %w", core_errors.ErrorBadRequest)
-	}
-
-	if s.CountOperation < 0 {
-		return fmt.Errorf("count operations cannot be negative: %w", core_errors.ErrorBadRequest)
-	}
-
-	if s.AVGIncome < 0 || s.AVGExpenditure < 0 {
-		return fmt.Errorf("avg operations cannot be negative: %w", core_errors.ErrorBadRequest)
-	}
-
-	if s.MaxIncome < 0 || s.MaxExpenditure < 0 {
-		return fmt.Errorf("max operations cannot be negative: %w", core_errors.ErrorBadRequest)
-	}
-
-	for _, share := range s.ShareCategory {
-		if share < 0 || share > 100 {
-			return fmt.Errorf("share operations cannot be negative: %w", core_errors.ErrorBadRequest)
-		}
-	}
-
-	return nil
 }
 
 func NewFiltersStatic(

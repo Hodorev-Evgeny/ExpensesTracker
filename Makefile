@@ -41,7 +41,6 @@ tracker-deploy-check:
 	@for i in 1 2 3 4 5; do \
 		if curl -fsSL http://localhost:8080/api/v1/health; then \
 			echo "App is ready!"; \
-			go test ./...; \
 			exit 0; \
 		fi; \
 		echo "App is not ready"; \
@@ -52,9 +51,8 @@ tracker-deploy-check:
 
 test-app-server-run:
 	@for i in 1 2 3 4 5; do \
-			if curl -fsSL "$(IP_SERVER_TEST)/health" > /dev/null; then \
+			if curl -fsSL "$(IP_SERVER_TEST)/api/v1/health" > /dev/null; then \
 				echo "App is ready!"; \
-				go test ./...; \
 				exit 0; \
 			fi; \
 			echo "App is not ready"; \
