@@ -13,6 +13,7 @@ import (
 func (r *LimitRepository) GetLimit(
 	ctx context.Context,
 	id int,
+	userID int,
 ) (core_domain.Limit, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -20,9 +21,9 @@ func (r *LimitRepository) GetLimit(
 	query := `
 		SELECT id, duration, amount_limit
 		FROM trackerapp.spending_limit
-		WHERE id=$1;`
+		WHERE id=$1 AND user_id = $2;`
 
-	row := r.pool.QueryRow(ctx, query, id)
+	row := r.pool.QueryRow(ctx, query, id, userID)
 
 	var limitDomain core_domain.Limit
 	err := row.Scan(

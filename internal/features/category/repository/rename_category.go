@@ -2,8 +2,12 @@ package feature_repositor_category
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
 func (r *CategoryRepository) RenameCategory(
@@ -17,8 +21,14 @@ func (r *CategoryRepository) RenameCategory(
 
 	query := `
 		UPDATE trackerapp.categories 
-		SET title=$1, limit_id=$2
-		WHERE id=$3 AND user_id = $4
+		SET title=$1::text, limit_id=$2::integer
+		WHERE id=$3::integer
+		  AND user_id = $4::integer
+		  AND ($2::integer IS NULL OR EXISTS (
+			  SELECT 1 
+			  FROM trackerapp.spending_limit 
+			  WHERE id = $2::integer AND user_id = $4::integer
+		))
 		RETURNING id, title, user_id, limit_id;`
 
 	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id, userId)
@@ -31,6 +41,12 @@ func (r *CategoryRepository) RenameCategory(
 		&categoryUpdated.Limit_id,
 	)
 	if err != nil {
+		if errors.Is(err, core_repository_pool.ErrViolationKey) {
+			return core_domain.Category{}, fmt.Errorf("this limit not in database: %w", core_errors.ErrorBadRequest)
+		}
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
+			return core_domain.Category{}, fmt.Errorf("limit not found in database: %w", core_errors.ErrorNotFoud)
+		}
 		return core_domain.Category{}, err
 	}
 

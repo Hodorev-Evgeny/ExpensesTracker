@@ -15,22 +15,26 @@ type LimitRepository interface {
 	GetLimit(
 		ctx context.Context,
 		id int,
+		userID int,
 	) (core_domain.Limit, error)
 
 	GetLimits(
 		ctx context.Context,
 		limit *int,
 		offset *int,
+		userID int,
 	) ([]core_domain.Limit, error)
 
 	PatchLimit(
 		ctx context.Context,
 		limit core_domain.Limit,
+		userID int,
 	) (core_domain.Limit, error)
 
 	DeleteLimit(
 		ctx context.Context,
 		limitID int,
+		userID int,
 	) error
 }
 
