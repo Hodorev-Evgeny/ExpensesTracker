@@ -35,10 +35,6 @@ func (c *Category) Validate() error {
 		return fmt.Errorf("user_id is unincelized: %w", core_errors.ErrorBadRequest)
 	}
 
-	if c.ID == UnincelizedID || c.ID <= 0 {
-		return fmt.Errorf("id is unincelized: %w", core_errors.ErrorBadRequest)
-	}
-
 	if c.Limit_id != nil {
 		if *c.Limit_id <= 0 {
 			return fmt.Errorf("limit_id is required: %w", core_errors.ErrorBadRequest)

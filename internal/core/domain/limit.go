@@ -60,9 +60,6 @@ func (l *Limit) Validate() error {
 		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrorBadRequest)
 	}
 
-	if l.ID <= 0 {
-		return fmt.Errorf("invalid id: %w", core_errors.ErrorBadRequest)
-	}
 
 	if l.Duration == (time.Time{}) {
 		return fmt.Errorf("invalid duration: %w", core_errors.ErrorBadRequest)

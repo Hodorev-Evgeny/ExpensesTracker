@@ -78,10 +78,6 @@ func (u *User) ChangeID(id int) error {
 }
 
 func (u *User) Validate() error {
-	if u.ID == UnincelizedID || u.ID <= 0 {
-		return fmt.Errorf("invalid id: %w", core_errors.ErrorBadRequest)
-	}
-
 	if u.Time_add == (time.Time{}) {
 		return fmt.Errorf("invalid time: %w", core_errors.ErrorBadRequest)
 	}
