@@ -43,6 +43,9 @@ func (r *CategoryRepository) CreateCategory(
 		if errors.Is(err, core_repository_pool.ErrViolationKey) {
 			return core_domain.Category{}, fmt.Errorf("this limit not in database: %w", core_errors.ErrorBadRequest)
 		}
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
+			return core_domain.Category{}, fmt.Errorf("limit not found in database: %w", core_errors.ErrorNotFoud)
+		}
 		return core_domain.Category{}, fmt.Errorf("create category: %w", err)
 	}
 
