@@ -11,4 +11,5 @@ ADD COLUMN limit_id  INTEGER;
 ALTER TABLE trackerapp.categories
 ADD CONSTRAINT fk_transactions_spending_limit
 FOREIGN KEY (limit_id)
-REFERENCES trackerapp.spending_limit(id);
+REFERENCES trackerapp.spending_limit(id)
+ON DELETE SET NULL;
