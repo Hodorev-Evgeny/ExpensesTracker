@@ -23,13 +23,12 @@ func (r *TransactionRepository) GetTransactions(
 	args := []any{}
 	conditions := []string{}
 
+	conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
+	args = append(args, filters.UserId)
+
 	if filters.CategoryId != nil {
 		conditions = append(conditions, fmt.Sprintf("category_id=$%d", len(args)+1))
 		args = append(args, *filters.CategoryId)
-	}
-	if filters.UserId != nil {
-		conditions = append(conditions, fmt.Sprintf("user_id=$%d", len(args)+1))
-		args = append(args, *filters.UserId)
 	}
 	if filters.Sum != nil {
 		conditions = append(conditions, fmt.Sprintf("sum>$%d", len(args)+1))

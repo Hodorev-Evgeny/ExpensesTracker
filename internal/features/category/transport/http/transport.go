@@ -17,21 +17,25 @@ type CategoryService interface {
 	GetCategoryByID(
 		ctx context.Context,
 		id int,
+		userId int,
 	) (core_domain.Category, error)
 
 	GetAllCategories(
 		ctx context.Context,
+		userId int,
 	) ([]core_domain.Category, error)
 
 	RenameCategory(
 		ctx context.Context,
 		id int,
 		patch core_domain.CategoryUpdate,
+		userId int,
 	) (core_domain.Category, error)
 
 	DeleteCategory(
 		ctx context.Context,
 		id int,
+		userId int,
 	) error
 }
 

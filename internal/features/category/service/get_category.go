@@ -10,12 +10,13 @@ import (
 func (s *CategoryService) GetCategoryByID(
 	ctx context.Context,
 	id int,
+	userId int,
 ) (core_domain.Category, error) {
 	if id == core_domain.UnincelizedID {
 		return core_domain.Category{}, errors.New("unincelized category")
 	}
 
-	category, err := s.repository.GetCategoryByID(ctx, id)
+	category, err := s.repository.GetCategoryByID(ctx, id, userId)
 	if err != nil {
 		return core_domain.Category{}, err
 	}

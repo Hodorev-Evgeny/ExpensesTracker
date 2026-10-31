@@ -2,9 +2,11 @@ package features_users_transport
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_types "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/types"
@@ -73,9 +75,11 @@ func (h *UserHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Info("Start processing patch user")
-	userId, err := core_http_utils.GetValuePathInt(r, "id")
-	if err != nil {
-		ResponseHandler.ErrorResponse(err, "error parsing id")
+	userId, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		ResponseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
 		return
 	}
 

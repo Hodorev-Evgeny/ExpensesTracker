@@ -1,8 +1,11 @@
 package feature_transactio_transport
 
 import (
+	"fmt"
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
@@ -31,7 +34,15 @@ func (h *TransactionHTTPHandler) GetTransaction(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	transaction, err := h.transactionService.GetTransaction(ctx, transactionID)
+	userID, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		ResponseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
+		return
+	}
+
+	transaction, err := h.transactionService.GetTransaction(ctx, transactionID, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "failed getting transaction")
 		return

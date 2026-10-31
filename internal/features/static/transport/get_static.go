@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
@@ -35,7 +36,7 @@ type StaticResponse struct {
 // @Success				200	{object}	StaticResponse "Get static successfully"
 // @Failure 			400	{object}	response.ErrorResponse "Bad request"
 // @Failure      		500 {object} response.ErrorResponse "Internal server error"
-// @Router 				/static/{user_id}			[get]
+// @Router 				/static			[get]
 func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -88,7 +89,9 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 
 	userID, ok := core_domain.UserIDFromContext(r.Context())
 	if !ok {
-		return core_domain.FiltersStatic{}, fmt.Errorf("error getting user id from context")
+		return core_domain.FiltersStatic{},
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized)
+
 	}
 	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 

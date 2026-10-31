@@ -132,17 +132,13 @@ func whitelist(path string, method string) bool {
 		return true
 	}
 
-	if path == "/api/v1/users" {
-		return method == "POST"
-	}
-
 	allowedPaths := map[string]bool{
-		"/register":           true,
-		"/api/v1/users":       true,
-		"/api/v1/health":      true,
-		"/api/v1/users/login": true,
-		"/users/login":        true,
-		"/login":              true,
+		"/register":              true,
+		"/api/v1/health":         true,
+		"/api/v1/users/login":    true,
+		"/api/v1/users/register": true,
+		"/users/login":           true,
+		"/login":                 true,
 	}
 
 	if allowedPaths[path] {

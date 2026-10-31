@@ -20,17 +20,26 @@ type TransactionRepository interface {
 	GetTransaction(
 		ctx context.Context,
 		id int,
+		userID int,
 	) (core_domain.Transaction, error)
 
 	PatchTransaction(
 		ctx context.Context,
 		transaction core_domain.Transaction,
+		userID int,
 	) (core_domain.Transaction, error)
 
 	DeleteTransaction(
 		ctx context.Context,
 		id int,
+		userID int,
 	) error
+
+	CheckCategoryOwner(
+		ctx context.Context,
+		categoryID int,
+		userID int,
+	) (bool, error)
 }
 
 type TransactionService struct {

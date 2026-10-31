@@ -163,8 +163,8 @@ func TestAuthenticator(t *testing.T) {
 			{"js", http.MethodGet, "/js/app.js", http.StatusOK},
 			{"swagger", http.MethodGet, "/swagger/index.html", http.StatusOK},
 			{"health", http.MethodGet, "/api/v1/health", http.StatusOK},
-			{"register user", http.MethodPost, "/api/v1/users", http.StatusOK},
 			{"get users", http.MethodGet, "/api/v1/users", http.StatusUnauthorized},
+			{"register user", http.MethodPost, "/api/v1/users/register", http.StatusOK},
 		}
 
 		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
