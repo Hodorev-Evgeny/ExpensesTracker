@@ -142,7 +142,7 @@ function requireSessionUserId() {
 }
 
 async function loadCurrentUser() {
-  const user = await getCurrentUser();
+  const user = await usersApi.get();
   const userId = Number(getEntityId(user));
 
   if (!Number.isSafeInteger(userId) || userId <= 0) {
@@ -727,19 +727,6 @@ function setupApp() {
   setDefaultDates();
 
   runSafely(reloadMainData, "Данные загружены");
-}
-
-async function getCurrentUser() {
-  const response = await fetch("/api/v1/users", {
-    method: "GET",
-    credentials: "same-origin",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to get user: ${response.status}`);
-  }
-
-  return response.json();
 }
 
 document.addEventListener("DOMContentLoaded", setupApp);

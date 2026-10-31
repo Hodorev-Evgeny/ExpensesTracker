@@ -59,15 +59,6 @@ function parseResponseBody(text, response) {
   }
 }
 
-export function getCookie(name) {
-  const encodedName = `${encodeURIComponent(name)}=`;
-  const item = document.cookie
-    .split(";")
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(encodedName));
-
-  return item ? decodeURIComponent(item.slice(encodedName.length)) : "";
-}
 
 async function request(path, options = {}) {
   const { query, body, headers, ...fetchOptions } = options;
@@ -139,11 +130,6 @@ export const usersApi = {
   },
 };
 
-export const sessionApi = {
-  async current() {
-    return request("/users/me");
-  },
-};
 
 export const categoriesApi = {
   async list() {

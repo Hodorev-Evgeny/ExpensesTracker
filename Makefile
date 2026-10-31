@@ -118,3 +118,6 @@ swagger-generate:
 	-o docs \
 	--parseInternal \
 	--parseDependency
+
+test-integration:
+	@go test -tags=integration -run '^TestIntegration' -v ./...
