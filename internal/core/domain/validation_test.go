@@ -2,7 +2,9 @@ package core_domain
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -84,6 +86,18 @@ func TestUserValidate(t *testing.T) {
 				Email:     "test@gmail.com",
 				Password:  "password123",
 				Time_add:  time.Time{},
+			},
+			core_errors.ErrorBadRequest,
+		},
+		{
+			"Test incorrect phone number in user",
+			&User{
+				ID:           1,
+				Full_name:    "Test Name",
+				Email:        "test@gmail.com",
+				Phone_number: new("89991234567"),
+				Password:     "password123",
+				Time_add:     time.Now(),
 			},
 			core_errors.ErrorBadRequest,
 		},
@@ -254,6 +268,20 @@ func TestTransactionValidate(t *testing.T) {
 			},
 			core_errors.ErrorBadRequest,
 		},
+		{
+			"Test is not correct comment in transaction",
+			&Transaction{
+				ID:          1,
+				Sum:         5000,
+				Type:        "Income",
+				Date:        time.Now(),
+				CategoryID:  2,
+				UserID:      1,
+				Comments:    strings.Repeat("A", 1000),
+				TimeCreated: time.Now(),
+			},
+			core_errors.ErrorBadRequest,
+		},
 	}
 
 	for i, transact := range testCase {
@@ -261,6 +289,98 @@ func TestTransactionValidate(t *testing.T) {
 		if !errors.Is(err, transact.expected) {
 			t.Log("Name: ", transact.name)
 			t.Errorf("Test validation failed for transaction %d want: %d expected: %d", i, transact.expected, err)
+		}
+	}
+}
+
+func TestFiltersTransactionValidation(t *testing.T) {
+	intPtr := func(v int) *int {
+		return &v
+	}
+
+	testCase := []DataTest{
+		{
+			"Test valid filters",
+			&FiltersTransaction{
+				Limit:      intPtr(100),
+				Offset:     intPtr(10),
+				Sum:        intPtr(5000),
+				UserId:     intPtr(1),
+				CategoryId: intPtr(2),
+			},
+			nil,
+		},
+		{
+			"Test negative limit",
+			&FiltersTransaction{
+				Limit: intPtr(-1),
+			},
+			errors.New("invalid filter parameters limit/offset"),
+		},
+		{
+			"Test negative offset",
+			&FiltersTransaction{
+				Offset: intPtr(-1),
+			},
+			errors.New("invalid filter parameters limit/offset"),
+		},
+		{
+			"Test limit greater than 500",
+			&FiltersTransaction{
+				Limit: intPtr(501),
+			},
+			errors.New("invalid filter parameters limit is greater than 500"),
+		},
+		{
+			"Test limit equal to 500",
+			&FiltersTransaction{
+				Limit: intPtr(500),
+			},
+			nil,
+		},
+		{
+			"Test nil limit",
+			&FiltersTransaction{},
+			nil,
+		},
+		{
+			"Test negative sum",
+			&FiltersTransaction{
+				Sum: intPtr(-100),
+			},
+			errors.New("invalid filter parameters sum"),
+		},
+		{
+			"Test zero sum",
+			&FiltersTransaction{
+				Sum: intPtr(0),
+			},
+			nil,
+		},
+		{
+			"Test uninitialized user ID",
+			&FiltersTransaction{
+				UserId: intPtr(UnincelizedID),
+			},
+			errors.New("invalid filter parameters categoryID/userID"),
+		},
+		{
+			"Test uninitialized category ID",
+			&FiltersTransaction{
+				CategoryId: intPtr(UnincelizedID),
+			},
+			errors.New("invalid filter parameters categoryID/userID"),
+		},
+	}
+
+	for i, test := range testCase {
+		err := test.item.Validate()
+
+		if fmt.Sprint(err) != fmt.Sprint(test.expected) {
+			t.Errorf(
+				"Test %d (%s) failed: want %v, got %v",
+				i, test.name, test.expected, err,
+			)
 		}
 	}
 }
@@ -566,6 +686,13 @@ func TestPatchUser(t *testing.T) {
 			item:     &UserPatch{},
 			expected: nil,
 		},
+		{
+			name: "Update invalid full name",
+			item: &UserPatch{
+				Full_name: Nullable[string]{Value: new("Tes"), Set: true},
+			},
+			expected: core_errors.ErrorBadRequest,
+		},
 	}
 
 	for i, transact := range testCase {
@@ -629,6 +756,27 @@ func TestPatchTransactions(t *testing.T) {
 			item:     &PatchTransaction{},
 			expected: nil,
 		},
+		{
+			name: "Update invalid value",
+			item: &PatchTransaction{
+				Sum: Nullable[int]{Value: new(-11), Set: true},
+			},
+			expected: core_errors.ErrorValidation,
+		},
+		{
+			name: "Update invalid type transaction",
+			item: &PatchTransaction{
+				TypeTransaction: Nullable[string]{Value: new("Is not correct"), Set: true},
+			},
+			expected: core_errors.ErrorValidation,
+		},
+		{
+			name: "Update invalid comments",
+			item: &PatchTransaction{
+				Comments: Nullable[string]{Value: new(strings.Repeat("A", 1000)), Set: true},
+			},
+			expected: core_errors.ErrorValidation,
+		},
 	}
 
 	for i, transact := range testCase {
@@ -677,6 +825,13 @@ func TestPatchLimits(t *testing.T) {
 			name:     "Empty limit patch",
 			item:     &PatchLimit{},
 			expected: nil,
+		},
+		{
+			name: "Update limit amount is not correct",
+			item: &PatchLimit{
+				Amount_limit: Nullable[int]{Value: new(-124), Set: true},
+			},
+			expected: core_errors.ErrorValidation,
 		},
 	}
 
