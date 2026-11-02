@@ -1,13 +1,20 @@
 package core_middleware
 
 import (
+	"context"
+	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -40,29 +47,93 @@ func CORS(allowedList []string) Middleware {
 	}
 }
 
-func Authenticator() Middleware {
+func Authenticator(rbd core_repository_redis_pool.RedisPool) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if whitelist(r.URL.Path) || r.Method == http.MethodOptions {
+			if whitelist(r.URL.Path, r.Method) || r.Method == http.MethodOptions {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			if _, err := r.Cookie("sessionID"); err != nil {
+			isApi := r.URL.Path == "/api" || strings.HasPrefix(r.URL.Path, "/api/")
+			log := core_logger.FromContext(r.Context())
+
+			val, err := r.Cookie("sessionID")
+			if err != nil {
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "error getting sessionID")
+					return
+				}
 				http.Redirect(w, r, "/register", http.StatusSeeOther)
 				return
 			}
 
-			next.ServeHTTP(w, r)
+			key := "sessionID:" + val.Value
+			ctxRedis, cancel := context.WithTimeout(r.Context(), rbd.GetTimeout())
+			defer cancel()
+
+			row := rbd.Get(ctxRedis, key)
+			userID, err := row.Result()
+
+			if errors.Is(err, redis.Nil) {
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "not found sessionID in database")
+					return
+				}
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				return
+			}
+
+			if err != nil {
+				WriteError(w, http.StatusInternalServerError, "internal server error")
+				return
+			}
+
+			userIDInt, err := strconv.Atoi(userID)
+			if err != nil {
+				log.Error("Error converting userID to int")
+				ctxDel, cancel := context.WithTimeout(r.Context(), rbd.GetTimeout())
+				defer cancel()
+
+				rbd.Del(ctxDel, key)
+
+				if isApi {
+					WriteError(w, http.StatusUnauthorized, "invalid user ID")
+					return
+				}
+				http.Redirect(w, r, "/register", http.StatusSeeOther)
+				return
+			}
+
+			ctx := core_domain.UserIDToContext(r.Context(), userIDInt)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
-func whitelist(path string) bool {
+func WriteError(w http.ResponseWriter, code int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	req := map[string]string{
+		"error":   http.StatusText(code),
+		"message": message,
+	}
+	if err := json.NewEncoder(w).Encode(req); err != nil {
+		return
+	}
+}
+
+func whitelist(path string, method string) bool {
 	if strings.HasPrefix(path, "/css/") ||
 		strings.HasPrefix(path, "/js/") ||
 		strings.HasPrefix(path, "/swagger/") {
 		return true
+	}
+
+	if path == "/api/v1/users" {
+		return method == "POST"
 	}
 
 	allowedPaths := map[string]bool{
@@ -71,13 +142,10 @@ func whitelist(path string) bool {
 		"/api/v1/health":      true,
 		"/api/v1/users/login": true,
 		"/users/login":        true,
+		"/login":              true,
 	}
 
 	if allowedPaths[path] {
-		return true
-	}
-
-	if strings.HasPrefix(path, "/api/v1/session") {
 		return true
 	}
 

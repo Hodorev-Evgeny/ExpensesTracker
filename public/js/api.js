@@ -140,18 +140,8 @@ export const usersApi = {
 };
 
 export const sessionApi = {
-  async get(sessionID) {
-    return request(`/session/${encodeURIComponent(sessionID)}`);
-  },
-
   async current() {
-    const sessionID = getCookie("sessionID");
-
-    if (!sessionID) {
-      throw new Error("Cookie sessionID не найдена. Войдите в аккаунт.");
-    }
-
-    return this.get(sessionID);
+    return request("/users/me");
   },
 };
 
@@ -246,11 +236,7 @@ export const limitsApi = {
 };
 
 export const statsApi = {
-  async get(userId, query = {}) {
-    if (!userId) {
-      return request("/static", { query });
-    }
-
-    return request(`/static/${encodeURIComponent(userId)}`, { query });
-  },
+  async get() {
+    return request("/static");
+  }
 };

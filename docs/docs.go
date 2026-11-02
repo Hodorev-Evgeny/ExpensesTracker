@@ -469,41 +469,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/session/{sessionID}": {
-            "get": {
-                "description": "Get cookie by sessionID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "session"
-                ],
-                "summary": "Get cookie data",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID for get something info",
-                        "name": "sessionID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "session cookieData return",
-                        "schema": {
-                            "$ref": "#/definitions/core_domain.CookieData"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/static/{user_id}": {
             "get": {
                 "description": "Get all static about category and transaction",
@@ -970,6 +935,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/me": {
+            "get": {
+                "description": "Get cookie by sessionID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Get cookie data",
+                "responses": {
+                    "200": {
+                        "description": "session cookieData return",
+                        "schema": {
+                            "$ref": "#/definitions/core_domain.CookieData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "description": "Получение конкретного пользователя по его ID",
@@ -1132,8 +1123,7 @@ const docTemplate = `{
         "feature_category_transport.CategoryRequest": {
             "type": "object",
             "required": [
-                "category_name",
-                "user_id"
+                "category_name"
             ],
             "properties": {
                 "category_name": {
@@ -1143,10 +1133,6 @@ const docTemplate = `{
                     "example": "Medicine"
                 },
                 "limit_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "user_id": {
                     "type": "integer",
                     "example": 1
                 }
@@ -1164,10 +1150,6 @@ const docTemplate = `{
                     "example": 4
                 },
                 "limit_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "user_id": {
                     "type": "integer",
                     "example": 1
                 }
@@ -1216,8 +1198,7 @@ const docTemplate = `{
                 "comments",
                 "date",
                 "sum",
-                "type",
-                "user_id"
+                "type"
             ],
             "properties": {
                 "category_id": {
@@ -1239,10 +1220,6 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "example": "Expenditure/Income"
-                },
-                "user_id": {
-                    "type": "integer",
-                    "example": 1
                 }
             }
         },
@@ -1450,9 +1427,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "full_name": {
                     "type": "string"
                 },
                 "password": {
