@@ -127,3 +127,6 @@ swagger-generate:
 
 test-integration:
 	@go test -tags=integration -run '^TestIntegration' -v ./...
+
+mock-generate:
+	mockery --config .mockery.yml
