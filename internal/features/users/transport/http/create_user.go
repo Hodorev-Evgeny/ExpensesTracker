@@ -60,11 +60,7 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:  "sessionID",
-		Value: sessionID,
-		Path:  "/",
-	})
+	core_http_utils.SetSessionCookie(w, sessionID, int(h.ttlRedis.Seconds()), h.isSecure)
 
 	log.Info("Start writing response")
 	respons := DomainFromResponse(userDomain)

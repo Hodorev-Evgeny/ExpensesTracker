@@ -37,7 +37,7 @@ type UserRepository interface {
 	FindByEmail(
 		ctx context.Context,
 		user core_domain.User,
-	) (int, error)
+	) (core_domain.User, error)
 }
 
 type RedisRepository interface {
@@ -45,6 +45,11 @@ type RedisRepository interface {
 		ctx context.Context,
 		user core_domain.User,
 	) (string, error)
+
+	DeleteCache(
+		ctx context.Context,
+		sessionID string,
+	) error
 }
 
 type UserService struct {

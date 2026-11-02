@@ -5,6 +5,8 @@ import (
 	"net/mail"
 	"regexp"
 	"time"
+
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
 var (
@@ -53,17 +55,14 @@ func CreateUnincelizedUser(
 }
 
 func CreateLoginUser(
-	full_name string,
 	email string,
 	password string,
 ) User {
-	return CreateUser(
-		UnincelizedID,
-		full_name,
-		email,
-		nil,
-		password,
-	)
+	return User{
+		ID:       UnincelizedID,
+		Email:    email,
+		Password: password,
+	}
 }
 
 func (u *User) ChangeID(id int) error {
@@ -93,6 +92,18 @@ func (u *User) Validate() error {
 		if !regular.MatchString(*u.Phone_number) {
 			return fmt.Errorf("invalid user phone number")
 		}
+	}
+
+	return nil
+}
+
+func (u *User) LoginValidate() error {
+	if _, err := mail.ParseAddress(u.Email); err != nil {
+		return fmt.Errorf("invalid user email: %w", core_errors.ErrorBadRequest)
+	}
+
+	if u.Password == "" {
+		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrorBadRequest)
 	}
 
 	return nil
