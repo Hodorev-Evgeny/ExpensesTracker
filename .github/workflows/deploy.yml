@@ -3,20 +3,28 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 jobs:
   start:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Create .env
-        env:
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-        run: printf '%s\n' "$ENV_FILE" > .env
-      - name: Run project
-        run: make tracker-deploy-check
+      - name: Setup go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Run unit test
+        run: go test ./...
+      - name: Integration tests
+        run: go test -tags=integration -run '^TestIntegration' -v -count=1 ./...
+      - name: Go vet
+        run: go vet ./...
   deploy:
     needs: [start]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-24.04
     steps:
       - name: Prepare SSH key
@@ -40,7 +48,3 @@ jobs:
           git reset --hard origin/master && \
           make tracker-deploy-stop && \
           make tracker-deploy-run "
-      - name: Test work
-        env:
-          IP_SERVER_TEST: ${{secrets.IP_SERVER_TEST}}
-        run: make test-app-server-run
