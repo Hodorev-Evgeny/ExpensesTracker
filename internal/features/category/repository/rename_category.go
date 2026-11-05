@@ -2,13 +2,18 @@ package feature_repositor_category
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
 func (r *CategoryRepository) RenameCategory(
 	ctx context.Context,
 	id int,
+	userId int,
 	category core_domain.Category,
 ) (core_domain.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
@@ -17,10 +22,10 @@ func (r *CategoryRepository) RenameCategory(
 	query := `
 		UPDATE trackerapp.categories 
 		SET title=$1, limit_id=$2
-		WHERE id=$3
+		WHERE id=$3 AND user_id = $4
 		RETURNING id, title, user_id, limit_id;`
 
-	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id)
+	row := r.pool.QueryRow(ctx, query, category.Name, category.Limit_id, id, userId)
 
 	var categoryUpdated core_domain.Category
 	err := row.Scan(
@@ -30,6 +35,9 @@ func (r *CategoryRepository) RenameCategory(
 		&categoryUpdated.Limit_id,
 	)
 	if err != nil {
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
+			return core_domain.Category{}, fmt.Errorf("category not found: %w", core_errors.ErrorNotFoud)
+		}
 		return core_domain.Category{}, err
 	}
 

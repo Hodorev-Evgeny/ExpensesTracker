@@ -15,21 +15,25 @@ type CategoryRepository interface {
 	GetCategoryByID(
 		ctx context.Context,
 		id int,
+		userId int,
 	) (core_domain.Category, error)
 
 	GetAllCategories(
 		ctx context.Context,
+		userId int,
 	) ([]core_domain.Category, error)
 
 	RenameCategory(
 		ctx context.Context,
 		id int,
+		userId int,
 		category core_domain.Category,
 	) (core_domain.Category, error)
 
 	DeleteCategory(
 		ctx context.Context,
 		id int,
+		userId int,
 	) error
 }
 

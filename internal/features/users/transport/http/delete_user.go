@@ -1,11 +1,14 @@
 package features_users_transport
 
 import (
+	"fmt"
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
-	core_http_query_parm "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
+	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
 )
 
 // DeleteUser    godoc
@@ -24,9 +27,11 @@ func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	responseHandler := response.NewHandlerResponse(log, w)
 
 	log.Info("Start processing get value path")
-	id, err := core_http_query_parm.GetValuePathInt(r, "id")
-	if err != nil {
-		responseHandler.ErrorResponse(err, "id is required")
+	id, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		responseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
 		return
 	}
 
@@ -35,6 +40,16 @@ func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		responseHandler.ErrorResponse(err, err.Error())
 		return
 	}
+
+	sessionID, err := r.Cookie("sessionID")
+	if err == nil {
+		if err := h.userService.LogoutUser(ctx, sessionID.Value); err != nil {
+			responseHandler.ErrorResponse(err, "error delete session id")
+			return
+		}
+	}
+
+	core_http_utils.DeleteSessionCookie(w)
 	log.Info("End processing delete user")
 
 	responseHandler.JSONResponseHandler(http.StatusNoContent, nil)

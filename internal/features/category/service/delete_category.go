@@ -10,12 +10,13 @@ import (
 func (s *CategoryService) DeleteCategory(
 	ctx context.Context,
 	id int,
+	userId int,
 ) error {
 	if id == core_domain.UnincelizedID {
 		return fmt.Errorf("id category is invalid")
 	}
 
-	status := s.repository.DeleteCategory(ctx, id)
+	status := s.repository.DeleteCategory(ctx, id, userId)
 
 	return status
 }

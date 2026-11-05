@@ -13,6 +13,7 @@ import (
 func (r *CategoryRepository) GetCategoryByID(
 	ctx context.Context,
 	id int,
+	userId int,
 ) (core_domain.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -20,9 +21,9 @@ func (r *CategoryRepository) GetCategoryByID(
 	quey := `
 			SELECT id, title, user_id
 			FROM trackerapp.categories 
-			WHERE id = $1;`
+			WHERE id = $1 AND user_id = $2;`
 
-	row := r.pool.QueryRow(ctx, quey, id)
+	row := r.pool.QueryRow(ctx, quey, id, userId)
 
 	var category core_domain.Category
 	err := row.Scan(

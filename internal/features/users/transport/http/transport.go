@@ -75,27 +75,22 @@ func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
 	return []core_transport_server.Route{
 		{
 			Method:  http.MethodPost,
-			Path:    "/users",
+			Path:    "/users/register",
 			Handler: h.CreateUser,
 		},
 		{
 			Method:  http.MethodGet,
 			Path:    "/users",
-			Handler: h.GetUsers,
-		},
-		{
-			Method:  http.MethodGet,
-			Path:    "/users/{id}",
 			Handler: h.ExtraditionUser,
 		},
 		{
 			Method:  http.MethodDelete,
-			Path:    "/users/{id}",
+			Path:    "/users",
 			Handler: h.DeleteUser,
 		},
 		{
 			Method:  http.MethodPatch,
-			Path:    "/users/{id}",
+			Path:    "/users",
 			Handler: h.PatchUser,
 		},
 		{

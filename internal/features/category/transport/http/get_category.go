@@ -1,8 +1,11 @@
 package feature_category_transport
 
 import (
+	"fmt"
 	"net/http"
 
+	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
@@ -31,7 +34,14 @@ func (h *CategoryHTTPHandler) GetCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	categoryDomain, err := h.CategoryService.GetCategoryByID(ctx, categoryID)
+	userID, ok := core_domain.UserIDFromContext(ctx)
+	if !ok {
+		ResponseHandler.ErrorResponse(
+			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			"user is not registered")
+		return
+	}
+	categoryDomain, err := h.CategoryService.GetCategoryByID(ctx, categoryID, userID)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error getting category id")
 		return

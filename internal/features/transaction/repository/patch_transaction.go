@@ -13,6 +13,7 @@ import (
 func (r *TransactionRepository) PatchTransaction(
 	ctx context.Context,
 	transaction core_domain.Transaction,
+	userID int,
 ) (core_domain.Transaction, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
@@ -20,7 +21,7 @@ func (r *TransactionRepository) PatchTransaction(
 	quary := `
 		UPDATE trackerapp.transactions
 		SET sum=$1, category_id=$2, type_transaction=$3, comments=$4, time_changes=$5
-		WHERE id=$6
+		WHERE id=$6 AND user_id = $7
 		RETURNING id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes;`
 
 	row := r.pool.QueryRow(ctx, quary,
@@ -30,6 +31,7 @@ func (r *TransactionRepository) PatchTransaction(
 		transaction.Comments,
 		transaction.TimeChange,
 		transaction.ID,
+		userID,
 	)
 
 	var updatedTransaction core_domain.Transaction
@@ -47,6 +49,9 @@ func (r *TransactionRepository) PatchTransaction(
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrViolationKey) {
 			return core_domain.Transaction{}, fmt.Errorf("error key violation: %w", core_errors.ErrorValidation)
+		}
+		if errors.Is(err, core_repository_pool.ErrNoRows) {
+			return core_domain.Transaction{}, fmt.Errorf("error found transaction: %w", core_errors.ErrorNotFoud)
 		}
 		return updatedTransaction, fmt.Errorf("error updating transaction: %w", err)
 	}

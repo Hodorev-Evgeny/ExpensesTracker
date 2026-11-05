@@ -9,15 +9,17 @@ import (
 
 func (r *CategoryRepository) GetAllCategories(
 	ctx context.Context,
+	userId int,
 ) ([]core_domain.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
 	query := `
 		SELECT id, title, user_id
-		FROM trackerapp.categories;`
+		FROM trackerapp.categories
+		WHERE user_id = $1;`
 
-	rows, err := r.pool.Query(ctx, query)
+	rows, err := r.pool.Query(ctx, query, userId)
 	if err != nil {
 		return nil, fmt.Errorf("Error get all categories: %w", err)
 	}

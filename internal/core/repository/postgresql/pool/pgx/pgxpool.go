@@ -15,6 +15,13 @@ type Pool struct {
 	timeout time.Duration
 }
 
+func NewPool(pool *pgxpool.Pool, timeout time.Duration) *Pool {
+	return &Pool{
+		Pool:    pool,
+		timeout: timeout,
+	}
+}
+
 func CreatePool(ctx context.Context, config ExpensesTracker.PostgresConfig) (*Pool, error) {
 	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Username,
