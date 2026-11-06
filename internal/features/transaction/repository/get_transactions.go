@@ -76,7 +76,6 @@ func (r *TransactionRepository) GetTransactions(
 			&transaction.TimeCreated,
 			&transaction.TimeChange,
 		)
-
 		if err != nil {
 			return nil, fmt.Errorf("transaction repository GetTransactions: %w", err)
 		}

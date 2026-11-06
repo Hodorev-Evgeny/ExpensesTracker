@@ -10,9 +10,7 @@ import (
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
-var (
-	UnincelizedID = -1
-)
+var UnincelizedID = -1
 
 // создания доменой сущности пользователя
 type User struct {
@@ -26,9 +24,7 @@ type User struct {
 
 type KeyUserID struct{}
 
-var (
-	key = KeyUserID{}
-)
+var key = KeyUserID{}
 
 func UserIDToContext(ctx context.Context, userID int) context.Context {
 	return context.WithValue(ctx, key, userID)
@@ -62,7 +58,8 @@ func CreateUnincelizedUser(
 	full_name string,
 	email string,
 	phone *string,
-	password string) User {
+	password string,
+) User {
 	return CreateUser(
 		UnincelizedID,
 		full_name,
@@ -93,7 +90,7 @@ func (u *User) ChangeID(id int) error {
 }
 
 func (u *User) Validate() error {
-	if u.Time_add == (time.Time{}) {
+	if u.Time_add.IsZero() {
 		return fmt.Errorf("invalid time: %w", core_errors.ErrorBadRequest)
 	}
 	if u.Full_name == "" {

@@ -22,9 +22,7 @@ type Logger struct {
 */
 type keyLogger struct{}
 
-var (
-	key = keyLogger{}
-)
+var key = keyLogger{}
 
 func ToContext(ctx context.Context, logger *Logger) context.Context {
 	return context.WithValue(ctx, key, logger)
@@ -46,7 +44,7 @@ func NewLogger(config Config) (*Logger, error) {
 	}
 
 	// создаю папку где будут хрониться логи рпограмы
-	if err := os.MkdirAll(config.Folder, 0755); err != nil {
+	if err := os.MkdirAll(config.Folder, 0o755); err != nil {
 		return nil, fmt.Errorf("failed to make folder: %w", err)
 	}
 
@@ -58,7 +56,7 @@ func NewLogger(config Config) (*Logger, error) {
 	)
 
 	// открывю файл с логами и д
-	logFile, err := os.OpenFile(LogerFilePath, os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(LogerFilePath, os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open log file: %w", err)
 	}
@@ -91,11 +89,9 @@ func (l *Logger) With(field ...zap.Field) *Logger {
 	}
 }
 
-//окуратно закрываю логер
-
+// окуратно закрываю логер
 func (l *Logger) Close() {
 	if err := l.file.Close(); err != nil {
 		fmt.Printf("failed to close log file: %v", err)
-
 	}
 }

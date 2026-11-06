@@ -91,7 +91,6 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 	if !ok {
 		return core_domain.FiltersStatic{},
 			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized)
-
 	}
 	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 

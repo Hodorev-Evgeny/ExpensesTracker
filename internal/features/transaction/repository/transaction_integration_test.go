@@ -86,7 +86,6 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 	}
 
 	t.Run("B cannot get transaction A", func(t *testing.T) {
-
 		_, err := testTransactionRepository.GetTransaction(ctx, transactionA.ID, userB.ID)
 
 		if !errors.Is(err, core_errors.ErrorNotFoud) {
@@ -162,7 +161,6 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 
 	t.Run("A correct get their transaction", func(t *testing.T) {
 		ans, err := testTransactionRepository.GetTransaction(ctx, transactionA.ID, userA.ID)
-
 		if err != nil {
 			t.Fatalf(
 				"expected error to be nil, got: %v",
@@ -177,7 +175,6 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 		newTransaction.Sum = 12345
 
 		ans, err := testTransactionRepository.PatchTransaction(ctx, newTransaction, userA.ID)
-
 		if err != nil {
 			t.Fatalf(
 				"expected error to be nil, got: %v",
@@ -189,7 +186,6 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 
 	t.Run("A correct delete their transaction", func(t *testing.T) {
 		err := testTransactionRepository.DeleteTransaction(ctx, transactionA.ID, userA.ID)
-
 		if err != nil {
 			t.Fatalf("failed to delete transaction A: %v",
 				err,

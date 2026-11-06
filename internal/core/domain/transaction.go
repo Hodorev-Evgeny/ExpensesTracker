@@ -79,8 +79,8 @@ func (f *FiltersTransaction) Validate() error {
 	}
 
 	if f.Limit == nil {
-		defualt := 50
-		f.Limit = &defualt
+		defaultLimit := 50
+		f.Limit = &defaultLimit
 	}
 
 	if f.Sum != nil && *f.Sum < 0 {

@@ -59,7 +59,8 @@ type UserService struct {
 
 func NewUserService(
 	userRepository UserRepository,
-	repository RedisRepository) *UserService {
+	repository RedisRepository,
+) *UserService {
 	return &UserService{
 		userRepository:      userRepository,
 		userRedisRepository: repository,

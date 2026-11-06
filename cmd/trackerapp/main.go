@@ -15,7 +15,7 @@ import (
 	core_goredis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool/goredis"
 	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
 	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
+	feature_repositor_category "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
 	feature_service_categor "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
 	feature_category_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
 	feature_repository_health "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/repository"
@@ -79,7 +79,11 @@ func main() {
 	logger.Debug("starting initialization redis connection")
 	redisConfig := core_goredis_pool.MustGetRedisConfig()
 	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
-	defer redisClient.Close()
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			logger.Error("error closing redis client", zap.Error(err))
+		}
+	}()
 
 	ctxCheckRedis, cancelRedis := context.WithTimeout(ctx, redisConfig.Timeout)
 	defer cancelRedis()

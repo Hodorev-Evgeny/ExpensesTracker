@@ -21,7 +21,7 @@ func (r *CategoryRepository) GetAllCategories(
 
 	rows, err := r.pool.Query(ctx, query, userId)
 	if err != nil {
-		return nil, fmt.Errorf("Error get all categories: %w", err)
+		return nil, fmt.Errorf("error get all categories: %w", err)
 	}
 	defer rows.Close()
 
@@ -33,9 +33,8 @@ func (r *CategoryRepository) GetAllCategories(
 			&category.Name,
 			&category.User_ID,
 		)
-
 		if err != nil {
-			return list, fmt.Errorf("Error get list category: %w", err)
+			return list, fmt.Errorf("error get list category: %w", err)
 		}
 
 		list = append(list, category)

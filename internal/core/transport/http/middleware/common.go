@@ -10,7 +10,7 @@ import (
 	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	"github.com/google/uuid"
@@ -141,11 +141,7 @@ func whitelist(path string, method string) bool {
 		"/login":                 true,
 	}
 
-	if allowedPaths[path] {
-		return true
-	}
-
-	return false
+	return allowedPaths[path]
 }
 
 func RequestId() Middleware {
@@ -179,7 +175,6 @@ func Logger(log *core_logger.Logger) Middleware {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
-
 }
 
 func PanicRecovery() Middleware {
@@ -221,7 +216,7 @@ func Trace() Middleware {
 			log.Debug(
 				"<< outgoing response",
 				zap.Int("status code:", rw.GetStatus()),
-				zap.Duration("latency", time.Now().Sub(before)),
+				zap.Duration("latency", time.Since(before)),
 			)
 		})
 	}

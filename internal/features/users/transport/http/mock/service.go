@@ -6,8 +6,7 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
-type MockService struct {
-}
+type MockService struct{}
 
 func NewMockService() *MockService {
 	return &MockService{}

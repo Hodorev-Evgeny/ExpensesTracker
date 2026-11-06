@@ -649,7 +649,6 @@ func TestLimitValidation(t *testing.T) {
 }
 
 func TestPatchUser(t *testing.T) {
-
 	testCase := []DataTest{
 		{
 			name: "Update user full name",
@@ -800,7 +799,8 @@ func TestPatchTransactions(t *testing.T) {
 
 func TestPatchLimits(t *testing.T) {
 	testCase := []DataTest{
-		{name: "Update limit duration",
+		{
+			name: "Update limit duration",
 			item: &PatchLimit{
 				Duraction: Nullable[time.Time]{Value: new(time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)), Set: true},
 			},
@@ -877,7 +877,8 @@ func TestPatchCategory(t *testing.T) {
 			name:     "Empty category patch",
 			item:     &CategoryUpdate{},
 			expected: nil,
-		}}
+		},
+	}
 
 	for i, transact := range testCase {
 		val := Category{

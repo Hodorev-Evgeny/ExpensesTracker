@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/docs"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
@@ -42,7 +42,6 @@ func (s *HTTPServer) ResisterApiVersionRouter(routers ...*APIVersionRouter) {
 			http.StripPrefix(prefix, router),
 		)
 	}
-
 }
 
 func (s *HTTPServer) AddFrond() {

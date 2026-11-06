@@ -137,7 +137,6 @@ func TestIntegrationCategory(t *testing.T) {
 
 	t.Run("UserA can get their transaction", func(t *testing.T) {
 		ans, err := testCategoryRepository.GetCategoryByID(ctx, categoryA.ID, userA.ID)
-
 		if err != nil {
 			t.Errorf("Wanted no error, got: %v",
 				err,
@@ -152,7 +151,6 @@ func TestIntegrationCategory(t *testing.T) {
 		patch.Name = "New category"
 
 		_, err := testCategoryRepository.RenameCategory(ctx, categoryA.ID, userA.ID, patch)
-
 		if err != nil {
 			t.Errorf("Wanted no error, got: %v",
 				err,
@@ -165,7 +163,6 @@ func TestIntegrationCategory(t *testing.T) {
 
 	t.Run("UserA can delete their transaction", func(t *testing.T) {
 		err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userA.ID)
-
 		if err != nil {
 			t.Errorf("Wanted no error, got: %v",
 				err,

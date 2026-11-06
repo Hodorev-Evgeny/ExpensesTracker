@@ -37,7 +37,6 @@ func (r *TransactionRepository) GetTransaction(
 		&transaction.TimeCreated,
 		&transaction.TimeChange,
 	)
-
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
 			return core_domain.Transaction{}, fmt.Errorf("transaction not found: %w", core_errors.ErrorNotFoud)

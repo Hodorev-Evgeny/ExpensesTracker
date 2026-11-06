@@ -17,8 +17,7 @@ import (
 
 var ValueSessionDb map[string]string = map[string]string{}
 
-type MockRedisClient struct {
-}
+type MockRedisClient struct{}
 
 type TestStringCmd struct {
 	ans string
@@ -74,7 +73,6 @@ func TestAuthenticator(t *testing.T) {
 		var CheckInCtx bool
 
 		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 			receivedUserid, CheckInCtx = core_domain.UserIDFromContext(r.Context())
 			w.WriteHeader(http.StatusOK)
 		})

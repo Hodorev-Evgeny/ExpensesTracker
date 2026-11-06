@@ -64,7 +64,7 @@ func (l *Limit) Validate() error {
 		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrorBadRequest)
 	}
 
-	if l.Duration == (time.Time{}) {
+	if l.Duration.IsZero() {
 		return fmt.Errorf("invalid duration: %w", core_errors.ErrorBadRequest)
 	}
 

@@ -48,14 +48,15 @@ func NewStatic(
 	countOperation = len(transaction)
 	tmpShare := make(map[int][]int)
 	for _, t := range transaction {
-		if t.Type == "Income" {
+		switch t.Type {
+		case "Income":
 			if t.Sum > maxIcome {
 				maxIcome = t.Sum
 			}
 
 			sumIncome += t.Sum
 			countIcome++
-		} else if t.Type == "Expenditure" {
+		case "Expenditure":
 			if t.Sum > maxExpenditure {
 				maxExpenditure = t.Sum
 			}
@@ -68,6 +69,7 @@ func NewStatic(
 			} else {
 				tmpShare[t.CategoryID] = []int{t.Sum}
 			}
+
 		}
 	}
 

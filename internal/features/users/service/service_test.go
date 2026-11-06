@@ -111,7 +111,8 @@ func TestUserLogin(t *testing.T) {
 			},
 			expectedError:   nil,
 			withCreateCache: true,
-		}, {
+		},
+		{
 			name: "Incorrect password",
 			inputUser: core_domain.User{
 				ID:       -1,

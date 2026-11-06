@@ -21,8 +21,7 @@ func (r *TestRow) Scan(dest ...interface{}) error {
 	return core_repository_pool.ErrNoRows
 }
 
-type Pool struct {
-}
+type Pool struct{}
 
 func (p *Pool) QueryRow(ctx context.Context, sql string, args ...any) core_repository_pool.Row {
 	return &TestRow{}

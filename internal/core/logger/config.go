@@ -35,7 +35,6 @@ func NewConfig() (Config, error) {
 
 func MustNewConfig() Config {
 	config, err := NewConfig()
-
 	if err != nil {
 		err := fmt.Errorf("failed to create config: %w", err)
 		panic(err)

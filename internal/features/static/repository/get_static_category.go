@@ -38,7 +38,7 @@ func (r *StaticRepository) GetStaticCategories(
 
 	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("Error get all categories: %w", err)
+		return nil, fmt.Errorf("error get all categories: %w", err)
 	}
 	defer rows.Close()
 
@@ -50,9 +50,8 @@ func (r *StaticRepository) GetStaticCategories(
 			&category.Name,
 			&category.User_ID,
 		)
-
 		if err != nil {
-			return list, fmt.Errorf("Error get list category: %w", err)
+			return list, fmt.Errorf("error get list category: %w", err)
 		}
 
 		list = append(list, category)

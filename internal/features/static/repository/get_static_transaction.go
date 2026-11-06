@@ -47,7 +47,7 @@ func (r *StaticRepository) GetStaticTransactions(
 
 	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("Error get all categories: %w", err)
+		return nil, fmt.Errorf("error get all categories: %w", err)
 	}
 	defer rows.Close()
 
@@ -65,7 +65,6 @@ func (r *StaticRepository) GetStaticTransactions(
 			&transaction.TimeCreated,
 			&transaction.TimeChange,
 		)
-
 		if err != nil {
 			return nil, fmt.Errorf("transaction repository GetTransactions: %w", err)
 		}
