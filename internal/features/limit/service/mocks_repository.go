@@ -114,16 +114,16 @@ func (_c *MockLimitRepository_CreateLimit_Call) RunAndReturn(run func(ctx contex
 }
 
 // DeleteLimit provides a mock function for the type MockLimitRepository
-func (_mock *MockLimitRepository) DeleteLimit(ctx context.Context, limitID int) error {
-	ret := _mock.Called(ctx, limitID)
+func (_mock *MockLimitRepository) DeleteLimit(ctx context.Context, limitID int, userID int) error {
+	ret := _mock.Called(ctx, limitID, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteLimit")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = returnFunc(ctx, limitID)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) error); ok {
+		r0 = returnFunc(ctx, limitID, userID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -138,11 +138,12 @@ type MockLimitRepository_DeleteLimit_Call struct {
 // DeleteLimit is a helper method to define mock.On call
 //   - ctx context.Context
 //   - limitID int
-func (_e *MockLimitRepository_Expecter) DeleteLimit(ctx any, limitID any) *MockLimitRepository_DeleteLimit_Call {
-	return &MockLimitRepository_DeleteLimit_Call{Call: _e.mock.On("DeleteLimit", ctx, limitID)}
+//   - userID int
+func (_e *MockLimitRepository_Expecter) DeleteLimit(ctx any, limitID any, userID any) *MockLimitRepository_DeleteLimit_Call {
+	return &MockLimitRepository_DeleteLimit_Call{Call: _e.mock.On("DeleteLimit", ctx, limitID, userID)}
 }
 
-func (_c *MockLimitRepository_DeleteLimit_Call) Run(run func(ctx context.Context, limitID int)) *MockLimitRepository_DeleteLimit_Call {
+func (_c *MockLimitRepository_DeleteLimit_Call) Run(run func(ctx context.Context, limitID int, userID int)) *MockLimitRepository_DeleteLimit_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -152,9 +153,14 @@ func (_c *MockLimitRepository_DeleteLimit_Call) Run(run func(ctx context.Context
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -165,14 +171,14 @@ func (_c *MockLimitRepository_DeleteLimit_Call) Return(err error) *MockLimitRepo
 	return _c
 }
 
-func (_c *MockLimitRepository_DeleteLimit_Call) RunAndReturn(run func(ctx context.Context, limitID int) error) *MockLimitRepository_DeleteLimit_Call {
+func (_c *MockLimitRepository_DeleteLimit_Call) RunAndReturn(run func(ctx context.Context, limitID int, userID int) error) *MockLimitRepository_DeleteLimit_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetLimit provides a mock function for the type MockLimitRepository
-func (_mock *MockLimitRepository) GetLimit(ctx context.Context, id int) (core_domain.Limit, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockLimitRepository) GetLimit(ctx context.Context, id int, userID int) (core_domain.Limit, error) {
+	ret := _mock.Called(ctx, id, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLimit")
@@ -180,16 +186,16 @@ func (_mock *MockLimitRepository) GetLimit(ctx context.Context, id int) (core_do
 
 	var r0 core_domain.Limit
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (core_domain.Limit, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) (core_domain.Limit, error)); ok {
+		return returnFunc(ctx, id, userID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) core_domain.Limit); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) core_domain.Limit); ok {
+		r0 = returnFunc(ctx, id, userID)
 	} else {
 		r0 = ret.Get(0).(core_domain.Limit)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = returnFunc(ctx, id, userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -204,11 +210,12 @@ type MockLimitRepository_GetLimit_Call struct {
 // GetLimit is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockLimitRepository_Expecter) GetLimit(ctx any, id any) *MockLimitRepository_GetLimit_Call {
-	return &MockLimitRepository_GetLimit_Call{Call: _e.mock.On("GetLimit", ctx, id)}
+//   - userID int
+func (_e *MockLimitRepository_Expecter) GetLimit(ctx any, id any, userID any) *MockLimitRepository_GetLimit_Call {
+	return &MockLimitRepository_GetLimit_Call{Call: _e.mock.On("GetLimit", ctx, id, userID)}
 }
 
-func (_c *MockLimitRepository_GetLimit_Call) Run(run func(ctx context.Context, id int)) *MockLimitRepository_GetLimit_Call {
+func (_c *MockLimitRepository_GetLimit_Call) Run(run func(ctx context.Context, id int, userID int)) *MockLimitRepository_GetLimit_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -218,9 +225,14 @@ func (_c *MockLimitRepository_GetLimit_Call) Run(run func(ctx context.Context, i
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -231,14 +243,14 @@ func (_c *MockLimitRepository_GetLimit_Call) Return(limit core_domain.Limit, err
 	return _c
 }
 
-func (_c *MockLimitRepository_GetLimit_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.Limit, error)) *MockLimitRepository_GetLimit_Call {
+func (_c *MockLimitRepository_GetLimit_Call) RunAndReturn(run func(ctx context.Context, id int, userID int) (core_domain.Limit, error)) *MockLimitRepository_GetLimit_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetLimits provides a mock function for the type MockLimitRepository
-func (_mock *MockLimitRepository) GetLimits(ctx context.Context, limit *int, offset *int) ([]core_domain.Limit, error) {
-	ret := _mock.Called(ctx, limit, offset)
+func (_mock *MockLimitRepository) GetLimits(ctx context.Context, limit *int, offset *int, userID int) ([]core_domain.Limit, error) {
+	ret := _mock.Called(ctx, limit, offset, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLimits")
@@ -246,18 +258,18 @@ func (_mock *MockLimitRepository) GetLimits(ctx context.Context, limit *int, off
 
 	var r0 []core_domain.Limit
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *int, *int) ([]core_domain.Limit, error)); ok {
-		return returnFunc(ctx, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *int, *int, int) ([]core_domain.Limit, error)); ok {
+		return returnFunc(ctx, limit, offset, userID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *int, *int) []core_domain.Limit); ok {
-		r0 = returnFunc(ctx, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *int, *int, int) []core_domain.Limit); ok {
+		r0 = returnFunc(ctx, limit, offset, userID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]core_domain.Limit)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, *int, *int) error); ok {
-		r1 = returnFunc(ctx, limit, offset)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *int, *int, int) error); ok {
+		r1 = returnFunc(ctx, limit, offset, userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -273,11 +285,12 @@ type MockLimitRepository_GetLimits_Call struct {
 //   - ctx context.Context
 //   - limit *int
 //   - offset *int
-func (_e *MockLimitRepository_Expecter) GetLimits(ctx any, limit any, offset any) *MockLimitRepository_GetLimits_Call {
-	return &MockLimitRepository_GetLimits_Call{Call: _e.mock.On("GetLimits", ctx, limit, offset)}
+//   - userID int
+func (_e *MockLimitRepository_Expecter) GetLimits(ctx any, limit any, offset any, userID any) *MockLimitRepository_GetLimits_Call {
+	return &MockLimitRepository_GetLimits_Call{Call: _e.mock.On("GetLimits", ctx, limit, offset, userID)}
 }
 
-func (_c *MockLimitRepository_GetLimits_Call) Run(run func(ctx context.Context, limit *int, offset *int)) *MockLimitRepository_GetLimits_Call {
+func (_c *MockLimitRepository_GetLimits_Call) Run(run func(ctx context.Context, limit *int, offset *int, userID int)) *MockLimitRepository_GetLimits_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -291,10 +304,15 @@ func (_c *MockLimitRepository_GetLimits_Call) Run(run func(ctx context.Context, 
 		if args[2] != nil {
 			arg2 = args[2].(*int)
 		}
+		var arg3 int
+		if args[3] != nil {
+			arg3 = args[3].(int)
+		}
 		run(
 			arg0,
 			arg1,
 			arg2,
+			arg3,
 		)
 	})
 	return _c
@@ -305,14 +323,14 @@ func (_c *MockLimitRepository_GetLimits_Call) Return(limits []core_domain.Limit,
 	return _c
 }
 
-func (_c *MockLimitRepository_GetLimits_Call) RunAndReturn(run func(ctx context.Context, limit *int, offset *int) ([]core_domain.Limit, error)) *MockLimitRepository_GetLimits_Call {
+func (_c *MockLimitRepository_GetLimits_Call) RunAndReturn(run func(ctx context.Context, limit *int, offset *int, userID int) ([]core_domain.Limit, error)) *MockLimitRepository_GetLimits_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // PatchLimit provides a mock function for the type MockLimitRepository
-func (_mock *MockLimitRepository) PatchLimit(ctx context.Context, limit core_domain.Limit) (core_domain.Limit, error) {
-	ret := _mock.Called(ctx, limit)
+func (_mock *MockLimitRepository) PatchLimit(ctx context.Context, limit core_domain.Limit, userID int) (core_domain.Limit, error) {
+	ret := _mock.Called(ctx, limit, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PatchLimit")
@@ -320,16 +338,16 @@ func (_mock *MockLimitRepository) PatchLimit(ctx context.Context, limit core_dom
 
 	var r0 core_domain.Limit
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Limit) (core_domain.Limit, error)); ok {
-		return returnFunc(ctx, limit)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Limit, int) (core_domain.Limit, error)); ok {
+		return returnFunc(ctx, limit, userID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Limit) core_domain.Limit); ok {
-		r0 = returnFunc(ctx, limit)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Limit, int) core_domain.Limit); ok {
+		r0 = returnFunc(ctx, limit, userID)
 	} else {
 		r0 = ret.Get(0).(core_domain.Limit)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, core_domain.Limit) error); ok {
-		r1 = returnFunc(ctx, limit)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, core_domain.Limit, int) error); ok {
+		r1 = returnFunc(ctx, limit, userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -344,11 +362,12 @@ type MockLimitRepository_PatchLimit_Call struct {
 // PatchLimit is a helper method to define mock.On call
 //   - ctx context.Context
 //   - limit core_domain.Limit
-func (_e *MockLimitRepository_Expecter) PatchLimit(ctx any, limit any) *MockLimitRepository_PatchLimit_Call {
-	return &MockLimitRepository_PatchLimit_Call{Call: _e.mock.On("PatchLimit", ctx, limit)}
+//   - userID int
+func (_e *MockLimitRepository_Expecter) PatchLimit(ctx any, limit any, userID any) *MockLimitRepository_PatchLimit_Call {
+	return &MockLimitRepository_PatchLimit_Call{Call: _e.mock.On("PatchLimit", ctx, limit, userID)}
 }
 
-func (_c *MockLimitRepository_PatchLimit_Call) Run(run func(ctx context.Context, limit core_domain.Limit)) *MockLimitRepository_PatchLimit_Call {
+func (_c *MockLimitRepository_PatchLimit_Call) Run(run func(ctx context.Context, limit core_domain.Limit, userID int)) *MockLimitRepository_PatchLimit_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -358,9 +377,14 @@ func (_c *MockLimitRepository_PatchLimit_Call) Run(run func(ctx context.Context,
 		if args[1] != nil {
 			arg1 = args[1].(core_domain.Limit)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -371,7 +395,7 @@ func (_c *MockLimitRepository_PatchLimit_Call) Return(limit1 core_domain.Limit, 
 	return _c
 }
 
-func (_c *MockLimitRepository_PatchLimit_Call) RunAndReturn(run func(ctx context.Context, limit core_domain.Limit) (core_domain.Limit, error)) *MockLimitRepository_PatchLimit_Call {
+func (_c *MockLimitRepository_PatchLimit_Call) RunAndReturn(run func(ctx context.Context, limit core_domain.Limit, userID int) (core_domain.Limit, error)) *MockLimitRepository_PatchLimit_Call {
 	_c.Call.Return(run)
 	return _c
 }

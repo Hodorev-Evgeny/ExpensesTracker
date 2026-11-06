@@ -8,7 +8,10 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestServiceUser(t *testing.T) {
@@ -33,13 +36,23 @@ func TestServiceUser(t *testing.T) {
 		expected.ID = 1
 
 		repo.EXPECT().
-			AddUser(ctx, user).
-			Return(expected, nil).
+			AddUser(ctx, mock.MatchedBy(func(got core_domain.User) bool {
+				return got.ID == user.ID &&
+					got.Full_name == user.Full_name &&
+					got.Email == user.Email &&
+					bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(user.Password)) == nil
+			})).
+			RunAndReturn(func(_ context.Context, got core_domain.User) (core_domain.User, error) {
+				got.ID = 1
+				return got, nil
+			}).
 			Times(1)
 
 		result, err := service.CreateUser(ctx, user)
 
 		assert.NoError(t, err)
+		assert.NoError(t, bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password)))
+		expected.Password = result.Password
 		assert.Equal(t, expected, result)
 	})
 
@@ -64,7 +77,10 @@ func TestServiceUser(t *testing.T) {
 		repoErr := errors.New("repository create failed")
 
 		repo.EXPECT().
-			AddUser(ctx, user).
+			AddUser(ctx, mock.MatchedBy(func(got core_domain.User) bool {
+				return got.Email == user.Email &&
+					bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(user.Password)) == nil
+			})).
 			Return(core_domain.User{}, repoErr).
 			Times(1)
 
@@ -327,13 +343,19 @@ func TestServiceUser(t *testing.T) {
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 		user := newUser()
-		user.ID = 0 // ID проставляется после поиска пользователя по email.
+		user.ID = 0
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
+		if err != nil {
+			t.Fatal(err)
+		}
 		cachedUser := user
 		cachedUser.ID = 12
+		cachedUser.Password = string(hash)
 
 		repo.EXPECT().
 			FindByEmail(ctx, user).
-			Return(12, nil).
+			Return(cachedUser, nil).
 			Times(1)
 		redis.EXPECT().
 			CreateCache(ctx, cachedUser).
@@ -364,33 +386,41 @@ func TestServiceUser(t *testing.T) {
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 		user := newUser()
-		repoErr := errors.New("user not found")
+		repoErr := core_repository_pool.ErrNoRows
 
 		repo.EXPECT().
 			FindByEmail(ctx, user).
-			Return(0, repoErr).
+			Return(core_domain.User{}, repoErr).
 			Times(1)
 
 		sessionID, err := service.LoginUser(ctx, user)
 
-		assert.ErrorIs(t, err, repoErr)
+		assert.ErrorIs(t, err, core_errors.ErrorUnauthorized)
 		assert.Equal(t, "", sessionID)
 	})
 
-	t.Run("Login invalid returned ID", func(t *testing.T) {
+	t.Run("Login incorrect password", func(t *testing.T) {
 		repo := NewMockUserRepository(t)
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 		user := newUser()
 
+		hash, err := bcrypt.GenerateFromPassword([]byte("another-password"), bcrypt.MinCost)
+		if err != nil {
+			t.Fatal(err)
+		}
+		foundUser := user
+		foundUser.ID = 12
+		foundUser.Password = string(hash)
+
 		repo.EXPECT().
 			FindByEmail(ctx, user).
-			Return(0, nil).
+			Return(foundUser, nil).
 			Times(1)
 
 		sessionID, err := service.LoginUser(ctx, user)
 
-		assert.Error(t, err)
+		assert.ErrorIs(t, err, core_errors.ErrorUnauthorized)
 		assert.Equal(t, "", sessionID)
 	})
 
@@ -399,13 +429,18 @@ func TestServiceUser(t *testing.T) {
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 		user := newUser()
+		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
+		if err != nil {
+			t.Fatal(err)
+		}
 		cachedUser := user
 		cachedUser.ID = 12
+		cachedUser.Password = string(hash)
 		redisErr := errors.New("redis unavailable")
 
 		repo.EXPECT().
 			FindByEmail(ctx, user).
-			Return(12, nil).
+			Return(cachedUser, nil).
 			Times(1)
 
 		redis.EXPECT().

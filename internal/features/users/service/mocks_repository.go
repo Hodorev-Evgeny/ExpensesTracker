@@ -237,22 +237,22 @@ func (_c *MockUserRepository_ExtraditionUser_Call) RunAndReturn(run func(ctx con
 }
 
 // FindByEmail provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) FindByEmail(ctx context.Context, user core_domain.User) (int, error) {
+func (_mock *MockUserRepository) FindByEmail(ctx context.Context, user core_domain.User) (core_domain.User, error) {
 	ret := _mock.Called(ctx, user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByEmail")
 	}
 
-	var r0 int
+	var r0 core_domain.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.User) (int, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.User) (core_domain.User, error)); ok {
 		return returnFunc(ctx, user)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.User) int); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.User) core_domain.User); ok {
 		r0 = returnFunc(ctx, user)
 	} else {
-		r0 = ret.Get(0).(int)
+		r0 = ret.Get(0).(core_domain.User)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, core_domain.User) error); ok {
 		r1 = returnFunc(ctx, user)
@@ -292,12 +292,12 @@ func (_c *MockUserRepository_FindByEmail_Call) Run(run func(ctx context.Context,
 	return _c
 }
 
-func (_c *MockUserRepository_FindByEmail_Call) Return(n int, err error) *MockUserRepository_FindByEmail_Call {
-	_c.Call.Return(n, err)
+func (_c *MockUserRepository_FindByEmail_Call) Return(user1 core_domain.User, err error) *MockUserRepository_FindByEmail_Call {
+	_c.Call.Return(user1, err)
 	return _c
 }
 
-func (_c *MockUserRepository_FindByEmail_Call) RunAndReturn(run func(ctx context.Context, user core_domain.User) (int, error)) *MockUserRepository_FindByEmail_Call {
+func (_c *MockUserRepository_FindByEmail_Call) RunAndReturn(run func(ctx context.Context, user core_domain.User) (core_domain.User, error)) *MockUserRepository_FindByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -546,6 +546,63 @@ func (_c *MockRedisRepository_CreateCache_Call) Return(s string, err error) *Moc
 }
 
 func (_c *MockRedisRepository_CreateCache_Call) RunAndReturn(run func(ctx context.Context, user core_domain.User) (string, error)) *MockRedisRepository_CreateCache_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// DeleteCache provides a mock function for the type MockRedisRepository
+func (_mock *MockRedisRepository) DeleteCache(ctx context.Context, sessionID string) error {
+	ret := _mock.Called(ctx, sessionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteCache")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = returnFunc(ctx, sessionID)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockRedisRepository_DeleteCache_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteCache'
+type MockRedisRepository_DeleteCache_Call struct {
+	*mock.Call
+}
+
+// DeleteCache is a helper method to define mock.On call
+//   - ctx context.Context
+//   - sessionID string
+func (_e *MockRedisRepository_Expecter) DeleteCache(ctx any, sessionID any) *MockRedisRepository_DeleteCache_Call {
+	return &MockRedisRepository_DeleteCache_Call{Call: _e.mock.On("DeleteCache", ctx, sessionID)}
+}
+
+func (_c *MockRedisRepository_DeleteCache_Call) Run(run func(ctx context.Context, sessionID string)) *MockRedisRepository_DeleteCache_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockRedisRepository_DeleteCache_Call) Return(err error) *MockRedisRepository_DeleteCache_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockRedisRepository_DeleteCache_Call) RunAndReturn(run func(ctx context.Context, sessionID string) error) *MockRedisRepository_DeleteCache_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -47,6 +47,78 @@ func (_m *MockTransactionRepository) EXPECT() *MockTransactionRepository_Expecte
 	return &MockTransactionRepository_Expecter{mock: &_m.Mock}
 }
 
+// CheckCategoryOwner provides a mock function for the type MockTransactionRepository
+func (_mock *MockTransactionRepository) CheckCategoryOwner(ctx context.Context, categoryID int, userID int) (bool, error) {
+	ret := _mock.Called(ctx, categoryID, userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckCategoryOwner")
+	}
+
+	var r0 bool
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) (bool, error)); ok {
+		return returnFunc(ctx, categoryID, userID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) bool); ok {
+		r0 = returnFunc(ctx, categoryID, userID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = returnFunc(ctx, categoryID, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockTransactionRepository_CheckCategoryOwner_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckCategoryOwner'
+type MockTransactionRepository_CheckCategoryOwner_Call struct {
+	*mock.Call
+}
+
+// CheckCategoryOwner is a helper method to define mock.On call
+//   - ctx context.Context
+//   - categoryID int
+//   - userID int
+func (_e *MockTransactionRepository_Expecter) CheckCategoryOwner(ctx any, categoryID any, userID any) *MockTransactionRepository_CheckCategoryOwner_Call {
+	return &MockTransactionRepository_CheckCategoryOwner_Call{Call: _e.mock.On("CheckCategoryOwner", ctx, categoryID, userID)}
+}
+
+func (_c *MockTransactionRepository_CheckCategoryOwner_Call) Run(run func(ctx context.Context, categoryID int, userID int)) *MockTransactionRepository_CheckCategoryOwner_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockTransactionRepository_CheckCategoryOwner_Call) Return(b bool, err error) *MockTransactionRepository_CheckCategoryOwner_Call {
+	_c.Call.Return(b, err)
+	return _c
+}
+
+func (_c *MockTransactionRepository_CheckCategoryOwner_Call) RunAndReturn(run func(ctx context.Context, categoryID int, userID int) (bool, error)) *MockTransactionRepository_CheckCategoryOwner_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateTransaction provides a mock function for the type MockTransactionRepository
 func (_mock *MockTransactionRepository) CreateTransaction(ctx context.Context, transaction core_domain.Transaction) (core_domain.Transaction, error) {
 	ret := _mock.Called(ctx, transaction)
@@ -114,16 +186,16 @@ func (_c *MockTransactionRepository_CreateTransaction_Call) RunAndReturn(run fun
 }
 
 // DeleteTransaction provides a mock function for the type MockTransactionRepository
-func (_mock *MockTransactionRepository) DeleteTransaction(ctx context.Context, id int) error {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockTransactionRepository) DeleteTransaction(ctx context.Context, id int, userID int) error {
+	ret := _mock.Called(ctx, id, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteTransaction")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) error); ok {
+		r0 = returnFunc(ctx, id, userID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -138,11 +210,12 @@ type MockTransactionRepository_DeleteTransaction_Call struct {
 // DeleteTransaction is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockTransactionRepository_Expecter) DeleteTransaction(ctx any, id any) *MockTransactionRepository_DeleteTransaction_Call {
-	return &MockTransactionRepository_DeleteTransaction_Call{Call: _e.mock.On("DeleteTransaction", ctx, id)}
+//   - userID int
+func (_e *MockTransactionRepository_Expecter) DeleteTransaction(ctx any, id any, userID any) *MockTransactionRepository_DeleteTransaction_Call {
+	return &MockTransactionRepository_DeleteTransaction_Call{Call: _e.mock.On("DeleteTransaction", ctx, id, userID)}
 }
 
-func (_c *MockTransactionRepository_DeleteTransaction_Call) Run(run func(ctx context.Context, id int)) *MockTransactionRepository_DeleteTransaction_Call {
+func (_c *MockTransactionRepository_DeleteTransaction_Call) Run(run func(ctx context.Context, id int, userID int)) *MockTransactionRepository_DeleteTransaction_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -152,9 +225,14 @@ func (_c *MockTransactionRepository_DeleteTransaction_Call) Run(run func(ctx con
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -165,14 +243,14 @@ func (_c *MockTransactionRepository_DeleteTransaction_Call) Return(err error) *M
 	return _c
 }
 
-func (_c *MockTransactionRepository_DeleteTransaction_Call) RunAndReturn(run func(ctx context.Context, id int) error) *MockTransactionRepository_DeleteTransaction_Call {
+func (_c *MockTransactionRepository_DeleteTransaction_Call) RunAndReturn(run func(ctx context.Context, id int, userID int) error) *MockTransactionRepository_DeleteTransaction_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetTransaction provides a mock function for the type MockTransactionRepository
-func (_mock *MockTransactionRepository) GetTransaction(ctx context.Context, id int) (core_domain.Transaction, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockTransactionRepository) GetTransaction(ctx context.Context, id int, userID int) (core_domain.Transaction, error) {
+	ret := _mock.Called(ctx, id, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetTransaction")
@@ -180,16 +258,16 @@ func (_mock *MockTransactionRepository) GetTransaction(ctx context.Context, id i
 
 	var r0 core_domain.Transaction
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (core_domain.Transaction, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) (core_domain.Transaction, error)); ok {
+		return returnFunc(ctx, id, userID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) core_domain.Transaction); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) core_domain.Transaction); ok {
+		r0 = returnFunc(ctx, id, userID)
 	} else {
 		r0 = ret.Get(0).(core_domain.Transaction)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = returnFunc(ctx, id, userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -204,11 +282,12 @@ type MockTransactionRepository_GetTransaction_Call struct {
 // GetTransaction is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockTransactionRepository_Expecter) GetTransaction(ctx any, id any) *MockTransactionRepository_GetTransaction_Call {
-	return &MockTransactionRepository_GetTransaction_Call{Call: _e.mock.On("GetTransaction", ctx, id)}
+//   - userID int
+func (_e *MockTransactionRepository_Expecter) GetTransaction(ctx any, id any, userID any) *MockTransactionRepository_GetTransaction_Call {
+	return &MockTransactionRepository_GetTransaction_Call{Call: _e.mock.On("GetTransaction", ctx, id, userID)}
 }
 
-func (_c *MockTransactionRepository_GetTransaction_Call) Run(run func(ctx context.Context, id int)) *MockTransactionRepository_GetTransaction_Call {
+func (_c *MockTransactionRepository_GetTransaction_Call) Run(run func(ctx context.Context, id int, userID int)) *MockTransactionRepository_GetTransaction_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -218,9 +297,14 @@ func (_c *MockTransactionRepository_GetTransaction_Call) Run(run func(ctx contex
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -231,7 +315,7 @@ func (_c *MockTransactionRepository_GetTransaction_Call) Return(transaction core
 	return _c
 }
 
-func (_c *MockTransactionRepository_GetTransaction_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.Transaction, error)) *MockTransactionRepository_GetTransaction_Call {
+func (_c *MockTransactionRepository_GetTransaction_Call) RunAndReturn(run func(ctx context.Context, id int, userID int) (core_domain.Transaction, error)) *MockTransactionRepository_GetTransaction_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -305,8 +389,8 @@ func (_c *MockTransactionRepository_GetTransactions_Call) RunAndReturn(run func(
 }
 
 // PatchTransaction provides a mock function for the type MockTransactionRepository
-func (_mock *MockTransactionRepository) PatchTransaction(ctx context.Context, transaction core_domain.Transaction) (core_domain.Transaction, error) {
-	ret := _mock.Called(ctx, transaction)
+func (_mock *MockTransactionRepository) PatchTransaction(ctx context.Context, transaction core_domain.Transaction, userID int) (core_domain.Transaction, error) {
+	ret := _mock.Called(ctx, transaction, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PatchTransaction")
@@ -314,16 +398,16 @@ func (_mock *MockTransactionRepository) PatchTransaction(ctx context.Context, tr
 
 	var r0 core_domain.Transaction
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Transaction) (core_domain.Transaction, error)); ok {
-		return returnFunc(ctx, transaction)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Transaction, int) (core_domain.Transaction, error)); ok {
+		return returnFunc(ctx, transaction, userID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Transaction) core_domain.Transaction); ok {
-		r0 = returnFunc(ctx, transaction)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, core_domain.Transaction, int) core_domain.Transaction); ok {
+		r0 = returnFunc(ctx, transaction, userID)
 	} else {
 		r0 = ret.Get(0).(core_domain.Transaction)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, core_domain.Transaction) error); ok {
-		r1 = returnFunc(ctx, transaction)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, core_domain.Transaction, int) error); ok {
+		r1 = returnFunc(ctx, transaction, userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -338,11 +422,12 @@ type MockTransactionRepository_PatchTransaction_Call struct {
 // PatchTransaction is a helper method to define mock.On call
 //   - ctx context.Context
 //   - transaction core_domain.Transaction
-func (_e *MockTransactionRepository_Expecter) PatchTransaction(ctx any, transaction any) *MockTransactionRepository_PatchTransaction_Call {
-	return &MockTransactionRepository_PatchTransaction_Call{Call: _e.mock.On("PatchTransaction", ctx, transaction)}
+//   - userID int
+func (_e *MockTransactionRepository_Expecter) PatchTransaction(ctx any, transaction any, userID any) *MockTransactionRepository_PatchTransaction_Call {
+	return &MockTransactionRepository_PatchTransaction_Call{Call: _e.mock.On("PatchTransaction", ctx, transaction, userID)}
 }
 
-func (_c *MockTransactionRepository_PatchTransaction_Call) Run(run func(ctx context.Context, transaction core_domain.Transaction)) *MockTransactionRepository_PatchTransaction_Call {
+func (_c *MockTransactionRepository_PatchTransaction_Call) Run(run func(ctx context.Context, transaction core_domain.Transaction, userID int)) *MockTransactionRepository_PatchTransaction_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -352,9 +437,14 @@ func (_c *MockTransactionRepository_PatchTransaction_Call) Run(run func(ctx cont
 		if args[1] != nil {
 			arg1 = args[1].(core_domain.Transaction)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -365,7 +455,7 @@ func (_c *MockTransactionRepository_PatchTransaction_Call) Return(transaction1 c
 	return _c
 }
 
-func (_c *MockTransactionRepository_PatchTransaction_Call) RunAndReturn(run func(ctx context.Context, transaction core_domain.Transaction) (core_domain.Transaction, error)) *MockTransactionRepository_PatchTransaction_Call {
+func (_c *MockTransactionRepository_PatchTransaction_Call) RunAndReturn(run func(ctx context.Context, transaction core_domain.Transaction, userID int) (core_domain.Transaction, error)) *MockTransactionRepository_PatchTransaction_Call {
 	_c.Call.Return(run)
 	return _c
 }

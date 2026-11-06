@@ -13,6 +13,7 @@ import (
 
 func TestServiceLimit(t *testing.T) {
 	ctx := context.Background()
+	userID := 12
 
 	t.Run("Create correct limit", func(t *testing.T) {
 		repo := NewMockLimitRepository(t)
@@ -80,11 +81,11 @@ func TestServiceLimit(t *testing.T) {
 		service := NewLimitService(repo)
 
 		repo.EXPECT().
-			DeleteLimit(ctx, 12).
+			DeleteLimit(ctx, 12, userID).
 			Return(nil).
 			Times(1)
 
-		err := service.DeleteLimit(ctx, 12)
+		err := service.DeleteLimit(ctx, 12, userID)
 		assert.Nil(t, err)
 	})
 
@@ -92,7 +93,7 @@ func TestServiceLimit(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
 
-		err := service.DeleteLimit(ctx, core_domain.UnincelizedID)
+		err := service.DeleteLimit(ctx, core_domain.UnincelizedID, userID)
 
 		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
 	})
@@ -103,11 +104,11 @@ func TestServiceLimit(t *testing.T) {
 		repoErr := core_errors.ErrorNotFoud
 
 		repo.EXPECT().
-			DeleteLimit(ctx, 12).
+			DeleteLimit(ctx, 12, userID).
 			Return(repoErr).
 			Times(1)
 
-		err := service.DeleteLimit(ctx, 12)
+		err := service.DeleteLimit(ctx, 12, userID)
 		assert.ErrorIs(t, err, repoErr)
 	})
 
@@ -122,11 +123,11 @@ func TestServiceLimit(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetLimit(ctx, 12).
+			GetLimit(ctx, 12, userID).
 			Return(limit, nil).
 			Times(1)
 
-		result, err := service.GetLimit(ctx, 12)
+		result, err := service.GetLimit(ctx, 12, userID)
 
 		assert.Nil(t, err)
 		assert.Equal(t, limit, result)
@@ -136,7 +137,7 @@ func TestServiceLimit(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
 
-		result, err := service.GetLimit(ctx, -1)
+		result, err := service.GetLimit(ctx, -1, userID)
 
 		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
 		assert.Equal(t, result, core_domain.Limit{})
@@ -148,11 +149,11 @@ func TestServiceLimit(t *testing.T) {
 		repoErr := core_repository_pool.ErrNoRows
 
 		repo.EXPECT().
-			GetLimit(ctx, 12).
+			GetLimit(ctx, 12, userID).
 			Return(core_domain.Limit{}, repoErr).
 			Times(1)
 
-		result, err := service.GetLimit(ctx, 12)
+		result, err := service.GetLimit(ctx, 12, userID)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, result, core_domain.Limit{})
@@ -176,11 +177,11 @@ func TestServiceLimit(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetLimits(ctx, new(2), new(1)).
+			GetLimits(ctx, new(2), new(1), userID).
 			Return(output, nil).
 			Times(1)
 
-		result, err := service.GetLimits(ctx, new(2), new(1))
+		result, err := service.GetLimits(ctx, new(2), new(1), userID)
 
 		assert.Nil(t, err)
 		assert.Equal(t, output, result)
@@ -190,7 +191,7 @@ func TestServiceLimit(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
 
-		result, err := service.GetLimits(ctx, new(2), new(-1))
+		result, err := service.GetLimits(ctx, new(2), new(-1), userID)
 
 		assert.ErrorIs(t, err, core_errors.ErrorValidation)
 		assert.Equal(t, result, []core_domain.Limit{})
@@ -202,11 +203,11 @@ func TestServiceLimit(t *testing.T) {
 		repoErr := core_repository_pool.ErrNoRows
 
 		repo.EXPECT().
-			GetLimits(ctx, new(1), new(1)).
+			GetLimits(ctx, new(1), new(1), userID).
 			Return(nil, repoErr).
 			Times(1)
 
-		result, err := service.GetLimits(ctx, new(1), new(1))
+		result, err := service.GetLimits(ctx, new(1), new(1), userID)
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, result, []core_domain.Limit{})
 	})
@@ -228,7 +229,7 @@ func TestServiceLimit(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetLimit(ctx, 12).
+			GetLimit(ctx, 12, userID).
 			Return(limit, nil).
 			Times(1)
 
@@ -236,11 +237,11 @@ func TestServiceLimit(t *testing.T) {
 		output.AmountLimit = 123
 
 		repo.EXPECT().
-			PatchLimit(ctx, output).
+			PatchLimit(ctx, output, userID).
 			Return(output, nil).
 			Times(1)
 
-		result, err := service.PatchLimit(ctx, 12, patch)
+		result, err := service.PatchLimit(ctx, 12, patch, userID)
 
 		assert.Nil(t, err)
 		assert.Equal(t, result, output)
@@ -252,11 +253,11 @@ func TestServiceLimit(t *testing.T) {
 		repoErr := core_errors.ErrorNotFoud
 
 		repo.EXPECT().
-			GetLimit(ctx, 12).
+			GetLimit(ctx, 12, userID).
 			Return(core_domain.Limit{}, repoErr).
 			Times(1)
 
-		result, err := service.PatchLimit(ctx, 12, core_domain.PatchLimit{})
+		result, err := service.PatchLimit(ctx, 12, core_domain.PatchLimit{}, userID)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, result, core_domain.Limit{})
@@ -273,7 +274,7 @@ func TestServiceLimit(t *testing.T) {
 			}{Value: new(-123), Set: true},
 		}
 
-		result, err := service.PatchLimit(ctx, 12, patch)
+		result, err := service.PatchLimit(ctx, 12, patch, userID)
 
 		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
 		assert.Equal(t, result, core_domain.Limit{})
@@ -297,7 +298,7 @@ func TestServiceLimit(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetLimit(ctx, 12).
+			GetLimit(ctx, 12, userID).
 			Return(limit, nil).
 			Times(1)
 
@@ -305,11 +306,11 @@ func TestServiceLimit(t *testing.T) {
 		output.AmountLimit = 123
 
 		repo.EXPECT().
-			PatchLimit(ctx, output).
+			PatchLimit(ctx, output, userID).
 			Return(core_domain.Limit{}, repoErr).
 			Times(1)
 
-		result, err := service.PatchLimit(ctx, 12, patch)
+		result, err := service.PatchLimit(ctx, 12, patch, userID)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, result, core_domain.Limit{})

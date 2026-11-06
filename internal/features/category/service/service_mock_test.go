@@ -84,11 +84,11 @@ func TestServiceCategory(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, category.ID).
+			GetCategoryByID(ctx, category.ID, category.User_ID).
 			Return(category, nil).
 			Times(1)
 
-		result, err := service.GetCategoryByID(ctx, category.ID)
+		result, err := service.GetCategoryByID(ctx, category.ID, category.User_ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, category, result)
@@ -100,11 +100,11 @@ func TestServiceCategory(t *testing.T) {
 		repoErr := core_errors.ErrorNotFoud
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, 1).
+			GetCategoryByID(ctx, 1, 12).
 			Return(core_domain.Category{}, repoErr).
 			Times(1)
 
-		result, err := service.GetCategoryByID(ctx, 1)
+		result, err := service.GetCategoryByID(ctx, 1, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Category{}, result)
@@ -114,7 +114,7 @@ func TestServiceCategory(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
 
-		result, err := service.GetCategoryByID(ctx, core_domain.UnincelizedID)
+		result, err := service.GetCategoryByID(ctx, core_domain.UnincelizedID, 12)
 
 		assert.Error(t, err)
 		assert.Equal(t, core_domain.Category{}, result)
@@ -140,16 +140,16 @@ func TestServiceCategory(t *testing.T) {
 		expected.Name = newName
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, category.ID).
+			GetCategoryByID(ctx, category.ID, category.User_ID).
 			Return(category, nil).
 			Times(1)
 
 		repo.EXPECT().
-			RenameCategory(ctx, category.ID, expected).
+			RenameCategory(ctx, category.ID, category.User_ID, expected).
 			Return(expected, nil).
 			Times(1)
 
-		result, err := service.RenameCategory(ctx, category.ID, patch)
+		result, err := service.RenameCategory(ctx, category.ID, patch, category.User_ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -169,11 +169,11 @@ func TestServiceCategory(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, 1).
+			GetCategoryByID(ctx, 1, 12).
 			Return(core_domain.Category{}, repoErr).
 			Times(1)
 
-		result, err := service.RenameCategory(ctx, 1, patch)
+		result, err := service.RenameCategory(ctx, 1, patch, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Category{}, result)
@@ -195,11 +195,11 @@ func TestServiceCategory(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, category.ID).
+			GetCategoryByID(ctx, category.ID, category.User_ID).
 			Return(category, nil).
 			Times(1)
 
-		result, err := service.RenameCategory(ctx, category.ID, patch)
+		result, err := service.RenameCategory(ctx, category.ID, patch, category.User_ID)
 
 		assert.Error(t, err)
 		assert.Equal(t, category, result)
@@ -226,16 +226,16 @@ func TestServiceCategory(t *testing.T) {
 		updated.Name = newName
 
 		repo.EXPECT().
-			GetCategoryByID(ctx, category.ID).
+			GetCategoryByID(ctx, category.ID, category.User_ID).
 			Return(category, nil).
 			Times(1)
 
 		repo.EXPECT().
-			RenameCategory(ctx, category.ID, updated).
+			RenameCategory(ctx, category.ID, category.User_ID, updated).
 			Return(core_domain.Category{}, repoErr).
 			Times(1)
 
-		result, err := service.RenameCategory(ctx, category.ID, patch)
+		result, err := service.RenameCategory(ctx, category.ID, patch, category.User_ID)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Category{}, result)
@@ -246,11 +246,11 @@ func TestServiceCategory(t *testing.T) {
 		service := NewCategoryService(repo)
 
 		repo.EXPECT().
-			DeleteCategory(ctx, 1).
+			DeleteCategory(ctx, 1, 12).
 			Return(nil).
 			Times(1)
 
-		err := service.DeleteCategory(ctx, 1)
+		err := service.DeleteCategory(ctx, 1, 12)
 
 		assert.NoError(t, err)
 	})
@@ -261,11 +261,11 @@ func TestServiceCategory(t *testing.T) {
 		repoErr := errors.New("repository delete failed")
 
 		repo.EXPECT().
-			DeleteCategory(ctx, 1).
+			DeleteCategory(ctx, 1, 12).
 			Return(repoErr).
 			Times(1)
 
-		err := service.DeleteCategory(ctx, 1)
+		err := service.DeleteCategory(ctx, 1, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 	})
@@ -274,7 +274,7 @@ func TestServiceCategory(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
 
-		err := service.DeleteCategory(ctx, core_domain.UnincelizedID)
+		err := service.DeleteCategory(ctx, core_domain.UnincelizedID, 12)
 
 		assert.Error(t, err)
 	})

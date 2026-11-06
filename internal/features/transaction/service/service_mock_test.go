@@ -32,6 +32,11 @@ func TestServiceTransaction(t *testing.T) {
 		transaction := newTransaction()
 
 		repo.EXPECT().
+			CheckCategoryOwner(ctx, transaction.CategoryID, transaction.UserID).
+			Return(true, nil).
+			Times(1)
+
+		repo.EXPECT().
 			CreateTransaction(ctx, transaction).
 			Return(transaction, nil).
 			Times(1)
@@ -61,6 +66,11 @@ func TestServiceTransaction(t *testing.T) {
 		repoErr := core_repository_pool.ErrViolationKey
 
 		repo.EXPECT().
+			CheckCategoryOwner(ctx, transaction.CategoryID, transaction.UserID).
+			Return(true, nil).
+			Times(1)
+
+		repo.EXPECT().
 			CreateTransaction(ctx, transaction).
 			Return(core_domain.Transaction{}, repoErr).
 			Times(1)
@@ -77,11 +87,11 @@ func TestServiceTransaction(t *testing.T) {
 		transaction := newTransaction()
 
 		repo.EXPECT().
-			GetTransaction(ctx, transaction.ID).
+			GetTransaction(ctx, transaction.ID, transaction.UserID).
 			Return(transaction, nil).
 			Times(1)
 
-		result, err := service.GetTransaction(ctx, transaction.ID)
+		result, err := service.GetTransaction(ctx, transaction.ID, transaction.UserID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, transaction, result)
@@ -93,11 +103,11 @@ func TestServiceTransaction(t *testing.T) {
 		repoErr := errors.New("transaction not found")
 
 		repo.EXPECT().
-			GetTransaction(ctx, 1).
+			GetTransaction(ctx, 1, 12).
 			Return(core_domain.Transaction{}, repoErr).
 			Times(1)
 
-		result, err := service.GetTransaction(ctx, 1)
+		result, err := service.GetTransaction(ctx, 1, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -107,7 +117,7 @@ func TestServiceTransaction(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
 		service := NewTransactionService(repo)
 
-		result, err := service.GetTransaction(ctx, core_domain.UnincelizedID)
+		result, err := service.GetTransaction(ctx, core_domain.UnincelizedID, 12)
 
 		assert.Error(t, err)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -173,7 +183,7 @@ func TestServiceTransaction(t *testing.T) {
 		expected.Comments = comments
 
 		repo.EXPECT().
-			GetTransaction(ctx, transaction.ID).
+			GetTransaction(ctx, transaction.ID, transaction.UserID).
 			Return(transaction, nil).
 			Times(1)
 
@@ -183,11 +193,11 @@ func TestServiceTransaction(t *testing.T) {
 					got.Comments == expected.Comments &&
 					got.Sum == expected.Sum &&
 					got.TimeChange != nil
-			})).
+			}), transaction.UserID).
 			Return(expected, nil).
 			Times(1)
 
-		result, err := service.PatchTransaction(ctx, transaction.ID, patch)
+		result, err := service.PatchTransaction(ctx, transaction.ID, patch, transaction.UserID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -203,11 +213,11 @@ func TestServiceTransaction(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetTransaction(ctx, 1).
+			GetTransaction(ctx, 1, 12).
 			Return(core_domain.Transaction{}, repoErr).
 			Times(1)
 
-		result, err := service.PatchTransaction(ctx, 1, patch)
+		result, err := service.PatchTransaction(ctx, 1, patch, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -223,11 +233,11 @@ func TestServiceTransaction(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			GetTransaction(ctx, transaction.ID).
+			GetTransaction(ctx, transaction.ID, transaction.UserID).
 			Return(transaction, nil).
 			Times(1)
 
-		result, err := service.PatchTransaction(ctx, transaction.ID, patch)
+		result, err := service.PatchTransaction(ctx, transaction.ID, patch, transaction.UserID)
 
 		assert.ErrorIs(t, err, core_errors.ErrorValidation)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -244,7 +254,7 @@ func TestServiceTransaction(t *testing.T) {
 		repoErr := errors.New("repository patch failed")
 
 		repo.EXPECT().
-			GetTransaction(ctx, transaction.ID).
+			GetTransaction(ctx, transaction.ID, transaction.UserID).
 			Return(transaction, nil).
 			Times(1)
 
@@ -253,11 +263,11 @@ func TestServiceTransaction(t *testing.T) {
 				return got.ID == transaction.ID &&
 					got.Comments == comments &&
 					got.TimeChange != nil
-			})).
+			}), transaction.UserID).
 			Return(core_domain.Transaction{}, repoErr).
 			Times(1)
 
-		result, err := service.PatchTransaction(ctx, transaction.ID, patch)
+		result, err := service.PatchTransaction(ctx, transaction.ID, patch, transaction.UserID)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -268,11 +278,11 @@ func TestServiceTransaction(t *testing.T) {
 		service := NewTransactionService(repo)
 
 		repo.EXPECT().
-			DeleteTransaction(ctx, 1).
+			DeleteTransaction(ctx, 1, 12).
 			Return(nil).
 			Times(1)
 
-		err := service.DeleteTransaction(ctx, 1)
+		err := service.DeleteTransaction(ctx, 1, 12)
 
 		assert.NoError(t, err)
 	})
@@ -283,11 +293,11 @@ func TestServiceTransaction(t *testing.T) {
 		repoErr := errors.New("repository delete failed")
 
 		repo.EXPECT().
-			DeleteTransaction(ctx, 1).
+			DeleteTransaction(ctx, 1, 12).
 			Return(repoErr).
 			Times(1)
 
-		err := service.DeleteTransaction(ctx, 1)
+		err := service.DeleteTransaction(ctx, 1, 12)
 
 		assert.ErrorIs(t, err, repoErr)
 	})
@@ -296,7 +306,7 @@ func TestServiceTransaction(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
 		service := NewTransactionService(repo)
 
-		err := service.DeleteTransaction(ctx, core_domain.UnincelizedID)
+		err := service.DeleteTransaction(ctx, core_domain.UnincelizedID, 12)
 
 		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
 	})

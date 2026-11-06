@@ -114,16 +114,16 @@ func (_c *MockCategoryRepository_CreateCategory_Call) RunAndReturn(run func(ctx 
 }
 
 // DeleteCategory provides a mock function for the type MockCategoryRepository
-func (_mock *MockCategoryRepository) DeleteCategory(ctx context.Context, id int) error {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockCategoryRepository) DeleteCategory(ctx context.Context, id int, userId int) error {
+	ret := _mock.Called(ctx, id, userId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteCategory")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) error); ok {
+		r0 = returnFunc(ctx, id, userId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -138,11 +138,85 @@ type MockCategoryRepository_DeleteCategory_Call struct {
 // DeleteCategory is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockCategoryRepository_Expecter) DeleteCategory(ctx any, id any) *MockCategoryRepository_DeleteCategory_Call {
-	return &MockCategoryRepository_DeleteCategory_Call{Call: _e.mock.On("DeleteCategory", ctx, id)}
+//   - userId int
+func (_e *MockCategoryRepository_Expecter) DeleteCategory(ctx any, id any, userId any) *MockCategoryRepository_DeleteCategory_Call {
+	return &MockCategoryRepository_DeleteCategory_Call{Call: _e.mock.On("DeleteCategory", ctx, id, userId)}
 }
 
-func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.Context, id int)) *MockCategoryRepository_DeleteCategory_Call {
+func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.Context, id int, userId int)) *MockCategoryRepository_DeleteCategory_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockCategoryRepository_DeleteCategory_Call) Return(err error) *MockCategoryRepository_DeleteCategory_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockCategoryRepository_DeleteCategory_Call) RunAndReturn(run func(ctx context.Context, id int, userId int) error) *MockCategoryRepository_DeleteCategory_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetAllCategories provides a mock function for the type MockCategoryRepository
+func (_mock *MockCategoryRepository) GetAllCategories(ctx context.Context, userId int) ([]core_domain.Category, error) {
+	ret := _mock.Called(ctx, userId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllCategories")
+	}
+
+	var r0 []core_domain.Category
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) ([]core_domain.Category, error)); ok {
+		return returnFunc(ctx, userId)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) []core_domain.Category); ok {
+		r0 = returnFunc(ctx, userId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]core_domain.Category)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = returnFunc(ctx, userId)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockCategoryRepository_GetAllCategories_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllCategories'
+type MockCategoryRepository_GetAllCategories_Call struct {
+	*mock.Call
+}
+
+// GetAllCategories is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userId int
+func (_e *MockCategoryRepository_Expecter) GetAllCategories(ctx any, userId any) *MockCategoryRepository_GetAllCategories_Call {
+	return &MockCategoryRepository_GetAllCategories_Call{Call: _e.mock.On("GetAllCategories", ctx, userId)}
+}
+
+func (_c *MockCategoryRepository_GetAllCategories_Call) Run(run func(ctx context.Context, userId int)) *MockCategoryRepository_GetAllCategories_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -160,81 +234,19 @@ func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *MockCategoryRepository_DeleteCategory_Call) Return(err error) *MockCategoryRepository_DeleteCategory_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockCategoryRepository_DeleteCategory_Call) RunAndReturn(run func(ctx context.Context, id int) error) *MockCategoryRepository_DeleteCategory_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// GetAllCategories provides a mock function for the type MockCategoryRepository
-func (_mock *MockCategoryRepository) GetAllCategories(ctx context.Context) ([]core_domain.Category, error) {
-	ret := _mock.Called(ctx)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetAllCategories")
-	}
-
-	var r0 []core_domain.Category
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]core_domain.Category, error)); ok {
-		return returnFunc(ctx)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context) []core_domain.Category); ok {
-		r0 = returnFunc(ctx)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]core_domain.Category)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = returnFunc(ctx)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockCategoryRepository_GetAllCategories_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllCategories'
-type MockCategoryRepository_GetAllCategories_Call struct {
-	*mock.Call
-}
-
-// GetAllCategories is a helper method to define mock.On call
-//   - ctx context.Context
-func (_e *MockCategoryRepository_Expecter) GetAllCategories(ctx any) *MockCategoryRepository_GetAllCategories_Call {
-	return &MockCategoryRepository_GetAllCategories_Call{Call: _e.mock.On("GetAllCategories", ctx)}
-}
-
-func (_c *MockCategoryRepository_GetAllCategories_Call) Run(run func(ctx context.Context)) *MockCategoryRepository_GetAllCategories_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		run(
-			arg0,
-		)
-	})
-	return _c
-}
-
 func (_c *MockCategoryRepository_GetAllCategories_Call) Return(categorys []core_domain.Category, err error) *MockCategoryRepository_GetAllCategories_Call {
 	_c.Call.Return(categorys, err)
 	return _c
 }
 
-func (_c *MockCategoryRepository_GetAllCategories_Call) RunAndReturn(run func(ctx context.Context) ([]core_domain.Category, error)) *MockCategoryRepository_GetAllCategories_Call {
+func (_c *MockCategoryRepository_GetAllCategories_Call) RunAndReturn(run func(ctx context.Context, userId int) ([]core_domain.Category, error)) *MockCategoryRepository_GetAllCategories_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetCategoryByID provides a mock function for the type MockCategoryRepository
-func (_mock *MockCategoryRepository) GetCategoryByID(ctx context.Context, id int) (core_domain.Category, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockCategoryRepository) GetCategoryByID(ctx context.Context, id int, userId int) (core_domain.Category, error) {
+	ret := _mock.Called(ctx, id, userId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCategoryByID")
@@ -242,16 +254,16 @@ func (_mock *MockCategoryRepository) GetCategoryByID(ctx context.Context, id int
 
 	var r0 core_domain.Category
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (core_domain.Category, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) (core_domain.Category, error)); ok {
+		return returnFunc(ctx, id, userId)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) core_domain.Category); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) core_domain.Category); ok {
+		r0 = returnFunc(ctx, id, userId)
 	} else {
 		r0 = ret.Get(0).(core_domain.Category)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = returnFunc(ctx, id, userId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -266,11 +278,12 @@ type MockCategoryRepository_GetCategoryByID_Call struct {
 // GetCategoryByID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockCategoryRepository_Expecter) GetCategoryByID(ctx any, id any) *MockCategoryRepository_GetCategoryByID_Call {
-	return &MockCategoryRepository_GetCategoryByID_Call{Call: _e.mock.On("GetCategoryByID", ctx, id)}
+//   - userId int
+func (_e *MockCategoryRepository_Expecter) GetCategoryByID(ctx any, id any, userId any) *MockCategoryRepository_GetCategoryByID_Call {
+	return &MockCategoryRepository_GetCategoryByID_Call{Call: _e.mock.On("GetCategoryByID", ctx, id, userId)}
 }
 
-func (_c *MockCategoryRepository_GetCategoryByID_Call) Run(run func(ctx context.Context, id int)) *MockCategoryRepository_GetCategoryByID_Call {
+func (_c *MockCategoryRepository_GetCategoryByID_Call) Run(run func(ctx context.Context, id int, userId int)) *MockCategoryRepository_GetCategoryByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -280,9 +293,14 @@ func (_c *MockCategoryRepository_GetCategoryByID_Call) Run(run func(ctx context.
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -293,14 +311,14 @@ func (_c *MockCategoryRepository_GetCategoryByID_Call) Return(category core_doma
 	return _c
 }
 
-func (_c *MockCategoryRepository_GetCategoryByID_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.Category, error)) *MockCategoryRepository_GetCategoryByID_Call {
+func (_c *MockCategoryRepository_GetCategoryByID_Call) RunAndReturn(run func(ctx context.Context, id int, userId int) (core_domain.Category, error)) *MockCategoryRepository_GetCategoryByID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // RenameCategory provides a mock function for the type MockCategoryRepository
-func (_mock *MockCategoryRepository) RenameCategory(ctx context.Context, id int, category core_domain.Category) (core_domain.Category, error) {
-	ret := _mock.Called(ctx, id, category)
+func (_mock *MockCategoryRepository) RenameCategory(ctx context.Context, id int, userId int, category core_domain.Category) (core_domain.Category, error) {
+	ret := _mock.Called(ctx, id, userId, category)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RenameCategory")
@@ -308,16 +326,16 @@ func (_mock *MockCategoryRepository) RenameCategory(ctx context.Context, id int,
 
 	var r0 core_domain.Category
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int, core_domain.Category) (core_domain.Category, error)); ok {
-		return returnFunc(ctx, id, category)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int, core_domain.Category) (core_domain.Category, error)); ok {
+		return returnFunc(ctx, id, userId, category)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int, core_domain.Category) core_domain.Category); ok {
-		r0 = returnFunc(ctx, id, category)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int, core_domain.Category) core_domain.Category); ok {
+		r0 = returnFunc(ctx, id, userId, category)
 	} else {
 		r0 = ret.Get(0).(core_domain.Category)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, int, core_domain.Category) error); ok {
-		r1 = returnFunc(ctx, id, category)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int, core_domain.Category) error); ok {
+		r1 = returnFunc(ctx, id, userId, category)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -332,12 +350,13 @@ type MockCategoryRepository_RenameCategory_Call struct {
 // RenameCategory is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
+//   - userId int
 //   - category core_domain.Category
-func (_e *MockCategoryRepository_Expecter) RenameCategory(ctx any, id any, category any) *MockCategoryRepository_RenameCategory_Call {
-	return &MockCategoryRepository_RenameCategory_Call{Call: _e.mock.On("RenameCategory", ctx, id, category)}
+func (_e *MockCategoryRepository_Expecter) RenameCategory(ctx any, id any, userId any, category any) *MockCategoryRepository_RenameCategory_Call {
+	return &MockCategoryRepository_RenameCategory_Call{Call: _e.mock.On("RenameCategory", ctx, id, userId, category)}
 }
 
-func (_c *MockCategoryRepository_RenameCategory_Call) Run(run func(ctx context.Context, id int, category core_domain.Category)) *MockCategoryRepository_RenameCategory_Call {
+func (_c *MockCategoryRepository_RenameCategory_Call) Run(run func(ctx context.Context, id int, userId int, category core_domain.Category)) *MockCategoryRepository_RenameCategory_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -347,14 +366,19 @@ func (_c *MockCategoryRepository_RenameCategory_Call) Run(run func(ctx context.C
 		if args[1] != nil {
 			arg1 = args[1].(int)
 		}
-		var arg2 core_domain.Category
+		var arg2 int
 		if args[2] != nil {
-			arg2 = args[2].(core_domain.Category)
+			arg2 = args[2].(int)
+		}
+		var arg3 core_domain.Category
+		if args[3] != nil {
+			arg3 = args[3].(core_domain.Category)
 		}
 		run(
 			arg0,
 			arg1,
 			arg2,
+			arg3,
 		)
 	})
 	return _c
@@ -365,7 +389,7 @@ func (_c *MockCategoryRepository_RenameCategory_Call) Return(category1 core_doma
 	return _c
 }
 
-func (_c *MockCategoryRepository_RenameCategory_Call) RunAndReturn(run func(ctx context.Context, id int, category core_domain.Category) (core_domain.Category, error)) *MockCategoryRepository_RenameCategory_Call {
+func (_c *MockCategoryRepository_RenameCategory_Call) RunAndReturn(run func(ctx context.Context, id int, userId int, category core_domain.Category) (core_domain.Category, error)) *MockCategoryRepository_RenameCategory_Call {
 	_c.Call.Return(run)
 	return _c
 }

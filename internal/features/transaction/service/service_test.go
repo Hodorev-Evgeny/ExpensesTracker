@@ -10,23 +10,23 @@ import (
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
-type MockTransactionRepository struct{}
+type MockRepository struct{}
 
-func (r *MockTransactionRepository) CreateTransaction(
+func (r *MockRepository) CreateTransaction(
 	ctx context.Context,
 	transaction core_domain.Transaction,
 ) (core_domain.Transaction, error) {
 	return core_domain.Transaction{}, nil
 }
 
-func (r *MockTransactionRepository) GetTransactions(
+func (r *MockRepository) GetTransactions(
 	ctx context.Context,
 	filters core_domain.FiltersTransaction,
 ) ([]core_domain.Transaction, error) {
 	return []core_domain.Transaction{}, nil
 }
 
-func (r *MockTransactionRepository) GetTransaction(
+func (r *MockRepository) GetTransaction(
 	ctx context.Context,
 	id int,
 	userID int,
@@ -34,7 +34,7 @@ func (r *MockTransactionRepository) GetTransaction(
 	return core_domain.Transaction{}, nil
 }
 
-func (r *MockTransactionRepository) PatchTransaction(
+func (r *MockRepository) PatchTransaction(
 	ctx context.Context,
 	transaction core_domain.Transaction,
 	userID int,
@@ -42,7 +42,7 @@ func (r *MockTransactionRepository) PatchTransaction(
 	return core_domain.Transaction{}, nil
 }
 
-func (r *MockTransactionRepository) DeleteTransaction(
+func (r *MockRepository) DeleteTransaction(
 	ctx context.Context,
 	id int,
 	userID int,
@@ -50,7 +50,7 @@ func (r *MockTransactionRepository) DeleteTransaction(
 	return nil
 }
 
-func (r *MockTransactionRepository) CheckCategoryOwner(
+func (r *MockRepository) CheckCategoryOwner(
 	ctx context.Context,
 	categoryID int,
 	userID int,
@@ -60,7 +60,7 @@ func (r *MockTransactionRepository) CheckCategoryOwner(
 
 func TestCheckCategoryOwner(t *testing.T) {
 	ctx := context.Background()
-	repo := &MockTransactionRepository{}
+	repo := &MockRepository{}
 	seevice := NewTransactionService(repo)
 
 	t.Run("Test create trunsaction", func(t *testing.T) {
