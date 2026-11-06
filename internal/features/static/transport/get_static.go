@@ -1,4 +1,4 @@
-package feature_transport_static
+package statstransport
 
 import (
 	"fmt"

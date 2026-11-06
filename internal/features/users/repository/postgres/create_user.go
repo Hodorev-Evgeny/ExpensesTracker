@@ -1,4 +1,4 @@
-package features_users_repository
+package userrepo
 
 import (
 	"context"

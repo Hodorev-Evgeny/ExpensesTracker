@@ -1,4 +1,4 @@
-package feature_transport_limit
+package limittransport
 
 import (
 	"net/http"

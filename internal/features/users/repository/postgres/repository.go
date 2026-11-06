@@ -1,4 +1,4 @@
-package features_users_repository
+package userrepo
 
 import core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 

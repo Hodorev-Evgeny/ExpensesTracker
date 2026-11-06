@@ -1,4 +1,4 @@
-package feature_user_service
+package userservice
 
 import (
 	"context"

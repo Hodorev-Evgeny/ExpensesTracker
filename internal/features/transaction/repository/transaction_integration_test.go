@@ -1,6 +1,6 @@
 //go:build integration
 
-package feature_repository_transaction
+package transactionrepo
 
 import (
 	"context"

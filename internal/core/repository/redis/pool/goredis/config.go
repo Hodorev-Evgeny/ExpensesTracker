@@ -1,4 +1,4 @@
-package core_goredis_pool
+package redispool
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package core_middleware
+package middleware
 
 import (
 	"context"

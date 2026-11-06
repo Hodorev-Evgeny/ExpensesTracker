@@ -1,4 +1,4 @@
-package core_transport_server
+package httpserver
 
 import (
 	"fmt"

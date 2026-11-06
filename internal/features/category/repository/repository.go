@@ -1,4 +1,4 @@
-package feature_repositor_category
+package categoryrepo
 
 import core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 

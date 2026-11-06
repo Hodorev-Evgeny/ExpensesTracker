@@ -1,4 +1,4 @@
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"

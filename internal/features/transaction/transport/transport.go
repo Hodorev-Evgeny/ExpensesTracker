@@ -1,11 +1,11 @@
-package feature_transactio_transport
+package transactiontransport
 
 import (
 	"context"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type TransactionService interface {
@@ -51,8 +51,8 @@ func NewTransactionHTTPHandler(
 	}
 }
 
-func (h *TransactionHTTPHandler) Router() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h *TransactionHTTPHandler) Router() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodPost,
 			Path:    "/transactions",

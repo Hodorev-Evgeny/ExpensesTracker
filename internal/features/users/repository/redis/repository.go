@@ -1,4 +1,4 @@
-package feature_user_redis
+package userredis
 
 import (
 	core_repository_redis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool"

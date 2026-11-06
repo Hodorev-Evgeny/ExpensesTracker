@@ -1,4 +1,4 @@
-package feature_repository_health
+package healthrepo
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package feature_category_transport
+package categorytransport
 
 import core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 

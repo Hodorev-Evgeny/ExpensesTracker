@@ -1,4 +1,4 @@
-package feature_repositor_category
+package categoryrepo
 
 import (
 	"context"

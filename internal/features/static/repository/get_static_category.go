@@ -1,4 +1,4 @@
-package feature_repository_static
+package statsrepo
 
 import (
 	"context"

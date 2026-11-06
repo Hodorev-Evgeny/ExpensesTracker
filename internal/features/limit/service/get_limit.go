@@ -1,4 +1,4 @@
-package feature_service_limit
+package limitservice
 
 import (
 	"context"

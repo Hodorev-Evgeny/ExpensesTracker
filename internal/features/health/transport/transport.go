@@ -1,10 +1,10 @@
-package feature_transport_health
+package healthtransport
 
 import (
 	"context"
 	"net/http"
 
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type HealthRepository interface {
@@ -21,8 +21,8 @@ func NewHealthTransport(
 	return &HealthTransport{repo: repo}
 }
 
-func (h HealthTransport) Router() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h HealthTransport) Router() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodGet,
 			Path:    "/health",

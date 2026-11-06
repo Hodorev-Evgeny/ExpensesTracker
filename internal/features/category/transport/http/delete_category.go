@@ -1,4 +1,4 @@
-package feature_category_transport
+package categorytransport
 
 import (
 	"fmt"

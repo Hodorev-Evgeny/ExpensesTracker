@@ -1,11 +1,11 @@
-package feature_category_transport
+package categorytransport
 
 import (
 	"context"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type CategoryService interface {
@@ -51,8 +51,8 @@ func NewCategoryHTTPHandler(
 	}
 }
 
-func (h *CategoryHTTPHandler) Routes() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h *CategoryHTTPHandler) Routes() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodPost,
 			Path:    "/category",
