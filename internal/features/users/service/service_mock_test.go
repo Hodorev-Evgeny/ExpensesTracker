@@ -399,6 +399,26 @@ func TestServiceUser(t *testing.T) {
 		assert.Equal(t, "", sessionID)
 	})
 
+	t.Run("Error find email in login user", func(t *testing.T) {
+		repo := NewMockUserRepository(t)
+		redis := NewMockRedisRepository(t)
+		service := NewUserService(repo, redis)
+		user := newUser()
+		repoErr := errors.New("connection refused")
+
+		repo.EXPECT().
+			FindByEmail(ctx, user).
+			Return(core_domain.User{}, repoErr).
+			Times(1)
+
+		sessionID, err := service.LoginUser(ctx, user)
+
+		assert.ErrorIs(t, err, repoErr)
+		assert.False(t, errors.Is(err, core_errors.ErrorUnauthorized))
+		assert.Equal(t, "", sessionID)
+		redis.AssertNotCalled(t, "CreateCache", mock.Anything)
+	})
+
 	t.Run("Login incorrect password", func(t *testing.T) {
 		repo := NewMockUserRepository(t)
 		redis := NewMockRedisRepository(t)
@@ -449,6 +469,77 @@ func TestServiceUser(t *testing.T) {
 			Times(1)
 
 		sessionID, err := service.LoginUser(ctx, user)
+
+		assert.ErrorIs(t, err, redisErr)
+		assert.Equal(t, "", sessionID)
+	})
+
+	t.Run("Successful logout user", func(t *testing.T) {
+		repo := NewMockUserRepository(t)
+		redis := NewMockRedisRepository(t)
+		service := NewUserService(repo, redis)
+		mockSessionID := "session-123"
+
+		redis.EXPECT().
+			DeleteCache(ctx, mockSessionID).
+			Return(nil).
+			Times(1)
+
+		err := service.LogoutUser(ctx, mockSessionID)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("Error logout session", func(t *testing.T) {
+		repo := NewMockUserRepository(t)
+		redis := NewMockRedisRepository(t)
+		service := NewUserService(repo, redis)
+		mockSessionID := "session-123"
+		repoErr := errors.New("redis connection refused")
+
+		redis.EXPECT().
+			DeleteCache(ctx, mockSessionID).
+			Return(repoErr).
+			Times(1)
+
+		err := service.LogoutUser(ctx, mockSessionID)
+
+		assert.ErrorIs(t, err, repoErr)
+	})
+
+	t.Run("Successful create cache", func(t *testing.T) {
+		repo := NewMockUserRepository(t)
+		redis := NewMockRedisRepository(t)
+		service := NewUserService(repo, redis)
+		user := newUser()
+		user.ID = 12
+		mockSessionID := "session-123"
+
+		redis.EXPECT().
+			CreateCache(ctx, user).
+			Return(mockSessionID, nil).
+			Times(1)
+
+		sessionID, err := service.CreateCache(ctx, user)
+
+		assert.NoError(t, err)
+		assert.Equal(t, mockSessionID, sessionID)
+	})
+
+	t.Run("Error create cache", func(t *testing.T) {
+		repo := NewMockUserRepository(t)
+		redis := NewMockRedisRepository(t)
+		service := NewUserService(repo, redis)
+		user := newUser()
+		user.ID = 12
+		redisErr := errors.New("redis connection refused")
+
+		redis.EXPECT().
+			CreateCache(ctx, user).
+			Return("", redisErr).
+			Times(1)
+
+		sessionID, err := service.CreateCache(ctx, user)
 
 		assert.ErrorIs(t, err, redisErr)
 		assert.Equal(t, "", sessionID)
