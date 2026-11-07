@@ -2,7 +2,7 @@
 // github.com/vektra/mockery
 // template: testify
 
-package feature_user_service
+package userservice
 
 import (
 	"context"

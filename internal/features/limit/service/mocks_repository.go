@@ -2,7 +2,7 @@
 // github.com/vektra/mockery
 // template: testify
 
-package feature_service_limit
+package limitservice
 
 import (
 	"context"
