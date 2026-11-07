@@ -10,32 +10,32 @@ import (
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker"
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
-	core_pgx_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
-	core_goredis_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool/goredis"
-	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
-	feature_service_categor "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
-	feature_category_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
-	feature_repository_health "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/repository"
-	feature_transport_health "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/transport"
-	feature_repository_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
-	feature_service_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
-	feature_transport_limit "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
-	feature_repository_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
-	feature_service_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
-	feature_transport_static "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/transport"
-	feature_repository_transaction "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/repository"
-	feature_transaction_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service"
-	feature_transactio_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/transport"
-	features_users_repository "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/postgres"
-	feature_user_redis "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/redis"
-	feature_user_service "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
-	features_users_transport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
-	feature_repository_file_system "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/repository/file_system"
-	feature_service_web "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/service"
-	feature_transport_web "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/transport"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	pgpool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
+	redispool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/redis/pool/goredis"
+	middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	categoryrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/repository"
+	categoryservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service"
+	categorytransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/transport/http"
+	healthrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/repository"
+	healthtransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/health/transport"
+	limitrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/repository"
+	limitservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service"
+	limittransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/transport"
+	statsrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/repository"
+	statsservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service"
+	statstransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/transport"
+	transactionrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/repository"
+	transactionservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service"
+	transactiontransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/transport"
+	userrepo "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/postgres"
+	userredis "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/repository/redis"
+	userservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service"
+	usertransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/transport/http"
+	webfiles "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/repository/file_system"
+	webservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/service"
+	webtransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/transport"
 	"go.uber.org/zap"
 
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/docs"
@@ -53,11 +53,11 @@ func main() {
 	)
 	defer cancel()
 
-	serverConfig := core_transport_server.MustNewConfigServer()
+	serverConfig := httpserver.MustNewConfigServer()
 	time.Local = serverConfig.TimeZone
 
-	config := core_logger.MustNewConfig()
-	logger, err := core_logger.NewLogger(config)
+	config := corelogger.MustNewConfig()
+	logger, err := corelogger.NewLogger(config)
 	if err != nil {
 		fmt.Printf("Error initializing logger: %v", err)
 		os.Exit(1)
@@ -68,7 +68,7 @@ func main() {
 
 	logger.Debug("starting initialization pool connection")
 	pgconfig := ExpensesTracker.MustPostgresConfig()
-	pool := core_pgx_pool.CreatePoolMust(ctx, pgconfig)
+	pool := pgpool.CreatePoolMust(ctx, pgconfig)
 	defer pool.Close()
 
 	if err := pool.Ping(ctx); err != nil {
@@ -77,9 +77,13 @@ func main() {
 	}
 
 	logger.Debug("starting initialization redis connection")
-	redisConfig := core_goredis_pool.MustGetRedisConfig()
-	redisClient := core_goredis_pool.CreateRedisClientMust(redisConfig)
-	defer redisClient.Close()
+	redisConfig := redispool.MustGetRedisConfig()
+	redisClient := redispool.CreateRedisClientMust(redisConfig)
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			logger.Error("error closing redis client", zap.Error(err))
+		}
+	}()
 
 	ctxCheckRedis, cancelRedis := context.WithTimeout(ctx, redisConfig.Timeout)
 	defer cancelRedis()
@@ -90,47 +94,47 @@ func main() {
 		os.Exit(1)
 	}
 
-	userRedis := feature_user_redis.NewRepositoryRedis(redisClient)
+	userRedis := userredis.NewRepositoryRedis(redisClient)
 
 	logger.Debug("starting initialization user service")
 
-	userRepo := features_users_repository.NewUserRepository(pool)
-	userServ := feature_user_service.NewUserService(userRepo, userRedis)
+	userRepo := userrepo.NewUserRepository(pool)
+	userServ := userservice.NewUserService(userRepo, userRedis)
 
 	logger.Debug("starting initialization user transport")
-	userTransporthttp := features_users_transport.NewUserHTTPHandler(userServ, serverConfig.Secure, redisConfig.TTL)
+	userTransporthttp := usertransport.NewUserHTTPHandler(userServ, serverConfig.Secure, redisConfig.TTL)
 	userRouters := userTransporthttp.Routers()
 
-	categoryRepository := feature_repositor_category.NewCategoryRepository(pool)
-	categoryService := feature_service_categor.NewCategoryService(categoryRepository)
-	categoryTransport := feature_category_transport.NewCategoryHTTPHandler(categoryService)
+	categoryRepository := categoryrepo.NewCategoryRepository(pool)
+	categoryService := categoryservice.NewCategoryService(categoryRepository)
+	categoryTransport := categorytransport.NewCategoryHTTPHandler(categoryService)
 	categoryRouters := categoryTransport.Routes()
 
-	transactionRepository := feature_repository_transaction.NewTransactionRepository(pool)
-	transactionService := feature_transaction_service.NewTransactionService(transactionRepository)
-	transactionTransport := feature_transactio_transport.NewTransactionHTTPHandler(transactionService)
+	transactionRepository := transactionrepo.NewTransactionRepository(pool)
+	transactionService := transactionservice.NewTransactionService(transactionRepository)
+	transactionTransport := transactiontransport.NewTransactionHTTPHandler(transactionService)
 	transactionRouters := transactionTransport.Router()
 
-	limitRepository := feature_repository_limit.NewLimitRepository(pool)
-	limitService := feature_service_limit.NewLimitService(limitRepository)
-	limitTransport := feature_transport_limit.NewLimitHTTPHandler(limitService)
+	limitRepository := limitrepo.NewLimitRepository(pool)
+	limitService := limitservice.NewLimitService(limitRepository)
+	limitTransport := limittransport.NewLimitHTTPHandler(limitService)
 	limitRouters := limitTransport.Router()
 
-	staticRepository := feature_repository_static.NewStaticRepository(pool)
-	staticService := feature_service_static.NewStaticService(staticRepository)
-	staticTransport := feature_transport_static.NewStaticHTTPHandler(staticService)
+	staticRepository := statsrepo.NewStaticRepository(pool)
+	staticService := statsservice.NewStaticService(staticRepository)
+	staticTransport := statstransport.NewStaticHTTPHandler(staticService)
 	staticRouters := staticTransport.Router()
 
-	fileRepository := feature_repository_file_system.NewWebRepository()
-	webService := feature_service_web.NewWebService(fileRepository)
-	webTransport := feature_transport_web.NewWebTransport(webService)
+	fileRepository := webfiles.NewWebRepository()
+	webService := webservice.NewWebService(fileRepository)
+	webTransport := webtransport.NewWebTransport(webService)
 	webRouters := webTransport.Router()
 
-	healthRepository := feature_repository_health.NewHealthRepository(redisClient, pool)
-	healthTransport := feature_transport_health.NewHealthTransport(healthRepository)
+	healthRepository := healthrepo.NewHealthRepository(redisClient, pool)
+	healthTransport := healthtransport.NewHealthTransport(healthRepository)
 	healthRouters := healthTransport.Router()
 
-	apiVersionRouter := core_transport_server.NewAPIVersionRouter(core_transport_server.ApiVersion1)
+	apiVersionRouter := httpserver.NewAPIVersionRouter(httpserver.ApiVersion1)
 	apiVersionRouter.RegisterAPIRoutes(userRouters...)
 	apiVersionRouter.RegisterAPIRoutes(categoryRouters...)
 	apiVersionRouter.RegisterAPIRoutes(transactionRouters...)
@@ -138,15 +142,15 @@ func main() {
 	apiVersionRouter.RegisterAPIRoutes(staticRouters...)
 	apiVersionRouter.RegisterAPIRoutes(healthRouters...)
 
-	httpServer := core_transport_server.NewServer(
+	httpServer := httpserver.NewServer(
 		serverConfig,
 		logger,
-		core_middleware.CORS(serverConfig.AllowedOrigins),
-		core_middleware.RequestId(),
-		core_middleware.Logger(logger),
-		core_middleware.Trace(),
-		core_middleware.PanicRecovery(),
-		core_middleware.Authenticator(redisClient),
+		middleware.CORS(serverConfig.AllowedOrigins),
+		middleware.RequestId(),
+		middleware.Logger(logger),
+		middleware.Trace(),
+		middleware.PanicRecovery(),
+		middleware.Authenticator(redisClient),
 	)
 
 	httpServer.ResisterApiVersionRouter(apiVersionRouter)

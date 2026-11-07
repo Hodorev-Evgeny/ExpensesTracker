@@ -1,4 +1,4 @@
-package feature_user_service
+package userservice
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func TestServiceUser(t *testing.T) {
 
 	newUser := func() core_domain.User {
 		return core_domain.User{
-			ID:        core_domain.UnincelizedID,
+			ID:        core_domain.UninitializedID,
 			Full_name: "Test User",
 			Email:     "test@example.com",
 			Password:  "password123",
@@ -65,7 +65,7 @@ func TestServiceUser(t *testing.T) {
 
 		result, err := service.CreateUser(ctx, user)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, core_domain.User{}, result)
 	})
 
@@ -135,7 +135,7 @@ func TestServiceUser(t *testing.T) {
 
 		result, err := service.GetUsers(ctx, &limit, nil)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, []core_domain.User{}, result)
 	})
 
@@ -147,7 +147,7 @@ func TestServiceUser(t *testing.T) {
 
 		result, err := service.GetUsers(ctx, nil, &offset)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, []core_domain.User{}, result)
 	})
 
@@ -159,11 +159,11 @@ func TestServiceUser(t *testing.T) {
 		user.ID = 1
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, user.ID).
+			GetUserByID(ctx, user.ID).
 			Return(user, nil).
 			Times(1)
 
-		result, err := service.ExtraditionUser(ctx, user.ID)
+		result, err := service.GetUserByID(ctx, user.ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, user, result)
@@ -176,11 +176,11 @@ func TestServiceUser(t *testing.T) {
 		repoErr := errors.New("user not found")
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, 1).
+			GetUserByID(ctx, 1).
 			Return(core_domain.User{}, repoErr).
 			Times(1)
 
-		result, err := service.ExtraditionUser(ctx, 1)
+		result, err := service.GetUserByID(ctx, 1)
 
 		assert.ErrorIs(t, err, repoErr)
 		assert.Equal(t, core_domain.User{}, result)
@@ -191,9 +191,9 @@ func TestServiceUser(t *testing.T) {
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 
-		result, err := service.ExtraditionUser(ctx, core_domain.UnincelizedID)
+		result, err := service.GetUserByID(ctx, core_domain.UninitializedID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, core_domain.User{}, result)
 	})
 
@@ -211,7 +211,7 @@ func TestServiceUser(t *testing.T) {
 		expected.Full_name = name
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, user.ID).
+			GetUserByID(ctx, user.ID).
 			Return(user, nil).
 			Times(1)
 
@@ -237,7 +237,7 @@ func TestServiceUser(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, 1).
+			GetUserByID(ctx, 1).
 			Return(core_domain.User{}, repoErr).
 			Times(1)
 
@@ -258,7 +258,7 @@ func TestServiceUser(t *testing.T) {
 		}
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, user.ID).
+			GetUserByID(ctx, user.ID).
 			Return(user, nil).
 			Times(1)
 
@@ -283,7 +283,7 @@ func TestServiceUser(t *testing.T) {
 		repoErr := errors.New("repository patch failed")
 
 		repo.EXPECT().
-			ExtraditionUser(ctx, user.ID).
+			GetUserByID(ctx, user.ID).
 			Return(user, nil).
 			Times(1)
 		repo.EXPECT().
@@ -333,7 +333,7 @@ func TestServiceUser(t *testing.T) {
 		redis := NewMockRedisRepository(t)
 		service := NewUserService(repo, redis)
 
-		err := service.DeleteUser(ctx, core_domain.UnincelizedID)
+		err := service.DeleteUser(ctx, core_domain.UninitializedID)
 
 		assert.Error(t, err)
 	})
@@ -395,7 +395,7 @@ func TestServiceUser(t *testing.T) {
 
 		sessionID, err := service.LoginUser(ctx, user)
 
-		assert.ErrorIs(t, err, core_errors.ErrorUnauthorized)
+		assert.ErrorIs(t, err, core_errors.ErrUnauthorized)
 		assert.Equal(t, "", sessionID)
 	})
 
@@ -414,7 +414,7 @@ func TestServiceUser(t *testing.T) {
 		sessionID, err := service.LoginUser(ctx, user)
 
 		assert.ErrorIs(t, err, repoErr)
-		assert.False(t, errors.Is(err, core_errors.ErrorUnauthorized))
+		assert.False(t, errors.Is(err, core_errors.ErrUnauthorized))
 		assert.Equal(t, "", sessionID)
 		redis.AssertNotCalled(t, "CreateCache", mock.Anything)
 	})
@@ -440,7 +440,7 @@ func TestServiceUser(t *testing.T) {
 
 		sessionID, err := service.LoginUser(ctx, user)
 
-		assert.ErrorIs(t, err, core_errors.ErrorUnauthorized)
+		assert.ErrorIs(t, err, core_errors.ErrUnauthorized)
 		assert.Equal(t, "", sessionID)
 	})
 

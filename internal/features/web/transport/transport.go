@@ -1,10 +1,10 @@
-package feature_transport_web
+package webtransport
 
 import (
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type WebService interface {
@@ -25,8 +25,8 @@ func NewWebTransport(
 	}
 }
 
-func (h *WebTransport) Router() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h *WebTransport) Router() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodGet,
 			Path:    "/{$}",

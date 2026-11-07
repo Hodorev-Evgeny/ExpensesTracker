@@ -1,11 +1,11 @@
-package feature_transport_limit
+package limittransport
 
 import (
 	"context"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type LimitService interface {
@@ -53,8 +53,8 @@ func NewLimitHTTPHandler(
 	}
 }
 
-func (h LimitHTTPHandler) Router() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h LimitHTTPHandler) Router() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodPost,
 			Path:    "/limit",

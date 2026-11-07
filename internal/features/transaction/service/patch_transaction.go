@@ -1,4 +1,4 @@
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func (s *TransactionService) PatchTransaction(
 			return core_domain.Transaction{}, fmt.Errorf("failed to check transaction owner: %w", err)
 		}
 		if !exist {
-			return core_domain.Transaction{}, fmt.Errorf("this category dont exists for this user: %w", core_errors.ErrorNotFoud)
+			return core_domain.Transaction{}, fmt.Errorf("this category dont exists for this user: %w", core_errors.ErrNotFound)
 		}
 	}
 

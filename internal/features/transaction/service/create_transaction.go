@@ -1,4 +1,4 @@
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"
@@ -15,7 +15,7 @@ func (s *TransactionService) CreateTransaction(
 	if err := transaction.Validate(); err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("invalid transaction comments: %w: %w",
 			err,
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		)
 	}
 
@@ -24,7 +24,7 @@ func (s *TransactionService) CreateTransaction(
 		return core_domain.Transaction{}, fmt.Errorf("failed to check transaction owner: %w", err)
 	}
 	if !exist {
-		return core_domain.Transaction{}, fmt.Errorf("this category dont exists for this user: %w", core_errors.ErrorNotFoud)
+		return core_domain.Transaction{}, fmt.Errorf("this category dont exists for this user: %w", core_errors.ErrNotFound)
 	}
 
 	transactionDomain, err := s.transactionRepository.CreateTransaction(ctx, transaction)

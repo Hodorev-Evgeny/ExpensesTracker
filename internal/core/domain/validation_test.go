@@ -43,7 +43,7 @@ func TestUserValidate(t *testing.T) {
 				Password:  "password123",
 				Time_add:  time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test empty email in user",
@@ -54,7 +54,7 @@ func TestUserValidate(t *testing.T) {
 				Password:  "password123",
 				Time_add:  time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect email in user",
@@ -65,7 +65,7 @@ func TestUserValidate(t *testing.T) {
 				Password:  "password123",
 				Time_add:  time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test empty password in user",
@@ -76,7 +76,7 @@ func TestUserValidate(t *testing.T) {
 				Password:  "",
 				Time_add:  time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test zero time in user",
@@ -87,7 +87,7 @@ func TestUserValidate(t *testing.T) {
 				Password:  "password123",
 				Time_add:  time.Time{},
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect phone number in user",
@@ -99,7 +99,7 @@ func TestUserValidate(t *testing.T) {
 				Password:     "password123",
 				Time_add:     time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 	}
 
@@ -140,7 +140,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test negative sum in transaction",
@@ -154,7 +154,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test zero sum in transaction",
@@ -168,7 +168,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test empty type in transaction",
@@ -182,7 +182,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect type in transaction",
@@ -196,7 +196,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test zero date in transaction",
@@ -210,7 +210,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect category id in transaction",
@@ -224,7 +224,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect user id in transaction",
@@ -238,7 +238,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test empty comments in transaction",
@@ -266,7 +266,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    "Salary",
 				TimeCreated: time.Time{},
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test is not correct comment in transaction",
@@ -280,7 +280,7 @@ func TestTransactionValidate(t *testing.T) {
 				Comments:    strings.Repeat("A", 1000),
 				TimeCreated: time.Now(),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 	}
 
@@ -360,14 +360,14 @@ func TestFiltersTransactionValidation(t *testing.T) {
 		{
 			"Test uninitialized user ID",
 			&FiltersTransaction{
-				UserId: intPtr(UnincelizedID),
+				UserId: intPtr(UninitializedID),
 			},
 			errors.New("invalid filter parameters categoryID/userID"),
 		},
 		{
 			"Test uninitialized category ID",
 			&FiltersTransaction{
-				CategoryId: intPtr(UnincelizedID),
+				CategoryId: intPtr(UninitializedID),
 			},
 			errors.New("invalid filter parameters categoryID/userID"),
 		},
@@ -403,7 +403,7 @@ func TestCategoryValidate(t *testing.T) {
 				Name:    "",
 				User_ID: 1,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test incorrect user id in category",
@@ -412,7 +412,7 @@ func TestCategoryValidate(t *testing.T) {
 				Name:    "Food",
 				User_ID: -12,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test zero user id in category",
@@ -421,7 +421,7 @@ func TestCategoryValidate(t *testing.T) {
 				Name:    "Food",
 				User_ID: 0,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test category without limit",
@@ -441,7 +441,7 @@ func TestCategoryValidate(t *testing.T) {
 				User_ID:  1,
 				Limit_id: new(int),
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 	}
 
@@ -617,7 +617,7 @@ func TestLimitValidation(t *testing.T) {
 				Duration:    time.Time{},
 				AmountLimit: 10000,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test negative amount in limit",
@@ -626,7 +626,7 @@ func TestLimitValidation(t *testing.T) {
 				Duration:    time.Now().AddDate(0, 1, 0),
 				AmountLimit: -10000,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 		{
 			"Test zero amount in limit",
@@ -635,7 +635,7 @@ func TestLimitValidation(t *testing.T) {
 				Duration:    time.Now().AddDate(0, 1, 0),
 				AmountLimit: 0,
 			},
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		},
 	}
 
@@ -649,7 +649,6 @@ func TestLimitValidation(t *testing.T) {
 }
 
 func TestPatchUser(t *testing.T) {
-
 	testCase := []DataTest{
 		{
 			name: "Update user full name",
@@ -691,7 +690,7 @@ func TestPatchUser(t *testing.T) {
 			item: &UserPatch{
 				Full_name: Nullable[string]{Value: new("Tes"), Set: true},
 			},
-			expected: core_errors.ErrorBadRequest,
+			expected: core_errors.ErrBadRequest,
 		},
 	}
 
@@ -761,21 +760,21 @@ func TestPatchTransactions(t *testing.T) {
 			item: &PatchTransaction{
 				Sum: Nullable[int]{Value: new(-11), Set: true},
 			},
-			expected: core_errors.ErrorValidation,
+			expected: core_errors.ErrValidation,
 		},
 		{
 			name: "Update invalid type transaction",
 			item: &PatchTransaction{
 				TypeTransaction: Nullable[string]{Value: new("Is not correct"), Set: true},
 			},
-			expected: core_errors.ErrorValidation,
+			expected: core_errors.ErrValidation,
 		},
 		{
 			name: "Update invalid comments",
 			item: &PatchTransaction{
 				Comments: Nullable[string]{Value: new(strings.Repeat("A", 1000)), Set: true},
 			},
-			expected: core_errors.ErrorValidation,
+			expected: core_errors.ErrValidation,
 		},
 	}
 
@@ -800,9 +799,10 @@ func TestPatchTransactions(t *testing.T) {
 
 func TestPatchLimits(t *testing.T) {
 	testCase := []DataTest{
-		{name: "Update limit duration",
+		{
+			name: "Update limit duration",
 			item: &PatchLimit{
-				Duraction: Nullable[time.Time]{Value: new(time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)), Set: true},
+				Duration: Nullable[time.Time]{Value: new(time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)), Set: true},
 			},
 			expected: nil,
 		},
@@ -816,7 +816,7 @@ func TestPatchLimits(t *testing.T) {
 		{
 			name: "Update all limit fields",
 			item: &PatchLimit{
-				Duraction:    Nullable[time.Time]{Value: new(time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)), Set: true},
+				Duration:     Nullable[time.Time]{Value: new(time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)), Set: true},
 				Amount_limit: Nullable[int]{Value: new(20000), Set: true},
 			},
 			expected: nil,
@@ -831,7 +831,7 @@ func TestPatchLimits(t *testing.T) {
 			item: &PatchLimit{
 				Amount_limit: Nullable[int]{Value: new(-124), Set: true},
 			},
-			expected: core_errors.ErrorValidation,
+			expected: core_errors.ErrValidation,
 		},
 	}
 
@@ -877,7 +877,8 @@ func TestPatchCategory(t *testing.T) {
 			name:     "Empty category patch",
 			item:     &CategoryUpdate{},
 			expected: nil,
-		}}
+		},
+	}
 
 	for i, transact := range testCase {
 		val := Category{

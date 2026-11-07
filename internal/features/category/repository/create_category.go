@@ -1,4 +1,4 @@
-package feature_repositor_category
+package categoryrepo
 
 import (
 	"context"
@@ -41,10 +41,10 @@ func (r *CategoryRepository) CreateCategory(
 	)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrViolationKey) {
-			return core_domain.Category{}, fmt.Errorf("this limit not in database: %w", core_errors.ErrorBadRequest)
+			return core_domain.Category{}, fmt.Errorf("this limit not in database: %w", core_errors.ErrBadRequest)
 		}
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.Category{}, fmt.Errorf("limit not found in database: %w", core_errors.ErrorNotFoud)
+			return core_domain.Category{}, fmt.Errorf("limit not found in database: %w", core_errors.ErrNotFound)
 		}
 		return core_domain.Category{}, fmt.Errorf("create category: %w", err)
 	}

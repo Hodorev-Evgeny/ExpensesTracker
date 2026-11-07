@@ -32,7 +32,6 @@ func CreateTestUser(ctx context.Context, pool core_repository_pool.Pool, user co
 		&userDomain.Phone_number,
 		&userDomain.Password,
 		&userDomain.Time_add)
-
 	if err != nil {
 		return core_domain.User{}, err
 	}
@@ -97,7 +96,6 @@ func CreateTestTransaction(ctx context.Context, pool core_repository_pool.Pool, 
 		&transactionDomain.TimeCreated,
 		&transactionDomain.TimeChange,
 	)
-
 	if err != nil {
 		return core_domain.Transaction{}, err
 	}

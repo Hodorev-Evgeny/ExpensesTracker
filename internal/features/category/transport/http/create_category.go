@@ -1,4 +1,4 @@
-package feature_category_transport
+package categorytransport
 
 import (
 	"net/http"
@@ -36,7 +36,7 @@ func (h *CategoryHTTPHandler) CreateNewCategory(w http.ResponseWriter, r *http.R
 
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
 	categoryDomain := CategoryDTOFromDomain(userID, req)

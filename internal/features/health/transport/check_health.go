@@ -1,4 +1,4 @@
-package feature_transport_health
+package healthtransport
 
 import (
 	"net/http"

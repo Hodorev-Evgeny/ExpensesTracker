@@ -10,7 +10,7 @@ import (
 	"time"
 
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
-	core_pgx_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
+	pgpool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/testcontainers/testcontainers-go"
@@ -88,7 +88,7 @@ func UpTestDataBase(ctx context.Context) (core_repository_pool.Pool, func(), err
 		}
 	}
 
-	pool := core_pgx_pool.NewPool(testPool, 5*time.Second)
+	pool := pgpool.NewPool(testPool, 5*time.Second)
 	return pool, cleanup, nil
 }
 

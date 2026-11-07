@@ -1,4 +1,4 @@
-package feature_service_categor
+package categoryservice
 
 import (
 	"context"
@@ -13,7 +13,7 @@ func (s *CategoryService) GetAllCategories(
 ) ([]core_domain.Category, error) {
 	categoryList, err := s.repository.GetAllCategories(ctx, userId)
 	if err != nil {
-		return nil, fmt.Errorf("Error get list category: %w", err)
+		return nil, fmt.Errorf("error get list category: %w", err)
 	}
 
 	return categoryList, nil

@@ -1,4 +1,4 @@
-package feature_service_limit
+package limitservice
 
 import (
 	"context"
@@ -13,8 +13,8 @@ func (s *LimitService) GetLimit(
 	id int,
 	userID int,
 ) (core_domain.Limit, error) {
-	if id == core_domain.UnincelizedID {
-		return core_domain.Limit{}, core_errors.ErrorBadRequest
+	if id == core_domain.UninitializedID {
+		return core_domain.Limit{}, core_errors.ErrBadRequest
 	}
 
 	limitDomain, err := s.limitRepo.GetLimit(ctx, id, userID)

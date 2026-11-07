@@ -14,7 +14,6 @@ func SetSessionCookie(w http.ResponseWriter, sessionID string, ttl int, isSecure
 		SameSite: http.SameSiteLaxMode,
 		Secure:   isSecure,
 	})
-
 }
 
 func DeleteSessionCookie(w http.ResponseWriter) {

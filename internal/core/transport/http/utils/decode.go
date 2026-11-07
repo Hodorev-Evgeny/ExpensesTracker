@@ -17,7 +17,7 @@ type customValidator interface {
 
 func DecodeJSON(data any, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(data); err != nil {
-		return fmt.Errorf("error decoding JSON: %w: %w", core_errors.ErrorBadRequest, err)
+		return fmt.Errorf("error decoding JSON: %w: %w", core_errors.ErrBadRequest, err)
 	}
 
 	var err error
@@ -33,7 +33,7 @@ func DecodeJSON(data any, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("invalid argument: %w, %w",
 			err,
-			core_errors.ErrorBadRequest,
+			core_errors.ErrBadRequest,
 		)
 	}
 

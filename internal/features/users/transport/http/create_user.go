@@ -1,4 +1,4 @@
-package features_users_transport
+package usertransport
 
 import (
 	"errors"
@@ -45,7 +45,7 @@ func (h *UserHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Info("Start processing creating new user")
 	userDomain, err := h.userService.CreateUser(ctx, DTOFromDomain(req))
 	if err != nil {
-		if errors.Is(err, core_errors.ErrorConflict) {
+		if errors.Is(err, core_errors.ErrConflict) {
 			RsponceHandler.ErrorResponse(err, "this user email is already in use")
 			return
 		}

@@ -1,4 +1,4 @@
-package features_users_transport
+package usertransport
 
 import (
 	"errors"
@@ -78,7 +78,7 @@ func (h *UserHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	userId, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
 		ResponseHandler.ErrorResponse(
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized),
 			"user is not registered")
 		return
 	}

@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"go.uber.org/zap"
 )
 
@@ -55,27 +55,27 @@ func (h *HandlerResponse) ErrorResponse(err error, msg string) {
 	)
 
 	switch {
-	case errors.Is(err, core_errors.ErrorBadRequest):
+	case errors.Is(err, core_errors.ErrBadRequest):
 		statusCode = http.StatusBadRequest
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorUnauthorized):
+	case errors.Is(err, core_errors.ErrUnauthorized):
 		statusCode = http.StatusUnauthorized
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorValidation):
+	case errors.Is(err, core_errors.ErrValidation):
 		statusCode = http.StatusUnprocessableEntity
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorNotFoud):
+	case errors.Is(err, core_errors.ErrNotFound):
 		statusCode = http.StatusNotFound
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorHealthCheck):
+	case errors.Is(err, core_errors.ErrHealthCheck):
 		statusCode = http.StatusServiceUnavailable
 		logfunc = h.log.Warn
 
-	case errors.Is(err, core_errors.ErrorConflict):
+	case errors.Is(err, core_errors.ErrConflict):
 		statusCode = http.StatusConflict
 		logfunc = h.log.Warn
 

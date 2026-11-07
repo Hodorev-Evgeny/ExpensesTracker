@@ -1,0 +1,28 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - ineffassign
+    - bodyclose
+    - rowserrcheck
+    - sqlclosecheck
+    - errorlint
+    - misspell
+
+  exclusions:
+    paths:
+      - ^out/
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+
+  exclusions:
+    paths:
+      - ^out/

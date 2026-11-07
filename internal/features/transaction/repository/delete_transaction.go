@@ -1,4 +1,4 @@
-package feature_repository_transaction
+package transactionrepo
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func (r *TransactionRepository) DeleteTransaction(
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("delete transaction: transaction not found: %w", core_errors.ErrorNotFoud)
+		return fmt.Errorf("delete transaction: transaction not found: %w", core_errors.ErrNotFound)
 	}
 
 	return nil

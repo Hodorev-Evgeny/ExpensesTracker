@@ -1,4 +1,4 @@
-package feature_repositor_category
+package categoryrepo
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func (r *CategoryRepository) DeleteCategory(
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("id category not in database: %d, %w", id, core_errors.ErrorNotFoud)
+		return fmt.Errorf("id category not in database: %d, %w", id, core_errors.ErrNotFound)
 	}
 
 	return nil

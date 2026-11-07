@@ -1,4 +1,4 @@
-package feature_service_limit
+package limitservice
 
 import (
 	"context"
@@ -50,7 +50,7 @@ func TestServiceLimit(t *testing.T) {
 
 		result, err := service.CreateLimit(ctx, limit)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 		assert.Equal(t, result, core_domain.Limit{})
 	})
 
@@ -93,15 +93,15 @@ func TestServiceLimit(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
 
-		err := service.DeleteLimit(ctx, core_domain.UnincelizedID, userID)
+		err := service.DeleteLimit(ctx, core_domain.UninitializedID, userID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 	})
 
 	t.Run("Delete limit failed", func(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
-		repoErr := core_errors.ErrorNotFoud
+		repoErr := core_errors.ErrNotFound
 
 		repo.EXPECT().
 			DeleteLimit(ctx, 12, userID).
@@ -139,7 +139,7 @@ func TestServiceLimit(t *testing.T) {
 
 		result, err := service.GetLimit(ctx, -1, userID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 		assert.Equal(t, result, core_domain.Limit{})
 	})
 
@@ -193,7 +193,7 @@ func TestServiceLimit(t *testing.T) {
 
 		result, err := service.GetLimits(ctx, new(2), new(-1), userID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, result, []core_domain.Limit{})
 	})
 
@@ -250,7 +250,7 @@ func TestServiceLimit(t *testing.T) {
 	t.Run("Failed patch limit: not found", func(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
-		repoErr := core_errors.ErrorNotFoud
+		repoErr := core_errors.ErrNotFound
 
 		repo.EXPECT().
 			GetLimit(ctx, 12, userID).
@@ -276,14 +276,14 @@ func TestServiceLimit(t *testing.T) {
 
 		result, err := service.PatchLimit(ctx, 12, patch, userID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 		assert.Equal(t, result, core_domain.Limit{})
 	})
 
 	t.Run("Failed patch limit", func(t *testing.T) {
 		repo := NewMockLimitRepository(t)
 		service := NewLimitService(repo)
-		repoErr := core_errors.ErrorConflict
+		repoErr := core_errors.ErrConflict
 
 		limit := core_domain.Limit{
 			ID:          12,

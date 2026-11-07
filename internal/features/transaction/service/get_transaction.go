@@ -1,4 +1,4 @@
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"
@@ -12,7 +12,7 @@ func (s *TransactionService) GetTransaction(
 	id int,
 	userID int,
 ) (core_domain.Transaction, error) {
-	if id == core_domain.UnincelizedID {
+	if id == core_domain.UninitializedID {
 		return core_domain.Transaction{}, fmt.Errorf("incorrect transaction id")
 	}
 

@@ -1,4 +1,4 @@
-package feature_repository_health
+package healthrepo
 
 import (
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"

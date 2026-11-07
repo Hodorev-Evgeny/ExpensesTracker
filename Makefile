@@ -130,3 +130,6 @@ test-integration:
 
 mock-generate:
 	mockery --config .mockery.yml
+
+lint:
+	@golangci-lint config verify && golangci-lint run

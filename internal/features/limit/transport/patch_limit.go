@@ -1,4 +1,4 @@
-package feature_transport_limit
+package limittransport
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ import (
 )
 
 type PatchLimit struct {
-	Duraction   core_http_types.Nullable[time.Time] `json:"duration" swaggertype:"string" example:"2006-01-02T15:04:05-07:00"`
+	Duration    core_http_types.Nullable[time.Time] `json:"duration" swaggertype:"string" example:"2006-01-02T15:04:05-07:00"`
 	AmountLimit core_http_types.Nullable[int]       `json:"amount_limit" swaggertype:"integer" example:"1"`
 }
 
@@ -50,7 +50,7 @@ func (h *LimitHTTPHandler) PatchLimit(w http.ResponseWriter, r *http.Request) {
 	limitDomain := LimitResponseToPatch(patchLimit)
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
 

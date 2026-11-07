@@ -1,4 +1,4 @@
-package feature_transactio_transport
+package transactiontransport
 
 import (
 	"net/http"
@@ -36,7 +36,7 @@ func (h *TransactionHTTPHandler) CreateTransaction(w http.ResponseWriter, r *htt
 
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
 	transactionDomain := ToDomainTransaction(userID, request)

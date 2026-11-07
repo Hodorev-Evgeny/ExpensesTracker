@@ -13,8 +13,7 @@ func (r *TestRow) Scan(dest ...interface{}) error {
 	return core_repository_pool.ErrNoRows
 }
 
-type emptyRows struct {
-}
+type emptyRows struct{}
 
 func (r *emptyRows) Close() {
 }
@@ -26,6 +25,7 @@ func (r *emptyRows) Err() error {
 func (r *emptyRows) Next() bool {
 	return false
 }
+
 func (r *emptyRows) Scan(dest ...interface{}) error {
 	return nil
 }

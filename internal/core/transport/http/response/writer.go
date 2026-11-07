@@ -2,9 +2,7 @@ package response
 
 import "net/http"
 
-var (
-	StatusCodeUninitialized = -1
-)
+var StatusCodeUninitialized = -1
 
 type ResponseWriter struct {
 	http.ResponseWriter
@@ -28,5 +26,4 @@ func (rw *ResponseWriter) GetStatus() int {
 		return http.StatusOK
 	}
 	return rw.statuscode
-
 }

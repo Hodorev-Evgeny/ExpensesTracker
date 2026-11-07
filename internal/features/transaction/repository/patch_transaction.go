@@ -1,4 +1,4 @@
-package feature_repository_transaction
+package transactionrepo
 
 import (
 	"context"
@@ -48,10 +48,10 @@ func (r *TransactionRepository) PatchTransaction(
 	)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrViolationKey) {
-			return core_domain.Transaction{}, fmt.Errorf("error key violation: %w", core_errors.ErrorValidation)
+			return core_domain.Transaction{}, fmt.Errorf("error key violation: %w", core_errors.ErrValidation)
 		}
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.Transaction{}, fmt.Errorf("error found transaction: %w", core_errors.ErrorNotFoud)
+			return core_domain.Transaction{}, fmt.Errorf("error found transaction: %w", core_errors.ErrNotFound)
 		}
 		return updatedTransaction, fmt.Errorf("error updating transaction: %w", err)
 	}

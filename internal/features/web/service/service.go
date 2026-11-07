@@ -1,4 +1,4 @@
-package feature_service_web
+package webservice
 
 import core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 

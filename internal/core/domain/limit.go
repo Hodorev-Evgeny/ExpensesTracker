@@ -15,7 +15,7 @@ type Limit struct {
 }
 
 type PatchLimit struct {
-	Duraction    Nullable[time.Time]
+	Duration     Nullable[time.Time]
 	Amount_limit Nullable[int]
 }
 
@@ -33,12 +33,12 @@ func NewLimit(
 	}
 }
 
-func CreateUnincelizeLimit(
+func CreateUninitializedLimit(
 	duration time.Time,
 	amountLimit int,
 	userID int,
 ) Limit {
-	return NewLimit(UnincelizedID, duration, amountLimit, userID)
+	return NewLimit(UninitializedID, duration, amountLimit, userID)
 }
 
 func CreatePatchLimit(
@@ -46,14 +46,14 @@ func CreatePatchLimit(
 	amountLimit Nullable[int],
 ) PatchLimit {
 	return PatchLimit{
-		Duraction:    duration,
+		Duration:     duration,
 		Amount_limit: amountLimit,
 	}
 }
 
 func (p *PatchLimit) Validate() error {
 	if p.Amount_limit.Set && *p.Amount_limit.Value < 0 {
-		return fmt.Errorf("amount limit cannot be set to zero: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("amount limit cannot be set to zero: %w", core_errors.ErrBadRequest)
 	}
 
 	return nil
@@ -61,11 +61,11 @@ func (p *PatchLimit) Validate() error {
 
 func (l *Limit) Validate() error {
 	if l.AmountLimit <= 0 {
-		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrBadRequest)
 	}
 
-	if l.Duration == (time.Time{}) {
-		return fmt.Errorf("invalid duration: %w", core_errors.ErrorBadRequest)
+	if l.Duration.IsZero() {
+		return fmt.Errorf("invalid duration: %w", core_errors.ErrBadRequest)
 	}
 
 	return nil
@@ -73,12 +73,12 @@ func (l *Limit) Validate() error {
 
 func (l *Limit) ApplyPatch(patch PatchLimit) error {
 	if err := patch.Validate(); err != nil {
-		return fmt.Errorf("invalid patch: %w", core_errors.ErrorValidation)
+		return fmt.Errorf("invalid patch: %w", core_errors.ErrValidation)
 	}
 
 	tmp := *l
-	if patch.Duraction.Set {
-		tmp.Duration = *patch.Duraction.Value
+	if patch.Duration.Set {
+		tmp.Duration = *patch.Duration.Value
 	}
 
 	if patch.Amount_limit.Set {
@@ -86,7 +86,7 @@ func (l *Limit) ApplyPatch(patch PatchLimit) error {
 	}
 
 	if err := tmp.Validate(); err != nil {
-		return fmt.Errorf("invalid limit: %w", core_errors.ErrorValidation)
+		return fmt.Errorf("invalid limit: %w", core_errors.ErrValidation)
 	}
 
 	*l = tmp

@@ -1,4 +1,4 @@
-package core_transport_server
+package httpserver
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/docs"
-	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
-	core_middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
+	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	middleware "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
@@ -17,13 +17,13 @@ type HTTPServer struct {
 	mux        *http.ServeMux
 	config     ServerConfig
 	log        *core_logger.Logger
-	middleware []core_middleware.Middleware
+	middleware []middleware.Middleware
 }
 
 func NewServer(
 	config ServerConfig,
 	log *core_logger.Logger,
-	middleware ...core_middleware.Middleware,
+	middleware ...middleware.Middleware,
 ) *HTTPServer {
 	return &HTTPServer{
 		mux:        http.NewServeMux(),
@@ -42,7 +42,6 @@ func (s *HTTPServer) ResisterApiVersionRouter(routers ...*APIVersionRouter) {
 			http.StripPrefix(prefix, router),
 		)
 	}
-
 }
 
 func (s *HTTPServer) AddFrond() {
@@ -89,7 +88,7 @@ func (s *HTTPServer) RegisterSwagger() {
 }
 
 func (s *HTTPServer) Start(ctx context.Context) error {
-	mux := core_middleware.ChainMiddleware(s.mux, s.middleware...)
+	mux := middleware.ChainMiddleware(s.mux, s.middleware...)
 
 	server := &http.Server{
 		Addr:    s.config.Addr,

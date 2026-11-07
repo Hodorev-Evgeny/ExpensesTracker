@@ -10,9 +10,7 @@ import (
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 )
 
-var (
-	UnincelizedID = -1
-)
+var UninitializedID = -1
 
 // создания доменой сущности пользователя
 type User struct {
@@ -26,9 +24,7 @@ type User struct {
 
 type KeyUserID struct{}
 
-var (
-	key = KeyUserID{}
-)
+var key = KeyUserID{}
 
 func UserIDToContext(ctx context.Context, userID int) context.Context {
 	return context.WithValue(ctx, key, userID)
@@ -58,13 +54,14 @@ func CreateUser(
 	}
 }
 
-func CreateUnincelizedUser(
+func CreateUninitializedUser(
 	full_name string,
 	email string,
 	phone *string,
-	password string) User {
+	password string,
+) User {
 	return CreateUser(
-		UnincelizedID,
+		UninitializedID,
 		full_name,
 		email,
 		phone,
@@ -77,14 +74,14 @@ func CreateLoginUser(
 	password string,
 ) User {
 	return User{
-		ID:       UnincelizedID,
+		ID:       UninitializedID,
 		Email:    email,
 		Password: password,
 	}
 }
 
 func (u *User) ChangeID(id int) error {
-	if id == UnincelizedID || id <= 0 {
+	if id == UninitializedID || id <= 0 {
 		return fmt.Errorf("invalid id")
 	}
 
@@ -93,25 +90,25 @@ func (u *User) ChangeID(id int) error {
 }
 
 func (u *User) Validate() error {
-	if u.Time_add == (time.Time{}) {
-		return fmt.Errorf("invalid time: %w", core_errors.ErrorBadRequest)
+	if u.Time_add.IsZero() {
+		return fmt.Errorf("invalid time: %w", core_errors.ErrBadRequest)
 	}
 	if u.Full_name == "" {
-		return fmt.Errorf("invalid user full_name: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid user full_name: %w", core_errors.ErrBadRequest)
 	}
 
 	if _, err := mail.ParseAddress(u.Email); err != nil {
-		return fmt.Errorf("invalid user email: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid user email: %w", core_errors.ErrBadRequest)
 	}
 
 	if u.Password == "" {
-		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrBadRequest)
 	}
 
 	if u.Phone_number != nil {
 		regular := regexp.MustCompile(`^\+[0-9]+$`)
 		if !regular.MatchString(*u.Phone_number) {
-			return fmt.Errorf("invalid user phone number: %w", core_errors.ErrorBadRequest)
+			return fmt.Errorf("invalid user phone number: %w", core_errors.ErrBadRequest)
 		}
 	}
 
@@ -120,11 +117,11 @@ func (u *User) Validate() error {
 
 func (u *User) LoginValidate() error {
 	if _, err := mail.ParseAddress(u.Email); err != nil {
-		return fmt.Errorf("invalid user email: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid user email: %w", core_errors.ErrBadRequest)
 	}
 
 	if u.Password == "" {
-		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid user password for user: %w", core_errors.ErrBadRequest)
 	}
 
 	return nil

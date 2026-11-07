@@ -1,4 +1,4 @@
-package features_users_transport
+package usertransport
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func (h *UserHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
 		responseHandler.ErrorResponse(
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized),
 			"user is not registered")
 		return
 	}

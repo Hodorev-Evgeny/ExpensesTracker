@@ -1,4 +1,4 @@
-package feature_user_redis
+package userredis
 
 import (
 	"context"

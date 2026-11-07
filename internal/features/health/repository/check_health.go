@@ -1,4 +1,4 @@
-package feature_repository_health
+package healthrepo
 
 import (
 	"context"
@@ -13,12 +13,12 @@ func (r *HealthRepository) CheckHealth(ctx context.Context) error {
 	defer cancel()
 
 	if err := r.pool.Ping(ctx); err != nil {
-		return fmt.Errorf("postgres health check failed: %w", core_errors.ErrorHealthCheck)
+		return fmt.Errorf("postgres health check failed: %w", core_errors.ErrHealthCheck)
 	}
 
 	_, errRedisPing := r.rbd.Ping(ctx).Result()
 	if errRedisPing != nil {
-		return fmt.Errorf("redis health check failed: %w", core_errors.ErrorHealthCheck)
+		return fmt.Errorf("redis health check failed: %w", core_errors.ErrHealthCheck)
 	}
 
 	return nil

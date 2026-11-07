@@ -1,4 +1,4 @@
-package features_users_transport
+package usertransport
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 )
 
-// ExtraditionUser       godoc
+// GetUserByID       godoc
 // @Summary      Получение пользователя
 // @Description  Получение конкретного пользователя по его ID
 // @Tags         users
@@ -21,7 +21,7 @@ import (
 // @Failure      404 {object} response.ErrorResponse "User not found"
 // @Failure      500 {object} response.ErrorResponse "Internal server error"
 // @Router       /users/{id} [get]
-func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHTTPHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := response.NewHandlerResponse(log, w)
@@ -30,15 +30,15 @@ func (h *UserHTTPHandler) ExtraditionUser(w http.ResponseWriter, r *http.Request
 	id, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
 		responseHandler.ErrorResponse(
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized),
 			"user is not registered")
 		return
 	}
 
 	log.Info("Start processing get user")
-	domainUser, err := h.userService.ExtraditionUser(ctx, id)
+	domainUser, err := h.userService.GetUserByID(ctx, id)
 	if err != nil {
-		responseHandler.ErrorResponse(err, "error try extradition user")
+		responseHandler.ErrorResponse(err, "failed to get user by ID")
 		return
 	}
 	log.Info("End processing get user")

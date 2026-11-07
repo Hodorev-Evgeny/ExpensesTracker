@@ -1,4 +1,4 @@
-package feature_user_service
+package userservice
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 )
 
 func (s *UserService) DeleteUser(ctx context.Context, id int) error {
-	if id == core_domain.UnincelizedID {
-		return fmt.Errorf("cannot delete unincelized user")
+	if id == core_domain.UninitializedID {
+		return fmt.Errorf("cannot delete uninitialized user")
 	}
 
 	err := s.userRepository.DeleteUser(ctx, id)

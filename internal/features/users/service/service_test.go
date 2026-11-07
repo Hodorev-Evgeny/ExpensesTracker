@@ -1,4 +1,4 @@
-package feature_user_service
+package userservice
 
 import (
 	"context"
@@ -57,7 +57,7 @@ func (r *RepositoryPostgresMock) GetUsers(
 	return []core_domain.User{}, nil
 }
 
-func (r *RepositoryPostgresMock) ExtraditionUser(
+func (r *RepositoryPostgresMock) GetUserByID(
 	ctx context.Context,
 	id int,
 ) (core_domain.User, error) {
@@ -111,14 +111,15 @@ func TestUserLogin(t *testing.T) {
 			},
 			expectedError:   nil,
 			withCreateCache: true,
-		}, {
+		},
+		{
 			name: "Incorrect password",
 			inputUser: core_domain.User{
 				ID:       -1,
 				Email:    "testcorrect@gmai.com",
 				Password: "VeryHardAndPass",
 			},
-			expectedError:   core_errors.ErrorUnauthorized,
+			expectedError:   core_errors.ErrUnauthorized,
 			withCreateCache: false,
 		},
 		{
@@ -128,7 +129,7 @@ func TestUserLogin(t *testing.T) {
 				Email:    "testunknow@gmai.com",
 				Password: "VeryHardAndCorrectPass",
 			},
-			expectedError:   core_errors.ErrorUnauthorized,
+			expectedError:   core_errors.ErrUnauthorized,
 			withCreateCache: false,
 		},
 	}

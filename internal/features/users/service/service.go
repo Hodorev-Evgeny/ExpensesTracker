@@ -1,4 +1,4 @@
-package feature_user_service
+package userservice
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type UserRepository interface {
 		offset *int,
 	) ([]core_domain.User, error)
 
-	ExtraditionUser(
+	GetUserByID(
 		ctx context.Context,
 		id int,
 	) (core_domain.User, error)
@@ -59,7 +59,8 @@ type UserService struct {
 
 func NewUserService(
 	userRepository UserRepository,
-	repository RedisRepository) *UserService {
+	repository RedisRepository,
+) *UserService {
 	return &UserService{
 		userRepository:      userRepository,
 		userRedisRepository: repository,

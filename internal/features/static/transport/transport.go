@@ -1,11 +1,11 @@
-package feature_transport_static
+package statstransport
 
 import (
 	"context"
 	"net/http"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type StaticService interface {
@@ -27,8 +27,8 @@ func NewStaticHTTPHandler(
 	}
 }
 
-func (h *StaticHTTPHandler) Router() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h *StaticHTTPHandler) Router() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodGet,
 			Path:    "/static",

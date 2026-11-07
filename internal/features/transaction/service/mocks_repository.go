@@ -2,7 +2,7 @@
 // github.com/vektra/mockery
 // template: testify
 
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"

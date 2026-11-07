@@ -1,4 +1,4 @@
-package feature_service_limit
+package limitservice
 
 import (
 	"context"
@@ -13,7 +13,7 @@ func (s *LimitService) CreateLimit(
 	limit core_domain.Limit,
 ) (core_domain.Limit, error) {
 	if err := limit.Validate(); err != nil {
-		return core_domain.Limit{}, fmt.Errorf("message: %w;error: %w", err, core_errors.ErrorValidation)
+		return core_domain.Limit{}, fmt.Errorf("message: %w;error: %w", err, core_errors.ErrValidation)
 	}
 
 	limitDomain, err := s.limitRepo.CreateLimit(ctx, limit)

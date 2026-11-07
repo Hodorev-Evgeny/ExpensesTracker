@@ -1,4 +1,4 @@
-package features_users_repository
+package userrepo
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
-	core_pgx_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
+	pgpool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool/pgx"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -21,8 +21,7 @@ func (r *TestRow) Scan(dest ...interface{}) error {
 	return core_repository_pool.ErrNoRows
 }
 
-type Pool struct {
-}
+type Pool struct{}
 
 func (p *Pool) QueryRow(ctx context.Context, sql string, args ...any) core_repository_pool.Row {
 	return &TestRow{}
@@ -33,7 +32,7 @@ func (p *Pool) GetTimeout() time.Duration {
 }
 
 func (p *Pool) Exec(ctx context.Context, sql string, arguments ...any) (core_repository_pool.CommandTag, error) {
-	return core_pgx_pool.CommandTag{}, nil
+	return pgpool.CommandTag{}, nil
 }
 
 func (p *Pool) Ping(ctx context.Context) error {
@@ -41,7 +40,7 @@ func (p *Pool) Ping(ctx context.Context) error {
 }
 
 func (c *Pool) Query(ctx context.Context, sql string, args ...any) (core_repository_pool.Rows, error) {
-	return core_pgx_pool.Rows{}, nil
+	return pgpool.Rows{}, nil
 }
 
 func (c *Pool) Close() {
@@ -59,7 +58,7 @@ type TestData struct {
 	expectedResult core_domain.User
 }
 
-func TestExtraditionUser(t *testing.T) {
+func TestGetUserByID(t *testing.T) {
 	testPool := CreateTestPool()
 	repo := NewUserRepository(testPool)
 	testData := []TestData{
@@ -67,9 +66,9 @@ func TestExtraditionUser(t *testing.T) {
 			name: "Test get user",
 			pool: testPool,
 			function: func(ctx context.Context, repo *UserRepository) (any, error) {
-				return repo.ExtraditionUser(ctx, -1)
+				return repo.GetUserByID(ctx, -1)
 			},
-			expectedError:  core_errors.ErrorNotFoud,
+			expectedError:  core_errors.ErrNotFound,
 			expectedResult: core_domain.User{},
 		},
 	}

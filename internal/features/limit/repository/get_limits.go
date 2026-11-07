@@ -1,4 +1,4 @@
-package feature_repository_limit
+package limitrepo
 
 import (
 	"context"

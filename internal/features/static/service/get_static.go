@@ -1,4 +1,4 @@
-package feature_service_static
+package statsservice
 
 import (
 	"context"

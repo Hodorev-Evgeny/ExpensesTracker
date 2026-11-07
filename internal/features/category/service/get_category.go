@@ -1,4 +1,4 @@
-package feature_service_categor
+package categoryservice
 
 import (
 	"context"
@@ -12,8 +12,8 @@ func (s *CategoryService) GetCategoryByID(
 	id int,
 	userId int,
 ) (core_domain.Category, error) {
-	if id == core_domain.UnincelizedID {
-		return core_domain.Category{}, errors.New("unincelized category")
+	if id == core_domain.UninitializedID {
+		return core_domain.Category{}, errors.New("uninitialized category")
 	}
 
 	category, err := s.repository.GetCategoryByID(ctx, id, userId)

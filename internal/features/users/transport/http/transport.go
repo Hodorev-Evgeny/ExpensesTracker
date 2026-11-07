@@ -1,4 +1,4 @@
-package features_users_transport
+package usertransport
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
-	core_transport_server "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
+	httpserver "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/server"
 )
 
 type UserHTTPHandler struct {
@@ -27,7 +27,7 @@ type userService interface {
 		offset *int,
 	) ([]core_domain.User, error)
 
-	ExtraditionUser(
+	GetUserByID(
 		ctx context.Context,
 		id int,
 	) (core_domain.User, error)
@@ -71,8 +71,8 @@ func NewUserHTTPHandler(
 	}
 }
 
-func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
-	return []core_transport_server.Route{
+func (h *UserHTTPHandler) Routers() []httpserver.Route {
+	return []httpserver.Route{
 		{
 			Method:  http.MethodPost,
 			Path:    "/users/register",
@@ -81,7 +81,7 @@ func (h *UserHTTPHandler) Routers() []core_transport_server.Route {
 		{
 			Method:  http.MethodGet,
 			Path:    "/users",
-			Handler: h.ExtraditionUser,
+			Handler: h.GetUserByID,
 		},
 		{
 			Method:  http.MethodDelete,

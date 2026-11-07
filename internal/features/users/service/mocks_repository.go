@@ -2,7 +2,7 @@
 // github.com/vektra/mockery
 // template: testify
 
-package feature_user_service
+package userservice
 
 import (
 	"context"
@@ -170,12 +170,12 @@ func (_c *MockUserRepository_DeleteUser_Call) RunAndReturn(run func(ctx context.
 	return _c
 }
 
-// ExtraditionUser provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) ExtraditionUser(ctx context.Context, id int) (core_domain.User, error) {
+// GetUserByID provides a mock function for the type MockUserRepository
+func (_mock *MockUserRepository) GetUserByID(ctx context.Context, id int) (core_domain.User, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ExtraditionUser")
+		panic("no return value specified for GetUserByID")
 	}
 
 	var r0 core_domain.User
@@ -196,19 +196,19 @@ func (_mock *MockUserRepository) ExtraditionUser(ctx context.Context, id int) (c
 	return r0, r1
 }
 
-// MockUserRepository_ExtraditionUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ExtraditionUser'
-type MockUserRepository_ExtraditionUser_Call struct {
+// MockUserRepository_GetUserByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByID'
+type MockUserRepository_GetUserByID_Call struct {
 	*mock.Call
 }
 
-// ExtraditionUser is a helper method to define mock.On call
+// GetUserByID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-func (_e *MockUserRepository_Expecter) ExtraditionUser(ctx any, id any) *MockUserRepository_ExtraditionUser_Call {
-	return &MockUserRepository_ExtraditionUser_Call{Call: _e.mock.On("ExtraditionUser", ctx, id)}
+func (_e *MockUserRepository_Expecter) GetUserByID(ctx any, id any) *MockUserRepository_GetUserByID_Call {
+	return &MockUserRepository_GetUserByID_Call{Call: _e.mock.On("GetUserByID", ctx, id)}
 }
 
-func (_c *MockUserRepository_ExtraditionUser_Call) Run(run func(ctx context.Context, id int)) *MockUserRepository_ExtraditionUser_Call {
+func (_c *MockUserRepository_GetUserByID_Call) Run(run func(ctx context.Context, id int)) *MockUserRepository_GetUserByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -226,12 +226,12 @@ func (_c *MockUserRepository_ExtraditionUser_Call) Run(run func(ctx context.Cont
 	return _c
 }
 
-func (_c *MockUserRepository_ExtraditionUser_Call) Return(user core_domain.User, err error) *MockUserRepository_ExtraditionUser_Call {
+func (_c *MockUserRepository_GetUserByID_Call) Return(user core_domain.User, err error) *MockUserRepository_GetUserByID_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockUserRepository_ExtraditionUser_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.User, error)) *MockUserRepository_ExtraditionUser_Call {
+func (_c *MockUserRepository_GetUserByID_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.User, error)) *MockUserRepository_GetUserByID_Call {
 	_c.Call.Return(run)
 	return _c
 }

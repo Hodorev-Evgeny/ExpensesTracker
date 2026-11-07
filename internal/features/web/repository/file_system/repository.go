@@ -1,4 +1,4 @@
-package feature_repository_file_system
+package webfiles
 
 type WebRepository struct{}
 

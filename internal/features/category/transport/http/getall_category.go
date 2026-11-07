@@ -1,4 +1,4 @@
-package feature_category_transport
+package categorytransport
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func (h *CategoryHTTPHandler) GetAllCategorys(w http.ResponseWriter, r *http.Req
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
 		ResponseHandler.ErrorResponse(
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized),
 			"user is not registered")
 		return
 	}

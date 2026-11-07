@@ -50,14 +50,14 @@ func NewTransactionPatch(
 	}
 }
 
-func NewTransactionUnincelized(
+func NewUninitializedTransaction(
 	Sum, CategoryID, UserID int,
 	Type, Comments string,
 	Date, TimeCreated time.Time,
 	TimeChange *time.Time,
 ) Transaction {
 	return Transaction{
-		ID:          UnincelizedID,
+		ID:          UninitializedID,
 		Sum:         Sum,
 		CategoryID:  CategoryID,
 		UserID:      UserID,
@@ -79,15 +79,15 @@ func (f *FiltersTransaction) Validate() error {
 	}
 
 	if f.Limit == nil {
-		defualt := 50
-		f.Limit = &defualt
+		defaultLimit := 50
+		f.Limit = &defaultLimit
 	}
 
 	if f.Sum != nil && *f.Sum < 0 {
 		return fmt.Errorf("invalid filter parameters sum")
 	}
 
-	if (f.UserId != nil && *f.UserId == UnincelizedID) || (f.CategoryId != nil && *f.CategoryId == UnincelizedID) {
+	if (f.UserId != nil && *f.UserId == UninitializedID) || (f.CategoryId != nil && *f.CategoryId == UninitializedID) {
 		return fmt.Errorf("invalid filter parameters categoryID/userID")
 	}
 
@@ -96,19 +96,19 @@ func (f *FiltersTransaction) Validate() error {
 
 func (t *Transaction) Validate() error {
 	if t.Sum <= 0 {
-		return fmt.Errorf("invalid transaction sum: %d: %w", t.Sum, core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid transaction sum: %d: %w", t.Sum, core_errors.ErrBadRequest)
 	}
 
-	if t.CategoryID == UnincelizedID || t.UserID == UnincelizedID {
-		return fmt.Errorf("invalid transaction category id: %d: %w", t.CategoryID, core_errors.ErrorBadRequest)
+	if t.CategoryID == UninitializedID || t.UserID == UninitializedID {
+		return fmt.Errorf("invalid transaction category id: %d: %w", t.CategoryID, core_errors.ErrBadRequest)
 	}
 
 	if t.Type != "Income" && t.Type != "Expenditure" {
-		return fmt.Errorf("invalid transaction type: %s: %w", t.Type, core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid transaction type: %s: %w", t.Type, core_errors.ErrBadRequest)
 	}
 
 	if len(t.Comments) >= 1000 {
-		return fmt.Errorf("invalid transaction comments: %d:%w", len(t.Comments), core_errors.ErrorBadRequest)
+		return fmt.Errorf("invalid transaction comments: %d:%w", len(t.Comments), core_errors.ErrBadRequest)
 	}
 
 	return nil
@@ -119,7 +119,7 @@ func (p *PatchTransaction) Validate() error {
 		return fmt.Errorf("invalid transaction sum: %d", p.Sum.Value)
 	}
 
-	if p.CategoryId.Set && *p.CategoryId.Value == UnincelizedID {
+	if p.CategoryId.Set && *p.CategoryId.Value == UninitializedID {
 		return fmt.Errorf("invalid transaction category id: %d", p.CategoryId.Value)
 	}
 
@@ -136,7 +136,7 @@ func (p *PatchTransaction) Validate() error {
 
 func (t *Transaction) ApplyPatch(patch PatchTransaction) error {
 	if err := patch.Validate(); err != nil {
-		return fmt.Errorf("invalid patch: %w", core_errors.ErrorValidation)
+		return fmt.Errorf("invalid patch: %w", core_errors.ErrValidation)
 	}
 
 	tmp := *t

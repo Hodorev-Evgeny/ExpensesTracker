@@ -6,8 +6,7 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 )
 
-type MockService struct {
-}
+type MockService struct{}
 
 func NewMockService() *MockService {
 	return &MockService{}
@@ -28,7 +27,7 @@ func (s *MockService) GetUsers(
 	return []core_domain.User{}, nil
 }
 
-func (s *MockService) ExtraditionUser(
+func (s *MockService) GetUserByID(
 	ctx context.Context,
 	id int,
 ) (core_domain.User, error) {

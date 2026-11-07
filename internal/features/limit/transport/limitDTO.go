@@ -1,4 +1,4 @@
-package feature_transport_limit
+package limittransport
 
 import (
 	"time"
@@ -17,7 +17,7 @@ type LimitResponse struct {
 }
 
 func LimitResponseToDomain(req LimitDTO, userID int) core_domain.Limit {
-	return core_domain.CreateUnincelizeLimit(
+	return core_domain.CreateUninitializedLimit(
 		req.Duration,
 		req.AmountLimit,
 		userID,
@@ -25,7 +25,7 @@ func LimitResponseToDomain(req LimitDTO, userID int) core_domain.Limit {
 }
 
 func LimitResponseToPatch(req PatchLimit) core_domain.PatchLimit {
-	return core_domain.CreatePatchLimit(req.Duraction.ToDomain(), req.AmountLimit.ToDomain())
+	return core_domain.CreatePatchLimit(req.Duration.ToDomain(), req.AmountLimit.ToDomain())
 }
 
 func LimitDomainToResponse(limit core_domain.Limit) LimitResponse {

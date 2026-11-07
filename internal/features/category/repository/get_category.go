@@ -1,4 +1,4 @@
-package feature_repositor_category
+package categoryrepo
 
 import (
 	"context"
@@ -31,10 +31,9 @@ func (r *CategoryRepository) GetCategoryByID(
 		&category.Name,
 		&category.User_ID,
 	)
-
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.Category{}, fmt.Errorf("category not found: %w", core_errors.ErrorNotFoud)
+			return core_domain.Category{}, fmt.Errorf("category not found: %w", core_errors.ErrNotFound)
 		}
 		return core_domain.Category{}, fmt.Errorf("get category by id: %w", err)
 	}

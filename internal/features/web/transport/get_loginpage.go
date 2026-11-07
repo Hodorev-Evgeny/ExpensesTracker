@@ -1,4 +1,4 @@
-package feature_transport_web
+package webtransport
 
 import (
 	"net/http"

@@ -5,10 +5,10 @@ import (
 )
 
 var (
-	ErrorNotFoud      = errors.New("Not foud")
-	ErrorBadRequest   = errors.New("Bad request")
-	ErrorUnauthorized = errors.New("Unauthorized")
-	ErrorValidation   = errors.New("Validation error")
-	ErrorHealthCheck  = errors.New("Health check failed")
-	ErrorConflict     = errors.New("already exists")
+	ErrNotFound     = errors.New("not found")
+	ErrBadRequest   = errors.New("bad request")
+	ErrUnauthorized = errors.New("unauthorized")
+	ErrValidation   = errors.New("validation error")
+	ErrHealthCheck  = errors.New("health check failed")
+	ErrConflict     = errors.New("already exists")
 )

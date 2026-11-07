@@ -34,7 +34,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/feature_category_transport.CategoryResponse"
+                                "$ref": "#/definitions/categorytransport.CategoryResponse"
                             }
                         }
                     },
@@ -71,7 +71,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/feature_category_transport.CategoryRequest"
+                            "$ref": "#/definitions/categorytransport.CategoryRequest"
                         }
                     }
                 ],
@@ -79,7 +79,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Create new category successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_category_transport.CategoryResponse"
+                            "$ref": "#/definitions/categorytransport.CategoryResponse"
                         }
                     },
                     "400": {
@@ -123,7 +123,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Get category successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_category_transport.CategoryResponse"
+                            "$ref": "#/definitions/categorytransport.CategoryResponse"
                         }
                     },
                     "400": {
@@ -205,7 +205,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/feature_category_transport.CategoryUpdateRequest"
+                            "$ref": "#/definitions/categorytransport.CategoryUpdateRequest"
                         }
                     }
                 ],
@@ -213,7 +213,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Patch category successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_category_transport.CategoryResponse"
+                            "$ref": "#/definitions/categorytransport.CategoryResponse"
                         }
                     },
                     "400": {
@@ -270,7 +270,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/feature_transport_limit.LimitResponse"
+                                "$ref": "#/definitions/limittransport.LimitResponse"
                             }
                         }
                     },
@@ -307,7 +307,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/feature_transport_limit.LimitDTO"
+                            "$ref": "#/definitions/limittransport.LimitDTO"
                         }
                     }
                 ],
@@ -315,7 +315,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Create new limit successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transport_limit.LimitResponse"
+                            "$ref": "#/definitions/limittransport.LimitResponse"
                         }
                     },
                     "400": {
@@ -437,7 +437,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/feature_transport_limit.PatchLimit"
+                            "$ref": "#/definitions/limittransport.PatchLimit"
                         }
                     }
                 ],
@@ -445,7 +445,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Patch limit successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transport_limit.LimitResponse"
+                            "$ref": "#/definitions/limittransport.LimitResponse"
                         }
                     },
                     "400": {
@@ -469,7 +469,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/static/{user_id}": {
+        "/static": {
             "get": {
                 "description": "Get all static about category and transaction",
                 "consumes": [
@@ -506,7 +506,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Get static successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transport_static.StaticResponse"
+                            "$ref": "#/definitions/statstransport.StaticResponse"
                         }
                     },
                     "400": {
@@ -590,7 +590,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/feature_transactio_transport.TransactionResponse"
+                                "$ref": "#/definitions/transactiontransport.TransactionResponse"
                             }
                         }
                     },
@@ -627,7 +627,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/feature_transactio_transport.TransactionRequest"
+                            "$ref": "#/definitions/transactiontransport.TransactionRequest"
                         }
                     }
                 ],
@@ -635,7 +635,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Create transaction successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transactio_transport.TransactionResponse"
+                            "$ref": "#/definitions/transactiontransport.TransactionResponse"
                         }
                     },
                     "400": {
@@ -679,7 +679,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Get transaction successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transactio_transport.TransactionResponse"
+                            "$ref": "#/definitions/transactiontransport.TransactionResponse"
                         }
                     },
                     "400": {
@@ -767,7 +767,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/feature_transactio_transport.TransactionPatchRequest"
+                            "$ref": "#/definitions/transactiontransport.TransactionPatchRequest"
                         }
                     }
                 ],
@@ -775,7 +775,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Patch transaction successfully",
                         "schema": {
-                            "$ref": "#/definitions/feature_transactio_transport.TransactionResponse"
+                            "$ref": "#/definitions/transactiontransport.TransactionResponse"
                         }
                     },
                     "400": {
@@ -829,7 +829,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/features_users_transport.UserDTOResponse"
+                                "$ref": "#/definitions/usertransport.UserDTOResponse"
                             }
                         }
                     },
@@ -866,7 +866,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.CreateUserRequest"
+                            "$ref": "#/definitions/usertransport.CreateUserRequest"
                         }
                     }
                 ],
@@ -874,7 +874,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Успешно созданный пользователь",
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.CreateUserResponse"
+                            "$ref": "#/definitions/usertransport.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -909,7 +909,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.LoginHandler"
+                            "$ref": "#/definitions/usertransport.LoginHandler"
                         }
                     }
                 ],
@@ -917,39 +917,13 @@ const docTemplate = `{
                     "200": {
                         "description": "session created",
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.StatusRequest"
+                            "$ref": "#/definitions/usertransport.StatusRequest"
                         }
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me": {
-            "get": {
-                "description": "Get cookie by sessionID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "session"
-                ],
-                "summary": "Get cookie data",
-                "responses": {
-                    "200": {
-                        "description": "session cookieData return",
-                        "schema": {
-                            "$ref": "#/definitions/core_domain.CookieData"
                         }
                     },
                     "500": {
@@ -984,7 +958,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Пользователь успешно найден",
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.UserDTOResponse"
+                            "$ref": "#/definitions/usertransport.UserDTOResponse"
                         }
                     },
                     "400": {
@@ -1072,7 +1046,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.RequestPatchUser"
+                            "$ref": "#/definitions/usertransport.RequestPatchUser"
                         }
                     }
                 ],
@@ -1080,7 +1054,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully changed user",
                         "schema": {
-                            "$ref": "#/definitions/features_users_transport.UserDTOResponse"
+                            "$ref": "#/definitions/usertransport.UserDTOResponse"
                         }
                     },
                     "400": {
@@ -1112,15 +1086,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "core_domain.CookieData": {
-            "type": "object",
-            "properties": {
-                "userID": {
-                    "type": "integer"
-                }
-            }
-        },
-        "feature_category_transport.CategoryRequest": {
+        "categorytransport.CategoryRequest": {
             "type": "object",
             "required": [
                 "category_name"
@@ -1138,7 +1104,7 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_category_transport.CategoryResponse": {
+        "categorytransport.CategoryResponse": {
             "type": "object",
             "properties": {
                 "category_name": {
@@ -1155,7 +1121,7 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_category_transport.CategoryUpdateRequest": {
+        "categorytransport.CategoryUpdateRequest": {
             "type": "object",
             "required": [
                 "limit_id",
@@ -1170,105 +1136,7 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_transactio_transport.TransactionPatchRequest": {
-            "type": "object",
-            "properties": {
-                "categoryId": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "comments": {
-                    "type": "string",
-                    "example": "comment"
-                },
-                "sum": {
-                    "type": "integer",
-                    "example": 1023
-                },
-                "typeTransaction": {
-                    "type": "string",
-                    "example": "Expenditure/Income"
-                }
-            }
-        },
-        "feature_transactio_transport.TransactionRequest": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "comments",
-                "date",
-                "sum",
-                "type"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "comments": {
-                    "type": "string",
-                    "example": "somthing else"
-                },
-                "date": {
-                    "type": "string",
-                    "example": "2006-01-02T15:04:05-07:00"
-                },
-                "sum": {
-                    "type": "integer",
-                    "example": 10123
-                },
-                "type": {
-                    "type": "string",
-                    "example": "Expenditure/Income"
-                }
-            }
-        },
-        "feature_transactio_transport.TransactionResponse": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "comments",
-                "date",
-                "sum",
-                "type",
-                "user_id"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "comments": {
-                    "type": "string",
-                    "example": "somthing else"
-                },
-                "date": {
-                    "type": "string",
-                    "example": "2006-01-02T15:04:05-07:00"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "sum": {
-                    "type": "integer",
-                    "example": 10123
-                },
-                "time_change": {
-                    "type": "string",
-                    "example": "2006-01-02T15:04:05-07:00"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "Expenditure/Income"
-                },
-                "user_id": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
-        "feature_transport_limit.LimitDTO": {
+        "limittransport.LimitDTO": {
             "type": "object",
             "required": [
                 "amount_limit",
@@ -1285,7 +1153,7 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_transport_limit.LimitResponse": {
+        "limittransport.LimitResponse": {
             "type": "object",
             "required": [
                 "amount_limit",
@@ -1305,7 +1173,7 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_transport_limit.PatchLimit": {
+        "limittransport.PatchLimit": {
             "type": "object",
             "properties": {
                 "amount_limit": {
@@ -1318,7 +1186,18 @@ const docTemplate = `{
                 }
             }
         },
-        "feature_transport_static.StaticResponse": {
+        "response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "statstransport.StaticResponse": {
             "type": "object",
             "properties": {
                 "avg_expenditure": {
@@ -1370,7 +1249,105 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.CreateUserRequest": {
+        "transactiontransport.TransactionPatchRequest": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "comment"
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 1023
+                },
+                "typeTransaction": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                }
+            }
+        },
+        "transactiontransport.TransactionRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "comments",
+                "date",
+                "sum",
+                "type"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "somthing else"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 10123
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                }
+            }
+        },
+        "transactiontransport.TransactionResponse": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "comments",
+                "date",
+                "sum",
+                "type",
+                "user_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "somthing else"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sum": {
+                    "type": "integer",
+                    "example": 10123
+                },
+                "time_change": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05-07:00"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Expenditure/Income"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "usertransport.CreateUserRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1403,7 +1380,7 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.CreateUserResponse": {
+        "usertransport.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1423,7 +1400,7 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.LoginHandler": {
+        "usertransport.LoginHandler": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1434,7 +1411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.RequestPatchUser": {
+        "usertransport.RequestPatchUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1451,7 +1428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.StatusRequest": {
+        "usertransport.StatusRequest": {
             "type": "object",
             "properties": {
                 "status": {
@@ -1459,7 +1436,7 @@ const docTemplate = `{
                 }
             }
         },
-        "features_users_transport.UserDTOResponse": {
+        "usertransport.UserDTOResponse": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1475,17 +1452,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_add": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "message": {
                     "type": "string"
                 }
             }

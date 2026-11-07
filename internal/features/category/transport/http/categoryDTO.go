@@ -1,4 +1,4 @@
-package feature_category_transport
+package categorytransport
 
 import core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 
@@ -22,7 +22,7 @@ func DomainFromResponse(category core_domain.Category) CategoryResponse {
 }
 
 func CategoryDTOFromDomain(userID int, category CategoryRequest) core_domain.Category {
-	return core_domain.CreateUnincelizedCategory(
+	return core_domain.CreateUninitializedCategory(
 		category.CategoryName,
 		userID,
 		category.Limit_id,

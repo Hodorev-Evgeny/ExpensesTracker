@@ -1,4 +1,4 @@
-package core_pgx_pool
+package pgpool
 
 import (
 	"errors"
@@ -17,7 +17,6 @@ type TestData struct {
 }
 
 func TestMappingError(t *testing.T) {
-
 	testData := []TestData{
 		{
 			Name:        "Test mapping Violation Key error",
@@ -27,7 +26,7 @@ func TestMappingError(t *testing.T) {
 		{
 			Name:        "Test mapping Error Conflict",
 			InputCode:   &pgconn.PgError{Code: pgerrcode.UniqueViolation},
-			ExpectedErr: core_errors.ErrorConflict,
+			ExpectedErr: core_errors.ErrConflict,
 		},
 	}
 

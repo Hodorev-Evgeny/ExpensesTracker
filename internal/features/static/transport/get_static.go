@@ -1,4 +1,4 @@
-package feature_transport_static
+package statstransport
 
 import (
 	"fmt"
@@ -90,8 +90,7 @@ func GetStaticFilters(r *http.Request) (core_domain.FiltersStatic, error) {
 	userID, ok := core_domain.UserIDFromContext(r.Context())
 	if !ok {
 		return core_domain.FiltersStatic{},
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized)
-
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized)
 	}
 	filters := core_domain.NewFiltersStatic(to, from, categoryID, userID)
 

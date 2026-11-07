@@ -1,4 +1,4 @@
-package feature_transaction_service
+package transactionservice
 
 import (
 	"context"
@@ -55,7 +55,7 @@ func TestServiceTransaction(t *testing.T) {
 
 		result, err := service.CreateTransaction(ctx, transaction)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 		assert.Equal(t, core_domain.Transaction{}, result)
 	})
 
@@ -117,7 +117,7 @@ func TestServiceTransaction(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
 		service := NewTransactionService(repo)
 
-		result, err := service.GetTransaction(ctx, core_domain.UnincelizedID, 12)
+		result, err := service.GetTransaction(ctx, core_domain.UninitializedID, 12)
 
 		assert.Error(t, err)
 		assert.Equal(t, core_domain.Transaction{}, result)
@@ -167,7 +167,7 @@ func TestServiceTransaction(t *testing.T) {
 
 		result, err := service.GetTransactions(ctx, filters)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 		assert.Nil(t, result)
 	})
 
@@ -239,7 +239,7 @@ func TestServiceTransaction(t *testing.T) {
 
 		result, err := service.PatchTransaction(ctx, transaction.ID, patch, transaction.UserID)
 
-		assert.ErrorIs(t, err, core_errors.ErrorValidation)
+		assert.ErrorIs(t, err, core_errors.ErrValidation)
 		assert.Equal(t, core_domain.Transaction{}, result)
 	})
 
@@ -306,8 +306,8 @@ func TestServiceTransaction(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
 		service := NewTransactionService(repo)
 
-		err := service.DeleteTransaction(ctx, core_domain.UnincelizedID, 12)
+		err := service.DeleteTransaction(ctx, core_domain.UninitializedID, 12)
 
-		assert.ErrorIs(t, err, core_errors.ErrorBadRequest)
+		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
 	})
 }

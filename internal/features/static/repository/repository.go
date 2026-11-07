@@ -1,4 +1,4 @@
-package feature_repository_static
+package statsrepo
 
 import core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 
