@@ -35,7 +35,7 @@ func (h *TransactionHTTPHandler) GetsTransaction(w http.ResponseWriter, r *http.
 
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
 

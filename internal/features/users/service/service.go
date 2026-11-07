@@ -18,7 +18,7 @@ type UserRepository interface {
 		offset *int,
 	) ([]core_domain.User, error)
 
-	ExtraditionUser(
+	GetUserByID(
 		ctx context.Context,
 		id int,
 	) (core_domain.User, error)

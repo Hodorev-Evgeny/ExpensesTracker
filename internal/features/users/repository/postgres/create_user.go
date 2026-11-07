@@ -35,8 +35,8 @@ func (r *UserRepository) AddUser(ctx context.Context, user core_domain.User) (co
 		&userDomain.Password,
 		&userDomain.Time_add)
 	if err != nil {
-		if errors.Is(err, core_errors.ErrorConflict) {
-			return core_domain.User{}, fmt.Errorf("this email user already exists: %w", core_errors.ErrorConflict)
+		if errors.Is(err, core_errors.ErrConflict) {
+			return core_domain.User{}, fmt.Errorf("this email user already exists: %w", core_errors.ErrConflict)
 		}
 		return core_domain.User{}, fmt.Errorf("error inserting user: %w", err)
 	}

@@ -52,12 +52,12 @@ func (h *UserHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 func GetLimitAnsOffset(r *http.Request) (*int, *int, error) {
 	limit, err := core_http_query_parm.GetIntQueryParm(r, "limit")
 	if err != nil {
-		return nil, nil, fmt.Errorf("error parsing limit: %w", core_errors.ErrorValidation)
+		return nil, nil, fmt.Errorf("error parsing limit: %w", core_errors.ErrValidation)
 	}
 
 	offset, err := core_http_query_parm.GetIntQueryParm(r, "offset")
 	if err != nil {
-		return nil, nil, fmt.Errorf("error parsing offset: %w", core_errors.ErrorValidation)
+		return nil, nil, fmt.Errorf("error parsing offset: %w", core_errors.ErrValidation)
 	}
 
 	return limit, offset, nil

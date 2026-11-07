@@ -10,7 +10,7 @@ import (
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
-func (r *UserRepository) ExtraditionUser(ctx context.Context, id int) (core_domain.User, error) {
+func (r *UserRepository) GetUserByID(ctx context.Context, id int) (core_domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.GetTimeout())
 	defer cancel()
 
@@ -31,9 +31,9 @@ func (r *UserRepository) ExtraditionUser(ctx context.Context, id int) (core_doma
 		&user.Time_add)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.User{}, core_errors.ErrorNotFoud
+			return core_domain.User{}, core_errors.ErrNotFound
 		}
-		return core_domain.User{}, fmt.Errorf("ExtraditionUser scan: %w", err)
+		return core_domain.User{}, fmt.Errorf("GetUserByID scan: %w", err)
 	}
 
 	return user, nil

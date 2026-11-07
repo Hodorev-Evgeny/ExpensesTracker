@@ -97,7 +97,7 @@ func TestServiceCategory(t *testing.T) {
 	t.Run("Get category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
-		repoErr := core_errors.ErrorNotFoud
+		repoErr := core_errors.ErrNotFound
 
 		repo.EXPECT().
 			GetCategoryByID(ctx, 1, 12).
@@ -114,7 +114,7 @@ func TestServiceCategory(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
 
-		result, err := service.GetCategoryByID(ctx, core_domain.UnincelizedID, 12)
+		result, err := service.GetCategoryByID(ctx, core_domain.UninitializedID, 12)
 
 		assert.Error(t, err)
 		assert.Equal(t, core_domain.Category{}, result)
@@ -158,7 +158,7 @@ func TestServiceCategory(t *testing.T) {
 	t.Run("Rename category get error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
-		repoErr := core_errors.ErrorNotFoud
+		repoErr := core_errors.ErrNotFound
 
 		newName := "renamed"
 		patch := core_domain.CategoryUpdate{
@@ -274,7 +274,7 @@ func TestServiceCategory(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
 		service := NewCategoryService(repo)
 
-		err := service.DeleteCategory(ctx, core_domain.UnincelizedID, 12)
+		err := service.DeleteCategory(ctx, core_domain.UninitializedID, 12)
 
 		assert.Error(t, err)
 	})

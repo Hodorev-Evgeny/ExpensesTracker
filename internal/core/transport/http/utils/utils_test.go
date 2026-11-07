@@ -23,7 +23,7 @@ func TestGetIntQueryParm(t *testing.T) {
 			nameTest:  "not valid query",
 			queryData: "abc",
 			queryKey:  "limit",
-			expected:  core_errors.ErrorValidation,
+			expected:  core_errors.ErrValidation,
 		},
 	}
 

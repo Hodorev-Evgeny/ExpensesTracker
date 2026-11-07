@@ -76,8 +76,8 @@ func TestCheckCategoryOwner(t *testing.T) {
 		}
 
 		_, err := seevice.CreateTransaction(ctx, transaction)
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
-			t.Errorf("expected error not foud, got: %v", err)
+		if !errors.Is(err, core_errors.ErrNotFound) {
+			t.Errorf("expected error not found, got: %v", err)
 		}
 	})
 
@@ -90,8 +90,8 @@ func TestCheckCategoryOwner(t *testing.T) {
 		}
 
 		_, err := seevice.PatchTransaction(ctx, 1, transaction, 1)
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
-			t.Errorf("expected error not foud, got: %v", err)
+		if !errors.Is(err, core_errors.ErrNotFound) {
+			t.Errorf("expected error not found, got: %v", err)
 		}
 	})
 }

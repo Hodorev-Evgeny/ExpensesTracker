@@ -34,12 +34,12 @@ func (h *LimitHTTPHandler) CreateLimit(w http.ResponseWriter, r *http.Request) {
 
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
-	limitUnincelizd := LimitResponseToDomain(req, userID)
+	uninitializedLimit := LimitResponseToDomain(req, userID)
 
-	limitDomain, err := h.limitService.CreateLimit(ctx, limitUnincelizd)
+	limitDomain, err := h.limitService.CreateLimit(ctx, uninitializedLimit)
 	if err != nil {
 		ResponseHandler.ErrorResponse(err, "error creating limit")
 		return

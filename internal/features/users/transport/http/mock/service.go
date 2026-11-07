@@ -27,7 +27,7 @@ func (s *MockService) GetUsers(
 	return []core_domain.User{}, nil
 }
 
-func (s *MockService) ExtraditionUser(
+func (s *MockService) GetUserByID(
 	ctx context.Context,
 	id int,
 ) (core_domain.User, error) {

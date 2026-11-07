@@ -27,7 +27,7 @@ func (r *LimitRepository) DeleteLimit(
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("delete limit: limit not found: %w", core_errors.ErrorNotFoud)
+		return fmt.Errorf("delete limit: limit not found: %w", core_errors.ErrNotFound)
 	}
 
 	return nil

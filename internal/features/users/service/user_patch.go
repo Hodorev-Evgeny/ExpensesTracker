@@ -10,7 +10,7 @@ func (s *UserService) PatchUser(ctx context.Context,
 	id int,
 	req core_domain.UserPatch,
 ) (core_domain.User, error) {
-	user, err := s.ExtraditionUser(ctx, id)
+	user, err := s.GetUserByID(ctx, id)
 	if err != nil {
 		return core_domain.User{}, err
 	}

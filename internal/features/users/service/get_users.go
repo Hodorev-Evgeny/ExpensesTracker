@@ -11,11 +11,11 @@ import (
 func (s *UserService) GetUsers(ctx context.Context, limit *int, offset *int) ([]core_domain.User, error) {
 	if limit != nil && *limit < 0 {
 		return []core_domain.User{},
-			fmt.Errorf("limit is not valid %w", core_errors.ErrorValidation)
+			fmt.Errorf("limit is not valid %w", core_errors.ErrValidation)
 	}
 	if offset != nil && *offset < 0 {
 		return []core_domain.User{},
-			fmt.Errorf("offset in not valid: %w", core_errors.ErrorValidation)
+			fmt.Errorf("offset in not valid: %w", core_errors.ErrValidation)
 	}
 
 	usersDomains, err := s.userRepository.GetUsers(ctx, limit, offset)

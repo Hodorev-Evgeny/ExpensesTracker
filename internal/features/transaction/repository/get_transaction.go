@@ -39,7 +39,7 @@ func (r *TransactionRepository) GetTransaction(
 	)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.Transaction{}, fmt.Errorf("transaction not found: %w", core_errors.ErrorNotFoud)
+			return core_domain.Transaction{}, fmt.Errorf("transaction not found: %w", core_errors.ErrNotFound)
 		}
 		return core_domain.Transaction{}, fmt.Errorf("error getting transaction: %w", err)
 	}

@@ -43,7 +43,7 @@ func MappingError(err error) error {
 		case pgerrcode.ForeignKeyViolation:
 			return core_repository_pool.ErrViolationKey
 		case pgerrcode.UniqueViolation:
-			return core_errors.ErrorConflict
+			return core_errors.ErrConflict
 		}
 	}
 

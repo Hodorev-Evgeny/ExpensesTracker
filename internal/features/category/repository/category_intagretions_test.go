@@ -61,9 +61,9 @@ func TestIntegrationCategory(t *testing.T) {
 
 	t.Run("UserB cant get category userA", func(t *testing.T) {
 		_, err := testCategoryRepository.GetCategoryByID(ctx, categoryA.ID, userB.ID)
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Errorf("Wanted error: %v, got: %v",
-				core_errors.ErrorNotFoud,
+				core_errors.ErrNotFound,
 				err,
 			)
 		}
@@ -75,9 +75,9 @@ func TestIntegrationCategory(t *testing.T) {
 
 		_, err := testCategoryRepository.RenameCategory(ctx, categoryA.ID, userB.ID, patch)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Errorf("Wanted error: %v, got: %v",
-				core_errors.ErrorNotFoud,
+				core_errors.ErrNotFound,
 				err,
 			)
 		}
@@ -95,9 +95,9 @@ func TestIntegrationCategory(t *testing.T) {
 	t.Run("UserB cant delete category userA", func(t *testing.T) {
 		err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userB.ID)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Errorf("Wanted error: %v, got: %v",
-				core_errors.ErrorNotFoud,
+				core_errors.ErrNotFound,
 				err,
 			)
 		}
@@ -170,9 +170,9 @@ func TestIntegrationCategory(t *testing.T) {
 		}
 
 		_, err = testCategoryRepository.GetCategoryByID(ctx, categoryA.ID, userA.ID)
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Errorf("Wanted error: %v, got: %v",
-				core_errors.ErrorNotFoud,
+				core_errors.ErrNotFound,
 				err,
 			)
 		}

@@ -22,7 +22,7 @@ func DomainFromResponse(category core_domain.Category) CategoryResponse {
 }
 
 func CategoryDTOFromDomain(userID int, category CategoryRequest) core_domain.Category {
-	return core_domain.CreateUnincelizedCategory(
+	return core_domain.CreateUninitializedCategory(
 		category.CategoryName,
 		userID,
 		category.Limit_id,

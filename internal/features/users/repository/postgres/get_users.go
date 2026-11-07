@@ -42,7 +42,7 @@ func (r *UserRepository) GetUsers(
 			&user.Time_add)
 		if err != nil {
 			if errors.Is(err, core_repository_pool.ErrNoRows) {
-				return nil, fmt.Errorf("user not in database: %w", core_errors.ErrorNotFoud)
+				return nil, fmt.Errorf("user not in database: %w", core_errors.ErrNotFound)
 			}
 			return nil, fmt.Errorf("error scan users: %w", err)
 		}

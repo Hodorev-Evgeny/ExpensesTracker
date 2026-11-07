@@ -27,7 +27,7 @@ type userService interface {
 		offset *int,
 	) ([]core_domain.User, error)
 
-	ExtraditionUser(
+	GetUserByID(
 		ctx context.Context,
 		id int,
 	) (core_domain.User, error)
@@ -81,7 +81,7 @@ func (h *UserHTTPHandler) Routers() []httpserver.Route {
 		{
 			Method:  http.MethodGet,
 			Path:    "/users",
-			Handler: h.ExtraditionUser,
+			Handler: h.GetUserByID,
 		},
 		{
 			Method:  http.MethodDelete,

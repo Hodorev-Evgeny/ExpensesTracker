@@ -29,7 +29,7 @@ func ToDomainTransaction(
 	userID int,
 	req TransactionRequest,
 ) core_domain.Transaction {
-	return core_domain.NewTransactionUnincelized(
+	return core_domain.NewUninitializedTransaction(
 		req.Sum, req.CategoryID, userID,
 		req.Type, req.Comments,
 		req.Date, time.Now(),

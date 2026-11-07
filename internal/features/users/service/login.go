@@ -22,14 +22,14 @@ func (s *UserService) LoginUser(
 	userLogin, err := s.userRepository.FindByEmail(ctx, user)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return "", fmt.Errorf("error get user for login: %w", core_errors.ErrorUnauthorized)
+			return "", fmt.Errorf("error get user for login: %w", core_errors.ErrUnauthorized)
 		}
 		return "", fmt.Errorf("error find user by email: %w", err)
 	}
 
 	errHash := bcrypt.CompareHashAndPassword([]byte(userLogin.Password), []byte(user.Password))
 	if errHash != nil {
-		return "", fmt.Errorf("the password does not match: %w", core_errors.ErrorUnauthorized)
+		return "", fmt.Errorf("the password does not match: %w", core_errors.ErrUnauthorized)
 	}
 
 	sessionID, err := s.userRedisRepository.CreateCache(ctx, userLogin)

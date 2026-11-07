@@ -21,7 +21,7 @@ func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
 		return fmt.Errorf(`user with id %d: %w`, id, err)
 	}
 	if comantag.RowsAffected() == 0 {
-		return fmt.Errorf(`user with id %d: %w`, id, core_errors.ErrorNotFoud)
+		return fmt.Errorf(`user with id %d: %w`, id, core_errors.ErrNotFound)
 	}
 
 	return nil

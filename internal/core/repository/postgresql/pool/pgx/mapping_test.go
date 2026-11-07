@@ -26,7 +26,7 @@ func TestMappingError(t *testing.T) {
 		{
 			Name:        "Test mapping Error Conflict",
 			InputCode:   &pgconn.PgError{Code: pgerrcode.UniqueViolation},
-			ExpectedErr: core_errors.ErrorConflict,
+			ExpectedErr: core_errors.ErrConflict,
 		},
 	}
 

@@ -15,7 +15,7 @@ func (s *LimitService) GetLimits(
 	userID int,
 ) ([]core_domain.Limit, error) {
 	if (limit != nil && *limit < 0) || (offset != nil && *offset < 0) {
-		return []core_domain.Limit{}, fmt.Errorf("invalid limit or offset: %w", core_errors.ErrorValidation)
+		return []core_domain.Limit{}, fmt.Errorf("invalid limit or offset: %w", core_errors.ErrValidation)
 	}
 
 	list, err := s.limitRepo.GetLimits(ctx, limit, offset, userID)

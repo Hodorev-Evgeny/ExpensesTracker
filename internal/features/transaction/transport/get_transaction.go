@@ -37,7 +37,7 @@ func (h *TransactionHTTPHandler) GetTransaction(w http.ResponseWriter, r *http.R
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
 		ResponseHandler.ErrorResponse(
-			fmt.Errorf("user not found in context: %w", core_errors.ErrorUnauthorized),
+			fmt.Errorf("user not found in context: %w", core_errors.ErrUnauthorized),
 			"user is not registered")
 		return
 	}

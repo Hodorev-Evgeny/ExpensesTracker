@@ -28,16 +28,16 @@ func (u *CategoryUpdate) Validate() error {
 
 func (c *Category) Validate() error {
 	if c.Name == "" {
-		return fmt.Errorf("name is required: %w", core_errors.ErrorBadRequest)
+		return fmt.Errorf("name is required: %w", core_errors.ErrBadRequest)
 	}
 
-	if c.User_ID == UnincelizedID || c.User_ID <= 0 {
-		return fmt.Errorf("user_id is unincelized: %w", core_errors.ErrorBadRequest)
+	if c.User_ID == UninitializedID || c.User_ID <= 0 {
+		return fmt.Errorf("user_id is uninitialized: %w", core_errors.ErrBadRequest)
 	}
 
 	if c.Limit_id != nil {
 		if *c.Limit_id <= 0 {
-			return fmt.Errorf("limit_id is required: %w", core_errors.ErrorBadRequest)
+			return fmt.Errorf("limit_id is required: %w", core_errors.ErrBadRequest)
 		}
 	}
 
@@ -81,12 +81,12 @@ func NewCategory(
 	}
 }
 
-func CreateUnincelizedCategory(
+func CreateUninitializedCategory(
 	name string,
 	user_id int,
 	limit_id *int,
 ) Category {
-	return NewCategory(UnincelizedID, name, user_id, limit_id)
+	return NewCategory(UninitializedID, name, user_id, limit_id)
 }
 
 func RequestUpdateFromDomain(title Nullable[string], limit Nullable[int]) CategoryUpdate {

@@ -33,7 +33,7 @@ func (r *LimitRepository) GetLimit(
 	)
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrNoRows) {
-			return core_domain.Limit{}, fmt.Errorf("limit not in database: %w", core_errors.ErrorNotFoud)
+			return core_domain.Limit{}, fmt.Errorf("limit not in database: %w", core_errors.ErrNotFound)
 		}
 		return core_domain.Limit{}, fmt.Errorf("error scanning row: %w", err)
 	}

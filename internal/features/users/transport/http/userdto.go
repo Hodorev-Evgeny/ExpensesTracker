@@ -15,7 +15,7 @@ type UserDTOResponse struct {
 }
 
 func DTOFromDomain(userDto CreateUserRequest) core_domain.User {
-	return core_domain.CreateUnincelizedUser(
+	return core_domain.CreateUninitializedUser(
 		userDto.FullName,
 		userDto.Email,
 		userDto.Phone,

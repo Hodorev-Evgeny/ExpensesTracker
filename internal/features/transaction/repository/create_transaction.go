@@ -47,7 +47,7 @@ func (r *TransactionRepository) CreateTransaction(
 	if err != nil {
 		if errors.Is(err, core_repository_pool.ErrViolationKey) {
 			return core_domain.Transaction{},
-				fmt.Errorf("cant create transaction: category not found: %w", core_errors.ErrorBadRequest)
+				fmt.Errorf("cant create transaction: category not found: %w", core_errors.ErrBadRequest)
 		}
 		return core_domain.Transaction{}, fmt.Errorf("error scanning transaction: %w", err)
 	}

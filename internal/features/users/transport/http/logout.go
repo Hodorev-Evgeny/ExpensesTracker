@@ -16,7 +16,7 @@ func (h *UserHTTPHandler) LogoutUser(w http.ResponseWriter, r *http.Request) {
 
 	sessionID, err := r.Cookie("sessionID")
 	if err != nil {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "error getting sessionID")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "error getting sessionID")
 		return
 	}
 

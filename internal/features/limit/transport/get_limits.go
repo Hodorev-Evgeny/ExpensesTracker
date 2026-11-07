@@ -40,7 +40,7 @@ func (h *LimitHTTPHandler) GetLimits(w http.ResponseWriter, r *http.Request) {
 
 	userID, ok := core_domain.UserIDFromContext(ctx)
 	if !ok {
-		ResponseHandler.ErrorResponse(core_errors.ErrorUnauthorized, "userID not found in context")
+		ResponseHandler.ErrorResponse(core_errors.ErrUnauthorized, "userID not found in context")
 		return
 	}
 	limitDomain, err := h.limitService.GetLimits(ctx, limit, offset, userID)

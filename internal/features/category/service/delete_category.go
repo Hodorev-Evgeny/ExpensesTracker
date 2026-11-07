@@ -12,7 +12,7 @@ func (s *CategoryService) DeleteCategory(
 	id int,
 	userId int,
 ) error {
-	if id == core_domain.UnincelizedID {
+	if id == core_domain.UninitializedID {
 		return fmt.Errorf("id category is invalid")
 	}
 

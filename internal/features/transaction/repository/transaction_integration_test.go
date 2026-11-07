@@ -88,9 +88,9 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 	t.Run("B cannot get transaction A", func(t *testing.T) {
 		_, err := testTransactionRepository.GetTransaction(ctx, transactionA.ID, userB.ID)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Fatalf(
-				"expected ErrorNotFoud, got: %v",
+				"expected ErrNotFound, got: %v",
 				err,
 			)
 		}
@@ -102,9 +102,9 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 
 		_, err := testTransactionRepository.PatchTransaction(ctx, newTransaction, userB.ID)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Fatalf(
-				"expected ErrorNotFoud, got: %v",
+				"expected ErrNotFound, got: %v",
 				err,
 			)
 		}
@@ -119,9 +119,9 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 	t.Run("B cannot delete transaction A", func(t *testing.T) {
 		err := testTransactionRepository.DeleteTransaction(ctx, transactionA.ID, userB.ID)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Fatalf(
-				"expected ErrorNotFoud, got: %v",
+				"expected ErrNotFound, got: %v",
 				err,
 			)
 		}
@@ -194,9 +194,9 @@ func TestIntegrationTransactionRepository(t *testing.T) {
 
 		_, err = testTransactionRepository.GetTransaction(ctx, transactionA.ID, userA.ID)
 
-		if !errors.Is(err, core_errors.ErrorNotFoud) {
+		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Fatalf(
-				"expected ErrorNotFoud, got: %v",
+				"expected ErrNotFound, got: %v",
 				err,
 			)
 		}

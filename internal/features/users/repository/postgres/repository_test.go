@@ -58,7 +58,7 @@ type TestData struct {
 	expectedResult core_domain.User
 }
 
-func TestExtraditionUser(t *testing.T) {
+func TestGetUserByID(t *testing.T) {
 	testPool := CreateTestPool()
 	repo := NewUserRepository(testPool)
 	testData := []TestData{
@@ -66,9 +66,9 @@ func TestExtraditionUser(t *testing.T) {
 			name: "Test get user",
 			pool: testPool,
 			function: func(ctx context.Context, repo *UserRepository) (any, error) {
-				return repo.ExtraditionUser(ctx, -1)
+				return repo.GetUserByID(ctx, -1)
 			},
-			expectedError:  core_errors.ErrorNotFoud,
+			expectedError:  core_errors.ErrNotFound,
 			expectedResult: core_domain.User{},
 		},
 	}
