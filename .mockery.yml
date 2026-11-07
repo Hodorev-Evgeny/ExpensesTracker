@@ -1,0 +1,31 @@
+all: false
+template: testify
+
+dir: "{{.InterfaceDir}}"
+filename: mocks_repository.go
+pkgname: "{{.SrcPackageName}}"
+structname: "Mock{{.InterfaceName}}"
+
+force-file-write: true
+
+packages:
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/category/service:
+    interfaces:
+      CategoryRepository:
+
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/limit/service:
+    interfaces:
+      LimitRepository:
+
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/static/service:
+    interfaces:
+      StaticeRepository:
+
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service:
+    interfaces:
+      TransactionRepository:
+
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service:
+    interfaces:
+      UserRepository:
+      RedisRepository:

@@ -53,7 +53,7 @@ func CreatePatchLimit(
 
 func (p *PatchLimit) Validate() error {
 	if p.Amount_limit.Set && *p.Amount_limit.Value < 0 {
-		return fmt.Errorf("amount limit cannot be set to zero")
+		return fmt.Errorf("amount limit cannot be set to zero: %w", core_errors.ErrorBadRequest)
 	}
 
 	return nil
@@ -63,7 +63,6 @@ func (l *Limit) Validate() error {
 	if l.AmountLimit <= 0 {
 		return fmt.Errorf("amount limit must be greater than zero: %w", core_errors.ErrorBadRequest)
 	}
-
 
 	if l.Duration == (time.Time{}) {
 		return fmt.Errorf("invalid duration: %w", core_errors.ErrorBadRequest)
