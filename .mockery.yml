@@ -24,6 +24,7 @@ packages:
   github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service:
     interfaces:
       TransactionRepository:
+      BudgetClient:
 
   github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service:
     interfaces:

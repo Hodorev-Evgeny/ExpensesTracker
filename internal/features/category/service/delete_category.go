@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"go.uber.org/zap"
 )
 
 func (s *CategoryService) DeleteCategory(
@@ -16,7 +18,17 @@ func (s *CategoryService) DeleteCategory(
 		return fmt.Errorf("id category is invalid")
 	}
 
-	status := s.repository.DeleteCategory(ctx, id, userId)
+	listTransaction, status := s.repository.DeleteCategory(ctx, id, userId)
+
+	log := corelogger.FromContext(ctx)
+	for _, transaction := range listTransaction {
+		ans, err := s.client.RevokeSpending(ctx, transaction)
+		if err != nil {
+			log.Error("Error revoking transaction", zap.Error(err))
+			continue
+		}
+		log.Debug("correct revoke transaction", zap.Any("ans", ans))
+	}
 
 	return status
 }

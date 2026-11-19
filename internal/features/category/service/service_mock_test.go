@@ -7,15 +7,41 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
+	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
+
+type noopBudgetClient struct{}
+
+func (noopBudgetClient) ApplySpending(
+	ctx context.Context,
+	transaction core_domain.Transaction,
+) (*pb.ApplySpendingResponse, error) {
+	return &pb.ApplySpendingResponse{}, nil
+}
+
+func (noopBudgetClient) RevokeSpending(
+	ctx context.Context,
+	transaction core_domain.DeletedTransaction,
+) (*pb.RevokeSpendingResponse, error) {
+	return &pb.RevokeSpendingResponse{}, nil
+}
+
+var _ grpcclient.BudgetService = noopBudgetClient{}
 
 func TestServiceCategory(t *testing.T) {
 	ctx := context.Background()
+	ctx = corelogger.ToContext(ctx, &corelogger.Logger{
+		Logger: zap.NewNop(),
+	})
 
 	t.Run("Create correct category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
 			ID:       1,
@@ -37,7 +63,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Create invalid category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
 			ID:      1,
@@ -53,7 +80,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Create category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository create failed")
 
 		category := core_domain.Category{
@@ -75,7 +103,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get existing category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
 			ID:      1,
@@ -96,7 +125,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 		repoErr := core_errors.ErrNotFound
 
 		repo.EXPECT().
@@ -112,7 +142,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get category invalid ID", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		result, err := service.GetCategoryByID(ctx, core_domain.UninitializedID, 12)
 
@@ -122,7 +153,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Successful rename category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
 			ID:      1,
@@ -157,7 +189,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category get error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 		repoErr := core_errors.ErrNotFound
 
 		newName := "renamed"
@@ -181,7 +214,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category invalid patch", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
 			ID:      1,
@@ -207,7 +241,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository rename failed")
 
 		category := core_domain.Category{
@@ -243,11 +278,12 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Successful delete category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		repo.EXPECT().
 			DeleteCategory(ctx, 1, 12).
-			Return(nil).
+			Return([]core_domain.DeletedTransaction{}, nil).
 			Times(1)
 
 		err := service.DeleteCategory(ctx, 1, 12)
@@ -257,12 +293,13 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Delete category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository delete failed")
 
 		repo.EXPECT().
 			DeleteCategory(ctx, 1, 12).
-			Return(repoErr).
+			Return([]core_domain.DeletedTransaction{}, repoErr).
 			Times(1)
 
 		err := service.DeleteCategory(ctx, 1, 12)
@@ -272,7 +309,8 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Delete category invalid ID", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		service := NewCategoryService(repo)
+		client := noopBudgetClient{}
+		service := NewCategoryService(repo, client)
 
 		err := service.DeleteCategory(ctx, core_domain.UninitializedID, 12)
 

@@ -7,13 +7,38 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
+	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.uber.org/zap"
 )
+
+type noopBudgetClient struct{}
+
+func (noopBudgetClient) ApplySpending(
+	ctx context.Context,
+	transaction core_domain.Transaction,
+) (*pb.ApplySpendingResponse, error) {
+	return &pb.ApplySpendingResponse{}, nil
+}
+
+func (noopBudgetClient) RevokeSpending(
+	ctx context.Context,
+	transaction core_domain.DeletedTransaction,
+) (*pb.RevokeSpendingResponse, error) {
+	return &pb.RevokeSpendingResponse{}, nil
+}
+
+var _ grpcclient.BudgetService = noopBudgetClient{}
 
 func TestServiceTransaction(t *testing.T) {
 	ctx := context.Background()
+	ctx = corelogger.ToContext(ctx, &corelogger.Logger{
+		Logger: zap.NewNop(),
+	})
 
 	newTransaction := func() core_domain.Transaction {
 		return core_domain.Transaction{
@@ -28,7 +53,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Create correct transaction", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 
 		repo.EXPECT().
@@ -49,7 +75,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Create invalid transaction", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 		transaction.Sum = -100
 
@@ -61,7 +88,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Create transaction repository error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 		repoErr := core_repository_pool.ErrViolationKey
 
@@ -83,7 +111,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get existing transaction", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 
 		repo.EXPECT().
@@ -99,7 +128,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get transaction repository error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		repoErr := errors.New("transaction not found")
 
 		repo.EXPECT().
@@ -115,7 +145,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get transaction invalid ID", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 
 		result, err := service.GetTransaction(ctx, core_domain.UninitializedID, 12)
 
@@ -125,7 +156,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get transactions", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		limit, offset := 10, 0
 		filters := core_domain.FiltersTransaction{Limit: &limit, Offset: &offset}
 		expected := []core_domain.Transaction{newTransaction()}
@@ -143,7 +175,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get transactions repository error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		limit := 10
 		filters := core_domain.FiltersTransaction{Limit: &limit}
 		repoErr := errors.New("repository list failed")
@@ -161,7 +194,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Get transactions invalid filters", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		limit := -1
 		filters := core_domain.FiltersTransaction{Limit: &limit}
 
@@ -173,7 +207,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Successful patch transaction", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 		comments := "Updated payment"
 		patch := core_domain.PatchTransaction{
@@ -205,7 +240,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Patch transaction get error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		repoErr := errors.New("transaction not found")
 		comments := "Updated payment"
 		patch := core_domain.PatchTransaction{
@@ -225,7 +261,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Patch transaction invalid data", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 		invalidType := "unknown"
 		patch := core_domain.PatchTransaction{
@@ -245,7 +282,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Patch transaction repository error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		transaction := newTransaction()
 		comments := "Updated payment"
 		patch := core_domain.PatchTransaction{
@@ -275,7 +313,14 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Successful delete transaction", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
+
+		// Optional if the service loads the transaction before Revoke.
+		repo.EXPECT().
+			GetTransaction(ctx, 1, 12).
+			Return(newTransaction(), nil).
+			Maybe()
 
 		repo.EXPECT().
 			DeleteTransaction(ctx, 1, 12).
@@ -289,8 +334,15 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Delete transaction repository error", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 		repoErr := errors.New("repository delete failed")
+
+		// Optional if the service loads the transaction before deletion.
+		repo.EXPECT().
+			GetTransaction(ctx, 1, 12).
+			Return(newTransaction(), nil).
+			Maybe()
 
 		repo.EXPECT().
 			DeleteTransaction(ctx, 1, 12).
@@ -304,7 +356,8 @@ func TestServiceTransaction(t *testing.T) {
 
 	t.Run("Delete transaction invalid ID", func(t *testing.T) {
 		repo := NewMockTransactionRepository(t)
-		service := NewTransactionService(repo)
+		client := noopBudgetClient{}
+		service := NewTransactionService(repo, client)
 
 		err := service.DeleteTransaction(ctx, core_domain.UninitializedID, 12)
 

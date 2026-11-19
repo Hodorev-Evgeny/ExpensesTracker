@@ -39,6 +39,10 @@ func (p *TestPool) GetTimeout() time.Duration {
 
 func (p *TestPool) Close() {}
 
+func (p *TestPool) BeginTx(ctx context.Context, opts core_repository_pool.TxOptions) (core_repository_pool.Tx, error) {
+	return nil, nil
+}
+
 func CreateTestPool() *TestPool {
 	return &TestPool{}
 }

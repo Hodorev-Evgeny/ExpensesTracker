@@ -7,6 +7,7 @@ import (
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker"
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -83,4 +84,16 @@ func CreatePoolMust(ctx context.Context, config ExpensesTracker.PostgresConfig) 
 	}
 
 	return poolconnect
+}
+
+func (c *Pool) BeginTx(ctx context.Context, opts core_repository_pool.TxOptions) (core_repository_pool.Tx, error) {
+	tx, err := c.Pool.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel: pgx.TxIsoLevel(opts.IsolationLevel),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &Tx{
+		Tx: tx,
+	}, err
 }

@@ -6,6 +6,8 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"go.uber.org/zap"
 )
 
 func (s *TransactionService) CreateTransaction(
@@ -30,6 +32,19 @@ func (s *TransactionService) CreateTransaction(
 	transactionDomain, err := s.transactionRepository.CreateTransaction(ctx, transaction)
 	if err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("error creating transaction: %w", err)
+	}
+
+	log := corelogger.FromContext(ctx)
+	if transactionDomain.Type == "Expenditure" {
+		ans, err := s.client.ApplySpending(
+			ctx,
+			transactionDomain,
+		)
+		if err != nil {
+			log.Error("error applying spending transaction expenditure:", zap.Error(err))
+		} else {
+			log.Debug("spending transaction expenditure", zap.Any("ans", ans))
+		}
 	}
 
 	return transactionDomain, nil

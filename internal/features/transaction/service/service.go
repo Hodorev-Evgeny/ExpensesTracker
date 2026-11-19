@@ -4,6 +4,7 @@ import (
 	"context"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 )
 
 type TransactionRepository interface {
@@ -44,12 +45,15 @@ type TransactionRepository interface {
 
 type TransactionService struct {
 	transactionRepository TransactionRepository
+	client                grpcclient.BudgetService
 }
 
 func NewTransactionService(
 	transactionRepository TransactionRepository,
+	client grpcclient.BudgetService,
 ) *TransactionService {
 	return &TransactionService{
 		transactionRepository: transactionRepository,
+		client:                client,
 	}
 }

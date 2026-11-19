@@ -36,6 +36,7 @@ import (
 	webfiles "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/repository/file_system"
 	webservice "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/service"
 	webtransport "github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/web/transport"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 	"go.uber.org/zap"
 
 	_ "github.com/Hodorev-Evgeny/ExpensesTracker/docs"
@@ -63,6 +64,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer logger.Close()
+	zap.ReplaceGlobals(logger.Logger)
 
 	logger.Debug("starting expenses app")
 
@@ -94,6 +96,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	budgetConf := grpcclient.MustGetBudgetConfig()
+	budgetClient, err := grpcclient.NewClientBudget(budgetConf)
+	if err != nil {
+		logger.Error("error initializing budget client", zap.Error(err))
+		os.Exit(1)
+	}
+
 	userRedis := userredis.NewRepositoryRedis(redisClient)
 
 	logger.Debug("starting initialization user service")
@@ -106,12 +115,12 @@ func main() {
 	userRouters := userTransporthttp.Routers()
 
 	categoryRepository := categoryrepo.NewCategoryRepository(pool)
-	categoryService := categoryservice.NewCategoryService(categoryRepository)
+	categoryService := categoryservice.NewCategoryService(categoryRepository, budgetClient)
 	categoryTransport := categorytransport.NewCategoryHTTPHandler(categoryService)
 	categoryRouters := categoryTransport.Routes()
 
 	transactionRepository := transactionrepo.NewTransactionRepository(pool)
-	transactionService := transactionservice.NewTransactionService(transactionRepository)
+	transactionService := transactionservice.NewTransactionService(transactionRepository, budgetClient)
 	transactionTransport := transactiontransport.NewTransactionHTTPHandler(transactionService)
 	transactionRouters := transactionTransport.Router()
 

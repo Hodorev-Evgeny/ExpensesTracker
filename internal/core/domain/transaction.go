@@ -36,6 +36,11 @@ type PatchTransaction struct {
 	Comments        Nullable[string]
 }
 
+type DeletedTransaction struct {
+	ID     int
+	UserID int
+}
+
 func NewTransactionPatch(
 	sum Nullable[int],
 	category Nullable[int],

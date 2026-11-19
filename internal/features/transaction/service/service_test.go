@@ -8,6 +8,7 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 )
 
 type MockRepository struct{}
@@ -58,10 +59,26 @@ func (r *MockRepository) CheckCategoryOwner(
 	return false, nil
 }
 
+type FakeBudgetClient struct{}
+
+func (m *FakeBudgetClient) ApplySpending(
+	ctx context.Context,
+	transaction core_domain.Transaction,
+) (*pb.ApplySpendingResponse, error) {
+	return &pb.ApplySpendingResponse{}, nil
+}
+
+func (m *FakeBudgetClient) RevokeSpending(
+	ctx context.Context,
+	transaction core_domain.DeletedTransaction,
+) (*pb.RevokeSpendingResponse, error) {
+	return &pb.RevokeSpendingResponse{}, nil
+}
+
 func TestCheckCategoryOwner(t *testing.T) {
 	ctx := context.Background()
 	repo := &MockRepository{}
-	seevice := NewTransactionService(repo)
+	seevice := NewTransactionService(repo, &FakeBudgetClient{})
 
 	t.Run("Test create trunsaction", func(t *testing.T) {
 		transaction := core_domain.Transaction{
