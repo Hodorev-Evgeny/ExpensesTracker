@@ -24,9 +24,16 @@ packages:
   github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/transaction/service:
     interfaces:
       TransactionRepository:
-      BudgetClient:
 
   github.com/Hodorev-Evgeny/ExpensesTracker/internal/features/users/service:
     interfaces:
       UserRepository:
       RedisRepository:
+
+  github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient:
+    config:
+      dir: "{{.ConfigDir}}/internal/features/transaction/service"
+      pkgname: transactionservice
+      filename: mocks_budget_service.go
+    interfaces:
+      BudgetService:

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
@@ -13,6 +14,7 @@ import (
 	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -362,5 +364,164 @@ func TestServiceTransaction(t *testing.T) {
 		err := service.DeleteTransaction(ctx, core_domain.UninitializedID, 12)
 
 		assert.ErrorIs(t, err, core_errors.ErrBadRequest)
+	})
+
+	t.Run("Delete transaction with empty type must revoke spending", func(t *testing.T) {
+		repo := NewMockTransactionRepository(t)
+		client := NewMockBudgetService(t)
+		service := NewTransactionService(repo, client)
+
+		transaction := newTransaction()
+		transaction.Type = ""
+
+		repo.EXPECT().
+			GetTransaction(ctx, 1, 12).
+			Return(transaction, nil).
+			Maybe()
+
+		repo.EXPECT().
+			DeleteTransaction(ctx, 1, 12).
+			Return(nil).
+			Once()
+
+		client.EXPECT().
+			RevokeSpending(ctx, mock.Anything).
+			Return(nil, nil).
+			Once()
+
+		err := service.DeleteTransaction(ctx, 1, 12)
+
+		require.NoError(t, err)
+
+		repo.AssertExpectations(t)
+		client.AssertExpectations(t)
+	})
+
+	t.Run("Concurrent patch must revoke spending", func(t *testing.T) {
+		repo := NewMockTransactionRepository(t)
+		client := NewMockBudgetService(t)
+		service := NewTransactionService(repo, client)
+
+		income := newTransaction()
+		income.Type = "Income"
+
+		expenditure := income
+		expenditure.Type = "Expenditure"
+
+		incomeType := "Income"
+		expenditureType := "Expenditure"
+
+		incomePatch := core_domain.PatchTransaction{
+			TypeTransaction: core_domain.Nullable[string]{
+				Value: &incomeType,
+				Set:   true,
+			},
+		}
+
+		expenditurePatch := core_domain.PatchTransaction{
+			TypeTransaction: core_domain.Nullable[string]{
+				Value: &expenditureType,
+				Set:   true,
+			},
+		}
+
+		firstAtSave := make(chan struct{})
+		releaseFirst := make(chan struct{})
+		firstDone := make(chan error, 1)
+
+		defer func() {
+			select {
+			case <-releaseFirst:
+			default:
+				close(releaseFirst)
+			}
+		}()
+
+		repo.EXPECT().
+			GetTransaction(ctx, 1, 12).
+			Return(income, nil).
+			Times(2)
+
+		repo.EXPECT().
+			PatchTransaction(
+				ctx,
+				mock.MatchedBy(func(tx core_domain.Transaction) bool {
+					return tx.Type == "Income"
+				}),
+				12,
+			).
+			Run(func(
+				_ context.Context,
+				_ core_domain.Transaction,
+				_ int,
+			) {
+				close(firstAtSave)
+				<-releaseFirst
+			}).
+			Return(income, nil).
+			Once()
+
+		repo.EXPECT().
+			PatchTransaction(
+				ctx,
+				mock.MatchedBy(func(tx core_domain.Transaction) bool {
+					return tx.Type == "Expenditure"
+				}),
+				12,
+			).
+			Return(expenditure, nil).
+			Once()
+
+		client.EXPECT().
+			ApplySpending(
+				ctx,
+				mock.MatchedBy(func(tx core_domain.Transaction) bool {
+					return tx.ID == 1 &&
+						tx.UserID == 12 &&
+						tx.Type == "Expenditure"
+				}),
+			).
+			Return(nil, nil).
+			Once()
+
+		client.EXPECT().
+			RevokeSpending(ctx, mock.Anything).
+			Return(nil, nil).
+			Once()
+
+		go func() {
+			_, err := service.PatchTransaction(
+				ctx,
+				1,
+				incomePatch,
+				12,
+			)
+			firstDone <- err
+		}()
+
+		select {
+		case <-firstAtSave:
+		case <-time.After(5 * time.Second):
+			t.Fatal("first PATCH did not reach save")
+		}
+
+		_, err := service.PatchTransaction(
+			ctx,
+			1,
+			expenditurePatch,
+			12,
+		)
+		require.NoError(t, err)
+		close(releaseFirst)
+
+		select {
+		case err := <-firstDone:
+			require.NoError(t, err)
+		case <-time.After(5 * time.Second):
+			t.Fatal("first PATCH did not finish")
+		}
+
+		repo.AssertExpectations(t)
+		client.AssertExpectations(t)
 	})
 }

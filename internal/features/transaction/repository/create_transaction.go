@@ -18,9 +18,20 @@ func (r *TransactionRepository) CreateTransaction(
 	defer cancel()
 
 	query := `
-		INSERT INTO trackerapp.transactions (sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-		RETURNING id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes`
+		WITH send_transaction AS (
+			INSERT INTO trackerapp.transactions (sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+			RETURNING id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes
+		),
+		send_outbox AS (
+			INSERT INTO trackerapp.outbox (transaction_id, status)
+			SELECT id, 'sent'
+			FROM send_transaction
+		)
+		
+		SELECT id, sum, type_transaction, date, category_id, user_id, comments, time_create, time_changes
+		FROM send_transaction
+		`
 
 	row := r.pool.QueryRow(ctx, query,
 		transaction.Sum,

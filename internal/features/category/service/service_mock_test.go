@@ -3,6 +3,7 @@ package categoryservice
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
@@ -11,36 +12,64 @@ import (
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
-type noopBudgetClient struct{}
+type fakeCategoryBudgetClient struct {
+	mu        sync.Mutex
+	applied   []core_domain.Transaction
+	revoked   []core_domain.DeletedTransaction
+	applyErr  error
+	revokeErr error
+}
 
-func (noopBudgetClient) ApplySpending(
-	ctx context.Context,
+func (s *fakeCategoryBudgetClient) ApplySpending(
+	_ context.Context,
 	transaction core_domain.Transaction,
 ) (*pb.ApplySpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.applied = append(s.applied, transaction)
+	if s.applyErr != nil {
+		return nil, s.applyErr
+	}
 	return &pb.ApplySpendingResponse{}, nil
 }
 
-func (noopBudgetClient) RevokeSpending(
-	ctx context.Context,
+func (s *fakeCategoryBudgetClient) RevokeSpending(
+	_ context.Context,
 	transaction core_domain.DeletedTransaction,
 ) (*pb.RevokeSpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.revoked = append(s.revoked, transaction)
+	if s.revokeErr != nil {
+		return nil, s.revokeErr
+	}
 	return &pb.RevokeSpendingResponse{}, nil
 }
 
-var _ grpcclient.BudgetService = noopBudgetClient{}
+func (s *fakeCategoryBudgetClient) calls() (
+	[]core_domain.Transaction,
+	[]core_domain.DeletedTransaction,
+) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return append([]core_domain.Transaction(nil), s.applied...),
+		append([]core_domain.DeletedTransaction(nil), s.revoked...)
+}
+
+var _ grpcclient.BudgetService = (*fakeCategoryBudgetClient)(nil)
 
 func TestServiceCategory(t *testing.T) {
-	ctx := context.Background()
-	ctx = corelogger.ToContext(ctx, &corelogger.Logger{
+	ctx := corelogger.ToContext(context.Background(), &corelogger.Logger{
 		Logger: zap.NewNop(),
 	})
 
 	t.Run("Create correct category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
@@ -63,7 +92,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Create invalid category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
@@ -80,7 +109,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Create category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository create failed")
 
@@ -103,7 +132,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get existing category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
@@ -125,7 +154,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 		repoErr := core_errors.ErrNotFound
 
@@ -142,7 +171,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Get category invalid ID", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		result, err := service.GetCategoryByID(ctx, core_domain.UninitializedID, 12)
@@ -153,7 +182,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Successful rename category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
@@ -189,7 +218,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category get error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 		repoErr := core_errors.ErrNotFound
 
@@ -214,7 +243,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category invalid patch", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		category := core_domain.Category{
@@ -241,7 +270,7 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Rename category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository rename failed")
 
@@ -278,42 +307,89 @@ func TestServiceCategory(t *testing.T) {
 
 	t.Run("Successful delete category", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
+
+		deleted := []core_domain.DeletedTransaction{
+			{ID: 101, UserID: 12},
+			{ID: 102, UserID: 12},
+			{ID: 103, UserID: 12},
+		}
 
 		repo.EXPECT().
 			DeleteCategory(ctx, 1, 12).
-			Return([]core_domain.DeletedTransaction{}, nil).
+			Return(deleted, nil).
 			Times(1)
 
 		err := service.DeleteCategory(ctx, 1, 12)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
+		applied, revoked := client.calls()
+		assert.Empty(t, applied)
+		assert.Len(t, revoked, len(deleted))
+		assert.ElementsMatch(t, deleted, revoked)
 	})
 
 	t.Run("Delete category repository error", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 		repoErr := errors.New("repository delete failed")
 
+		deleted := []core_domain.DeletedTransaction{
+			{ID: 101, UserID: 12},
+			{ID: 102, UserID: 12},
+		}
+
 		repo.EXPECT().
 			DeleteCategory(ctx, 1, 12).
-			Return([]core_domain.DeletedTransaction{}, repoErr).
+			Return(deleted, repoErr).
 			Times(1)
 
 		err := service.DeleteCategory(ctx, 1, 12)
 
 		assert.ErrorIs(t, err, repoErr)
+		applied, revoked := client.calls()
+		assert.Empty(t, applied)
+		assert.Empty(t, revoked)
+	})
+
+	t.Run("Delete category Budget unavailable", func(t *testing.T) {
+		repo := NewMockCategoryRepository(t)
+		client := &fakeCategoryBudgetClient{
+			revokeErr: errors.New("budget unavailable"),
+		}
+		service := NewCategoryService(repo, client)
+
+		deleted := []core_domain.DeletedTransaction{
+			{ID: 101, UserID: 12},
+			{ID: 102, UserID: 12},
+		}
+
+		repo.EXPECT().
+			DeleteCategory(ctx, 1, 12).
+			Return(deleted, nil).
+			Times(1)
+
+		err := service.DeleteCategory(ctx, 1, 12)
+
+		assert.NoError(t, err)
+		applied, revoked := client.calls()
+		assert.Empty(t, applied)
+		assert.Len(t, revoked, len(deleted))
+		assert.ElementsMatch(t, deleted, revoked)
 	})
 
 	t.Run("Delete category invalid ID", func(t *testing.T) {
 		repo := NewMockCategoryRepository(t)
-		client := noopBudgetClient{}
+		client := &fakeCategoryBudgetClient{}
 		service := NewCategoryService(repo, client)
 
 		err := service.DeleteCategory(ctx, core_domain.UninitializedID, 12)
 
 		assert.Error(t, err)
+		applied, revoked := client.calls()
+		assert.Empty(t, applied)
+		assert.Empty(t, revoked)
 	})
 }

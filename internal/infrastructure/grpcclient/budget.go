@@ -59,7 +59,7 @@ func (c *BudgetClient) ApplySpending(
 			AmountMinor: amount,
 			Currency:    "RUB",
 		},
-		OccurredAt: timestamppb.New(transaction.TimeCreated),
+		OccurredAt: timestamppb.New(transaction.Date),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not apply spending request: %w", err)

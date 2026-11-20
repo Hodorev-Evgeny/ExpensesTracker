@@ -10,7 +10,6 @@ import (
 	core_repository_pool "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/repository/postgresql/pool"
 )
 
-
 func (r *CategoryRepository) DeleteCategory(
 	ctx context.Context,
 	id int,

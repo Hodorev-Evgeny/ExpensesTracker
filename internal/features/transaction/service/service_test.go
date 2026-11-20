@@ -3,6 +3,7 @@ package transactionservice
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 	"time"
 
@@ -59,19 +60,43 @@ func (r *MockRepository) CheckCategoryOwner(
 	return false, nil
 }
 
-type FakeBudgetClient struct{}
+type FakeBudgetClient struct {
+	mu        sync.Mutex
+	applied   []core_domain.Transaction
+	revoked   []core_domain.DeletedTransaction
+	applyErr  error
+	revokeErr error
+}
 
-func (m *FakeBudgetClient) ApplySpending(
-	ctx context.Context,
-	transaction core_domain.Transaction,
+func (s *FakeBudgetClient) ApplySpending(
+	_ context.Context,
+	tx core_domain.Transaction,
 ) (*pb.ApplySpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.applied = append(s.applied, tx)
+
+	if s.applyErr != nil {
+		return nil, s.applyErr
+	}
+
 	return &pb.ApplySpendingResponse{}, nil
 }
 
-func (m *FakeBudgetClient) RevokeSpending(
-	ctx context.Context,
-	transaction core_domain.DeletedTransaction,
+func (s *FakeBudgetClient) RevokeSpending(
+	_ context.Context,
+	tx core_domain.DeletedTransaction,
 ) (*pb.RevokeSpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.revoked = append(s.revoked, tx)
+
+	if s.revokeErr != nil {
+		return nil, s.revokeErr
+	}
+
 	return &pb.RevokeSpendingResponse{}, nil
 }
 

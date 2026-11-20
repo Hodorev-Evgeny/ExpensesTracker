@@ -43,15 +43,15 @@ func (s *TransactionService) PatchTransaction(
 	}
 
 	log := corelogger.FromContext(ctx)
-	if updateTransaction.Type == "Expenditure" {
+	switch updateTransaction.Type {
+	case "Expenditure":
 		ans, err := s.client.ApplySpending(ctx, updateTransaction)
 		if err != nil {
 			log.Error("failed to apply spending transaction", zap.Error(err))
 		} else {
 			log.Debug("spending transaction updated successfully", zap.Any("ans", ans))
 		}
-
-	} else if oldTransaction.Type == "Expenditure" && updateTransaction.Type == "Income" {
+	case "Income":
 		ans, err := s.client.RevokeSpending(ctx, core_domain.DeletedTransaction{
 			ID:     oldTransaction.ID,
 			UserID: oldTransaction.UserID,

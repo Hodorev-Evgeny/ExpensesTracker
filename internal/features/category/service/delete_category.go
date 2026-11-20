@@ -19,6 +19,9 @@ func (s *CategoryService) DeleteCategory(
 	}
 
 	listTransaction, status := s.repository.DeleteCategory(ctx, id, userId)
+	if status != nil {
+		return status
+	}
 
 	log := corelogger.FromContext(ctx)
 	for _, transaction := range listTransaction {
