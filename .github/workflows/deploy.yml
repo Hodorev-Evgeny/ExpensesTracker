@@ -10,6 +10,15 @@ jobs:
   start:
     runs-on: ubuntu-24.04
     steps:
+      - name: Configure private Go modules
+        env:
+          GH_TOKEN: ${{ secrets.BUDGET_REPO_TOKEN }}
+        run: |
+          go env -w GOPRIVATE=github.com/diekinari/budget
+
+          git config --global \
+            url."https://x-access-token:${GH_TOKEN}@github.com/diekinari/budget".insteadOf \
+            "https://github.com/diekinari/budget"
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup go
