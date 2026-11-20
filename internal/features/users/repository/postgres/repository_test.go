@@ -35,6 +35,10 @@ func (p *Pool) Exec(ctx context.Context, sql string, arguments ...any) (core_rep
 	return pgpool.CommandTag{}, nil
 }
 
+func (p *Pool) BeginTx(ctx context.Context, opts core_repository_pool.TxOptions) (core_repository_pool.Tx, error) {
+	return nil, nil
+}
+
 func (p *Pool) Ping(ctx context.Context) error {
 	return nil
 }

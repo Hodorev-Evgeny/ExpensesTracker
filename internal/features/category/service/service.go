@@ -4,6 +4,7 @@ import (
 	"context"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 )
 
 type CategoryRepository interface {
@@ -33,18 +34,21 @@ type CategoryRepository interface {
 	DeleteCategory(
 		ctx context.Context,
 		id int,
-		userId int,
-	) error
+		userID int,
+	) ([]core_domain.DeletedTransaction, error)
 }
 
 type CategoryService struct {
 	repository CategoryRepository
+	client     grpcclient.BudgetService
 }
 
 func NewCategoryService(
 	repository CategoryRepository,
+	client grpcclient.BudgetService,
 ) *CategoryService {
 	return &CategoryService{
 		repository: repository,
+		client:     client,
 	}
 }

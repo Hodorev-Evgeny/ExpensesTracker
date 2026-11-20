@@ -3,11 +3,13 @@ package transactionservice
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 )
 
 type MockRepository struct{}
@@ -58,10 +60,50 @@ func (r *MockRepository) CheckCategoryOwner(
 	return false, nil
 }
 
+type FakeBudgetClient struct {
+	mu        sync.Mutex
+	applied   []core_domain.Transaction
+	revoked   []core_domain.DeletedTransaction
+	applyErr  error
+	revokeErr error
+}
+
+func (s *FakeBudgetClient) ApplySpending(
+	_ context.Context,
+	tx core_domain.Transaction,
+) (*pb.ApplySpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.applied = append(s.applied, tx)
+
+	if s.applyErr != nil {
+		return nil, s.applyErr
+	}
+
+	return &pb.ApplySpendingResponse{}, nil
+}
+
+func (s *FakeBudgetClient) RevokeSpending(
+	_ context.Context,
+	tx core_domain.DeletedTransaction,
+) (*pb.RevokeSpendingResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.revoked = append(s.revoked, tx)
+
+	if s.revokeErr != nil {
+		return nil, s.revokeErr
+	}
+
+	return &pb.RevokeSpendingResponse{}, nil
+}
+
 func TestCheckCategoryOwner(t *testing.T) {
 	ctx := context.Background()
 	repo := &MockRepository{}
-	seevice := NewTransactionService(repo)
+	seevice := NewTransactionService(repo, &FakeBudgetClient{})
 
 	t.Run("Test create trunsaction", func(t *testing.T) {
 		transaction := core_domain.Transaction{

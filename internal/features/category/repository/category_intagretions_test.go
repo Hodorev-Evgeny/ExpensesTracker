@@ -11,7 +11,7 @@ import (
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_testutil "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/testutil"
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIntegrationCategory(t *testing.T) {
@@ -93,7 +93,7 @@ func TestIntegrationCategory(t *testing.T) {
 	})
 
 	t.Run("UserB cant delete category userA", func(t *testing.T) {
-		err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userB.ID)
+		lists, err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userB.ID)
 
 		if !errors.Is(err, core_errors.ErrNotFound) {
 			t.Errorf("Wanted error: %v, got: %v",
@@ -110,6 +110,7 @@ func TestIntegrationCategory(t *testing.T) {
 		}
 
 		assert.Equal(t, ans, categoryA)
+		assert.Empty(t, lists)
 	})
 
 	t.Run("UserA can see only their category", func(t *testing.T) {
@@ -162,7 +163,7 @@ func TestIntegrationCategory(t *testing.T) {
 	})
 
 	t.Run("UserA can delete their transaction", func(t *testing.T) {
-		err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userA.ID)
+		lists, err := testCategoryRepository.DeleteCategory(ctx, categoryA.ID, userA.ID)
 		if err != nil {
 			t.Errorf("Wanted no error, got: %v",
 				err,
@@ -176,5 +177,7 @@ func TestIntegrationCategory(t *testing.T) {
 				err,
 			)
 		}
+
+		assert.Empty(t, lists)
 	})
 }

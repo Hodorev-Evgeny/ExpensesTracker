@@ -170,72 +170,6 @@ func (_c *MockUserRepository_DeleteUser_Call) RunAndReturn(run func(ctx context.
 	return _c
 }
 
-// GetUserByID provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) GetUserByID(ctx context.Context, id int) (core_domain.User, error) {
-	ret := _mock.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetUserByID")
-	}
-
-	var r0 core_domain.User
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (core_domain.User, error)); ok {
-		return returnFunc(ctx, id)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) core_domain.User); ok {
-		r0 = returnFunc(ctx, id)
-	} else {
-		r0 = ret.Get(0).(core_domain.User)
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = returnFunc(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockUserRepository_GetUserByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByID'
-type MockUserRepository_GetUserByID_Call struct {
-	*mock.Call
-}
-
-// GetUserByID is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id int
-func (_e *MockUserRepository_Expecter) GetUserByID(ctx any, id any) *MockUserRepository_GetUserByID_Call {
-	return &MockUserRepository_GetUserByID_Call{Call: _e.mock.On("GetUserByID", ctx, id)}
-}
-
-func (_c *MockUserRepository_GetUserByID_Call) Run(run func(ctx context.Context, id int)) *MockUserRepository_GetUserByID_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 int
-		if args[1] != nil {
-			arg1 = args[1].(int)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockUserRepository_GetUserByID_Call) Return(user core_domain.User, err error) *MockUserRepository_GetUserByID_Call {
-	_c.Call.Return(user, err)
-	return _c
-}
-
-func (_c *MockUserRepository_GetUserByID_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.User, error)) *MockUserRepository_GetUserByID_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // FindByEmail provides a mock function for the type MockUserRepository
 func (_mock *MockUserRepository) FindByEmail(ctx context.Context, user core_domain.User) (core_domain.User, error) {
 	ret := _mock.Called(ctx, user)
@@ -298,6 +232,72 @@ func (_c *MockUserRepository_FindByEmail_Call) Return(user1 core_domain.User, er
 }
 
 func (_c *MockUserRepository_FindByEmail_Call) RunAndReturn(run func(ctx context.Context, user core_domain.User) (core_domain.User, error)) *MockUserRepository_FindByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetUserByID provides a mock function for the type MockUserRepository
+func (_mock *MockUserRepository) GetUserByID(ctx context.Context, id int) (core_domain.User, error) {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByID")
+	}
+
+	var r0 core_domain.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (core_domain.User, error)); ok {
+		return returnFunc(ctx, id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) core_domain.User); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Get(0).(core_domain.User)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = returnFunc(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockUserRepository_GetUserByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByID'
+type MockUserRepository_GetUserByID_Call struct {
+	*mock.Call
+}
+
+// GetUserByID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int
+func (_e *MockUserRepository_Expecter) GetUserByID(ctx any, id any) *MockUserRepository_GetUserByID_Call {
+	return &MockUserRepository_GetUserByID_Call{Call: _e.mock.On("GetUserByID", ctx, id)}
+}
+
+func (_c *MockUserRepository_GetUserByID_Call) Run(run func(ctx context.Context, id int)) *MockUserRepository_GetUserByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockUserRepository_GetUserByID_Call) Return(user core_domain.User, err error) *MockUserRepository_GetUserByID_Call {
+	_c.Call.Return(user, err)
+	return _c
+}
+
+func (_c *MockUserRepository_GetUserByID_Call) RunAndReturn(run func(ctx context.Context, id int) (core_domain.User, error)) *MockUserRepository_GetUserByID_Call {
 	_c.Call.Return(run)
 	return _c
 }

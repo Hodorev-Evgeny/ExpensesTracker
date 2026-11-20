@@ -6,6 +6,8 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	corelogger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
+	"go.uber.org/zap"
 )
 
 func (s *TransactionService) PatchTransaction(
@@ -18,6 +20,8 @@ func (s *TransactionService) PatchTransaction(
 	if err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("error getting transaction: %w", err)
 	}
+
+	oldTransaction := transaction
 
 	if patch.CategoryId.Set {
 		exist, err := s.transactionRepository.CheckCategoryOwner(ctx, *patch.CategoryId.Value, userID)
@@ -36,6 +40,27 @@ func (s *TransactionService) PatchTransaction(
 	updateTransaction, err := s.transactionRepository.PatchTransaction(ctx, transaction, userID)
 	if err != nil {
 		return core_domain.Transaction{}, fmt.Errorf("error updating transaction: %w", err)
+	}
+
+	log := corelogger.FromContext(ctx)
+	switch updateTransaction.Type {
+	case "Expenditure":
+		ans, err := s.client.ApplySpending(ctx, updateTransaction)
+		if err != nil {
+			log.Error("failed to apply spending transaction", zap.Error(err))
+		} else {
+			log.Debug("spending transaction updated successfully", zap.Any("ans", ans))
+		}
+	case "Income":
+		ans, err := s.client.RevokeSpending(ctx, core_domain.DeletedTransaction{
+			ID:     oldTransaction.ID,
+			UserID: oldTransaction.UserID,
+		})
+		if err != nil {
+			log.Error("failed to revoke spending transaction", zap.Error(err))
+		} else {
+			log.Debug("spending transaction revoked successfully", zap.Any("ans", ans))
+		}
 	}
 
 	return updateTransaction, nil

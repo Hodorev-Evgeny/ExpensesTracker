@@ -114,20 +114,31 @@ func (_c *MockCategoryRepository_CreateCategory_Call) RunAndReturn(run func(ctx 
 }
 
 // DeleteCategory provides a mock function for the type MockCategoryRepository
-func (_mock *MockCategoryRepository) DeleteCategory(ctx context.Context, id int, userId int) error {
-	ret := _mock.Called(ctx, id, userId)
+func (_mock *MockCategoryRepository) DeleteCategory(ctx context.Context, id int, userID int) ([]core_domain.DeletedTransaction, error) {
+	ret := _mock.Called(ctx, id, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteCategory")
 	}
 
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) error); ok {
-		r0 = returnFunc(ctx, id, userId)
-	} else {
-		r0 = ret.Error(0)
+	var r0 []core_domain.DeletedTransaction
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) ([]core_domain.DeletedTransaction, error)); ok {
+		return returnFunc(ctx, id, userID)
 	}
-	return r0
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int, int) []core_domain.DeletedTransaction); ok {
+		r0 = returnFunc(ctx, id, userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]core_domain.DeletedTransaction)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = returnFunc(ctx, id, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
 }
 
 // MockCategoryRepository_DeleteCategory_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteCategory'
@@ -138,12 +149,12 @@ type MockCategoryRepository_DeleteCategory_Call struct {
 // DeleteCategory is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id int
-//   - userId int
-func (_e *MockCategoryRepository_Expecter) DeleteCategory(ctx any, id any, userId any) *MockCategoryRepository_DeleteCategory_Call {
-	return &MockCategoryRepository_DeleteCategory_Call{Call: _e.mock.On("DeleteCategory", ctx, id, userId)}
+//   - userID int
+func (_e *MockCategoryRepository_Expecter) DeleteCategory(ctx any, id any, userID any) *MockCategoryRepository_DeleteCategory_Call {
+	return &MockCategoryRepository_DeleteCategory_Call{Call: _e.mock.On("DeleteCategory", ctx, id, userID)}
 }
 
-func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.Context, id int, userId int)) *MockCategoryRepository_DeleteCategory_Call {
+func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.Context, id int, userID int)) *MockCategoryRepository_DeleteCategory_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -166,12 +177,12 @@ func (_c *MockCategoryRepository_DeleteCategory_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *MockCategoryRepository_DeleteCategory_Call) Return(err error) *MockCategoryRepository_DeleteCategory_Call {
-	_c.Call.Return(err)
+func (_c *MockCategoryRepository_DeleteCategory_Call) Return(deletedTransactions []core_domain.DeletedTransaction, err error) *MockCategoryRepository_DeleteCategory_Call {
+	_c.Call.Return(deletedTransactions, err)
 	return _c
 }
 
-func (_c *MockCategoryRepository_DeleteCategory_Call) RunAndReturn(run func(ctx context.Context, id int, userId int) error) *MockCategoryRepository_DeleteCategory_Call {
+func (_c *MockCategoryRepository_DeleteCategory_Call) RunAndReturn(run func(ctx context.Context, id int, userID int) ([]core_domain.DeletedTransaction, error)) *MockCategoryRepository_DeleteCategory_Call {
 	_c.Call.Return(run)
 	return _c
 }

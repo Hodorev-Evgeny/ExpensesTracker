@@ -133,3 +133,9 @@ mock-generate:
 
 lint:
 	@golangci-lint config verify && golangci-lint run
+
+send-transaction:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+     	export POSTGRES_HOST=localhost && \
+     	go mod tidy && \
+     	go run ${PROJECT_ROOT}/cmd/backfill/main.go

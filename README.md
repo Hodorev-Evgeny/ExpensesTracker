@@ -218,6 +218,9 @@ LOGGER_LEVEL=debug
 LOGGER_FOLDER=/app
 
 PROJECT_ROOT=.
+
+BUDGET_ADDR=localhost:9091
+BUDGET_TIMEOUT=5s
 ```
 
 ### 3. Запустить приложение
@@ -238,6 +241,11 @@ http://localhost:8080
 make tracker-deploy-stop
 ```
 
+### Если уже есть расходы в баззк даных
+```bash
+make send-transaction
+```
+- отправит расходы которые существовали до подключения Budget service
 ---
 
 ## Запуск для разработки
