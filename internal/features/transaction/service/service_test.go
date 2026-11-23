@@ -9,6 +9,7 @@ import (
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
 )
 
@@ -66,6 +67,18 @@ type FakeBudgetClient struct {
 	revoked   []core_domain.DeletedTransaction
 	applyErr  error
 	revokeErr error
+}
+
+func (s *FakeBudgetClient) ListBudgetStatuses(
+	ctx context.Context,
+	user_id int64,
+	args grpcclient.OptionalArgsStatus,
+) (*pb.ListBudgetStatusesResponse, error) {
+	return &pb.ListBudgetStatusesResponse{}, nil
+}
+
+func (s *FakeBudgetClient) GetTimeOut() time.Duration {
+	return time.Second
 }
 
 func (s *FakeBudgetClient) ApplySpending(

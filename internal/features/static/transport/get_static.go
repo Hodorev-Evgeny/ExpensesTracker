@@ -3,25 +3,31 @@ package statstransport
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
 	core_logger "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/logger"
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/response"
 	core_http_utils "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/transport/http/utils"
+	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
+	"google.golang.org/grpc/status"
 )
 
 type StaticResponse struct {
-	SumIncome      int                `json:"sum_income" example:"1255"`
-	SumExpenditure int                `json:"sum_expenditure" example:"1230"`
-	Difference     float64            `json:"difference" example:"25"`
-	CountOperation int                `json:"count_operation" example:"6"`
-	AVGIncome      float64            `json:"avg_income" example:"123.53"`
-	AVGExpenditure float64            `json:"avg_expenditure" example:"632.12"`
-	CostCategory   string             `json:"cost_category" example:"Medicine"`
-	ShareCategory  map[string]float64 `json:"share_category" example:"Medicine:0.42,Medic:0.58"`
-	MaxIncome      int                `json:"max_income" example:"1200"`
-	MaxExpenditure int                `json:"max_expenditure" example:"155"`
+	SumIncome          int                            `json:"sum_income" example:"1255"`
+	SumExpenditure     int                            `json:"sum_expenditure" example:"1230"`
+	Difference         float64                        `json:"difference" example:"25"`
+	CountOperation     int                            `json:"count_operation" example:"6"`
+	AVGIncome          float64                        `json:"avg_income" example:"123.53"`
+	AVGExpenditure     float64                        `json:"avg_expenditure" example:"632.12"`
+	CostCategory       string                         `json:"cost_category" example:"Medicine"`
+	ShareCategory      map[string]float64             `json:"share_category" example:"Medicine:0.42,Medic:0.58"`
+	MaxIncome          int                            `json:"max_income" example:"1200"`
+	MaxExpenditure     int                            `json:"max_expenditure" example:"155"`
+	StaticBudget       *pb.ListBudgetStatusesResponse `json:"static_budget" example:"[]"`
+	StatusStaticBudget string                         `json:"statistics_status"`
+	Message            string                         `json:"message,omitempty"`
 }
 
 // GetStatic			godoc
@@ -55,6 +61,27 @@ func (h *StaticHTTPHandler) GetStatic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := StaticDomainToResponse(staticDomain)
+
+	var categoryID core_domain.Nullable[int64]
+	var at core_domain.Nullable[time.Time]
+	if staticFilters.CategoryID != nil {
+		val := int64(*staticFilters.CategoryID)
+		categoryID = core_domain.Nullable[int64]{
+			Set:   true,
+			Value: &val,
+		}
+	}
+	userID := int64(staticFilters.UserID)
+
+	staticBudget, err := h.StaticService.GetBudgetStatus(ctx, userID, categoryID, at)
+	if err != nil {
+		log.Error(fmt.Sprintf("error getting static budget: %v", err.Error()))
+		resp.Message = "error getting static budget"
+		resp.StatusStaticBudget = status.Code(err).String()
+	} else {
+		resp.StaticBudget = staticBudget
+	}
+
 	ResponseHandler.JSONResponseHandler(http.StatusOK, resp)
 }
 
