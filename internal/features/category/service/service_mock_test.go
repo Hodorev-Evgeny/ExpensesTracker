@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sync"
 	"testing"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	core_errors "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/errors"
@@ -22,6 +23,11 @@ type fakeCategoryBudgetClient struct {
 	revoked   []core_domain.DeletedTransaction
 	applyErr  error
 	revokeErr error
+}
+
+func (s *fakeCategoryBudgetClient) ListBudgetStatuses(ctx context.Context, user_id int64, args grpcclient.OptionalArgsStatus) (*pb.ListBudgetStatusesResponse, error) {
+	// TODO implement me
+	panic("implement me")
 }
 
 func (s *fakeCategoryBudgetClient) ApplySpending(
@@ -48,6 +54,10 @@ func (s *fakeCategoryBudgetClient) RevokeSpending(
 		return nil, s.revokeErr
 	}
 	return &pb.RevokeSpendingResponse{}, nil
+}
+
+func (s *fakeCategoryBudgetClient) GetTimeOut() time.Duration {
+	return time.Second
 }
 
 func (s *fakeCategoryBudgetClient) calls() (

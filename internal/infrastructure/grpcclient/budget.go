@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"time"
 
 	core_domain "github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
 	pb "github.com/diekinari/budget/api/budgetpb/budget/v1"
@@ -22,6 +23,14 @@ type BudgetService interface {
 		ctx context.Context,
 		transaction core_domain.DeletedTransaction,
 	) (*pb.RevokeSpendingResponse, error)
+
+	ListBudgetStatuses(
+		ctx context.Context,
+		user_id int64,
+		args OptionalArgsStatus,
+	) (*pb.ListBudgetStatusesResponse, error)
+
+	GetTimeOut() time.Duration
 }
 
 type BudgetClient struct {
@@ -84,6 +93,34 @@ func (c *BudgetClient) RevokeSpending(
 	}
 
 	return ans, nil
+}
+
+func (c *BudgetClient) ListBudgetStatuses(
+	ctx context.Context,
+	user_id int64,
+	args OptionalArgsStatus,
+) (*pb.ListBudgetStatusesResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, c.conf.Timeout)
+	defer cancel()
+
+	var req pb.ListBudgetStatusesRequest
+	if args.CategoryID.Set {
+		req.CategoryId = args.CategoryID.Value
+	}
+	if args.At.Set {
+		req.At = timestamppb.New(*args.At.Value)
+	}
+	req.UserId = user_id
+
+	ans, err := c.client.ListBudgetStatuses(ctx, &req)
+	if err != nil {
+		return nil, fmt.Errorf("could not list budget statuses: %w", err)
+	}
+	return ans, nil
+}
+
+func (c *BudgetClient) GetTimeOut() time.Duration {
+	return c.conf.Timeout
 }
 
 func NewClientBudget(conf BudgetConfig) (*BudgetClient, error) {

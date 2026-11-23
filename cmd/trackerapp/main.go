@@ -129,7 +129,7 @@ func main() {
 	limitTransport := limittransport.NewLimitHTTPHandler(limitService)
 	limitRouters := limitTransport.Router()
 
-	staticRepository := statsrepo.NewStaticRepository(pool)
+	staticRepository := statsrepo.NewStaticRepository(pool, budgetClient)
 	staticService := statsservice.NewStaticService(staticRepository)
 	staticTransport := statstransport.NewStaticHTTPHandler(staticService)
 	staticRouters := staticTransport.Router()

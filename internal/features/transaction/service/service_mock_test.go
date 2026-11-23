@@ -20,6 +20,18 @@ import (
 
 type noopBudgetClient struct{}
 
+func (c noopBudgetClient) ListBudgetStatuses(
+	ctx context.Context,
+	user_id int64,
+	args grpcclient.OptionalArgsStatus,
+) (*pb.ListBudgetStatusesResponse, error) {
+	return &pb.ListBudgetStatusesResponse{}, nil
+}
+
+func (c noopBudgetClient) GetTimeOut() time.Duration {
+	return time.Second
+}
+
 func (noopBudgetClient) ApplySpending(
 	ctx context.Context,
 	transaction core_domain.Transaction,

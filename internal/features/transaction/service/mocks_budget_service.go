@@ -6,8 +6,10 @@ package transactionservice
 
 import (
 	"context"
+	"time"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/infrastructure/grpcclient"
 	"github.com/diekinari/budget/api/budgetpb/budget/v1"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -112,6 +114,124 @@ func (_c *MockBudgetService_ApplySpending_Call) Return(applySpendingResponse *bu
 }
 
 func (_c *MockBudgetService_ApplySpending_Call) RunAndReturn(run func(ctx context.Context, transaction core_domain.Transaction) (*budgetv1.ApplySpendingResponse, error)) *MockBudgetService_ApplySpending_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetTimeOut provides a mock function for the type MockBudgetService
+func (_mock *MockBudgetService) GetTimeOut() time.Duration {
+	ret := _mock.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetTimeOut")
+	}
+
+	var r0 time.Duration
+	if returnFunc, ok := ret.Get(0).(func() time.Duration); ok {
+		r0 = returnFunc()
+	} else {
+		r0 = ret.Get(0).(time.Duration)
+	}
+	return r0
+}
+
+// MockBudgetService_GetTimeOut_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetTimeOut'
+type MockBudgetService_GetTimeOut_Call struct {
+	*mock.Call
+}
+
+// GetTimeOut is a helper method to define mock.On call
+func (_e *MockBudgetService_Expecter) GetTimeOut() *MockBudgetService_GetTimeOut_Call {
+	return &MockBudgetService_GetTimeOut_Call{Call: _e.mock.On("GetTimeOut")}
+}
+
+func (_c *MockBudgetService_GetTimeOut_Call) Run(run func()) *MockBudgetService_GetTimeOut_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockBudgetService_GetTimeOut_Call) Return(duration time.Duration) *MockBudgetService_GetTimeOut_Call {
+	_c.Call.Return(duration)
+	return _c
+}
+
+func (_c *MockBudgetService_GetTimeOut_Call) RunAndReturn(run func() time.Duration) *MockBudgetService_GetTimeOut_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListBudgetStatuses provides a mock function for the type MockBudgetService
+func (_mock *MockBudgetService) ListBudgetStatuses(ctx context.Context, user_id int64, args grpcclient.OptionalArgsStatus) (*budgetv1.ListBudgetStatusesResponse, error) {
+	ret := _mock.Called(ctx, user_id, args)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListBudgetStatuses")
+	}
+
+	var r0 *budgetv1.ListBudgetStatusesResponse
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int64, grpcclient.OptionalArgsStatus) (*budgetv1.ListBudgetStatusesResponse, error)); ok {
+		return returnFunc(ctx, user_id, args)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int64, grpcclient.OptionalArgsStatus) *budgetv1.ListBudgetStatusesResponse); ok {
+		r0 = returnFunc(ctx, user_id, args)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*budgetv1.ListBudgetStatusesResponse)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int64, grpcclient.OptionalArgsStatus) error); ok {
+		r1 = returnFunc(ctx, user_id, args)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockBudgetService_ListBudgetStatuses_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListBudgetStatuses'
+type MockBudgetService_ListBudgetStatuses_Call struct {
+	*mock.Call
+}
+
+// ListBudgetStatuses is a helper method to define mock.On call
+//   - ctx context.Context
+//   - user_id int64
+//   - args grpcclient.OptionalArgsStatus
+func (_e *MockBudgetService_Expecter) ListBudgetStatuses(ctx any, user_id any, args any) *MockBudgetService_ListBudgetStatuses_Call {
+	return &MockBudgetService_ListBudgetStatuses_Call{Call: _e.mock.On("ListBudgetStatuses", ctx, user_id, args)}
+}
+
+func (_c *MockBudgetService_ListBudgetStatuses_Call) Run(run func(ctx context.Context, user_id int64, args grpcclient.OptionalArgsStatus)) *MockBudgetService_ListBudgetStatuses_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int64
+		if args[1] != nil {
+			arg1 = args[1].(int64)
+		}
+		var arg2 grpcclient.OptionalArgsStatus
+		if args[2] != nil {
+			arg2 = args[2].(grpcclient.OptionalArgsStatus)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockBudgetService_ListBudgetStatuses_Call) Return(listBudgetStatusesResponse *budgetv1.ListBudgetStatusesResponse, err error) *MockBudgetService_ListBudgetStatuses_Call {
+	_c.Call.Return(listBudgetStatusesResponse, err)
+	return _c
+}
+
+func (_c *MockBudgetService_ListBudgetStatuses_Call) RunAndReturn(run func(ctx context.Context, user_id int64, args grpcclient.OptionalArgsStatus) (*budgetv1.ListBudgetStatusesResponse, error)) *MockBudgetService_ListBudgetStatuses_Call {
 	_c.Call.Return(run)
 	return _c
 }

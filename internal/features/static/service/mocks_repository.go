@@ -6,8 +6,10 @@ package statsservice
 
 import (
 	"context"
+	"time"
 
 	"github.com/Hodorev-Evgeny/ExpensesTracker/internal/core/domain"
+	"github.com/diekinari/budget/api/budgetpb/budget/v1"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -45,6 +47,86 @@ type MockStaticeRepository_Expecter struct {
 
 func (_m *MockStaticeRepository) EXPECT() *MockStaticeRepository_Expecter {
 	return &MockStaticeRepository_Expecter{mock: &_m.Mock}
+}
+
+// GetBudgetStatus provides a mock function for the type MockStaticeRepository
+func (_mock *MockStaticeRepository) GetBudgetStatus(ctx context.Context, user_id int64, category_id core_domain.Nullable[int64], at core_domain.Nullable[time.Time]) (*budgetv1.ListBudgetStatusesResponse, error) {
+	ret := _mock.Called(ctx, user_id, category_id, at)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBudgetStatus")
+	}
+
+	var r0 *budgetv1.ListBudgetStatusesResponse
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int64, core_domain.Nullable[int64], core_domain.Nullable[time.Time]) (*budgetv1.ListBudgetStatusesResponse, error)); ok {
+		return returnFunc(ctx, user_id, category_id, at)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int64, core_domain.Nullable[int64], core_domain.Nullable[time.Time]) *budgetv1.ListBudgetStatusesResponse); ok {
+		r0 = returnFunc(ctx, user_id, category_id, at)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*budgetv1.ListBudgetStatusesResponse)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int64, core_domain.Nullable[int64], core_domain.Nullable[time.Time]) error); ok {
+		r1 = returnFunc(ctx, user_id, category_id, at)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockStaticeRepository_GetBudgetStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBudgetStatus'
+type MockStaticeRepository_GetBudgetStatus_Call struct {
+	*mock.Call
+}
+
+// GetBudgetStatus is a helper method to define mock.On call
+//   - ctx context.Context
+//   - user_id int64
+//   - category_id core_domain.Nullable[int64]
+//   - at core_domain.Nullable[time.Time]
+func (_e *MockStaticeRepository_Expecter) GetBudgetStatus(ctx any, user_id any, category_id any, at any) *MockStaticeRepository_GetBudgetStatus_Call {
+	return &MockStaticeRepository_GetBudgetStatus_Call{Call: _e.mock.On("GetBudgetStatus", ctx, user_id, category_id, at)}
+}
+
+func (_c *MockStaticeRepository_GetBudgetStatus_Call) Run(run func(ctx context.Context, user_id int64, category_id core_domain.Nullable[int64], at core_domain.Nullable[time.Time])) *MockStaticeRepository_GetBudgetStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int64
+		if args[1] != nil {
+			arg1 = args[1].(int64)
+		}
+		var arg2 core_domain.Nullable[int64]
+		if args[2] != nil {
+			arg2 = args[2].(core_domain.Nullable[int64])
+		}
+		var arg3 core_domain.Nullable[time.Time]
+		if args[3] != nil {
+			arg3 = args[3].(core_domain.Nullable[time.Time])
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+			arg3,
+		)
+	})
+	return _c
+}
+
+func (_c *MockStaticeRepository_GetBudgetStatus_Call) Return(listBudgetStatusesResponse *budgetv1.ListBudgetStatusesResponse, err error) *MockStaticeRepository_GetBudgetStatus_Call {
+	_c.Call.Return(listBudgetStatusesResponse, err)
+	return _c
+}
+
+func (_c *MockStaticeRepository_GetBudgetStatus_Call) RunAndReturn(run func(ctx context.Context, user_id int64, category_id core_domain.Nullable[int64], at core_domain.Nullable[time.Time]) (*budgetv1.ListBudgetStatusesResponse, error)) *MockStaticeRepository_GetBudgetStatus_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetStaticCategories provides a mock function for the type MockStaticeRepository
